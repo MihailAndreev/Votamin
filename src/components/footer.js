@@ -8,8 +8,11 @@ export function renderFooter(container) {
       <div class="container">
         <div class="row align-items-center gy-3">
           <div class="col-md-4 text-center text-md-start">
-            <span class="vm-gradient-text fw-bold">Votamin</span>
-            <small class="d-block text-muted mt-1">Свежа енергия за всеки вот</small>
+            <div class="d-flex align-items-center justify-content-center justify-content-md-start gap-2 mb-2">
+              <img src="/src/assets/images/logo/icon.svg" alt="Votamin" width="28" height="28">
+              <span class="vm-gradient-text fw-bold fs-5">Votamin</span>
+            </div>
+            <small class="d-block text-muted">Свежа енергия за всеки вот</small>
           </div>
           <div class="col-md-4 text-center">
             <a href="#/" class="text-muted small me-3">Начало</a>

@@ -12,18 +12,7 @@ export function renderNavbar(container) {
       <div class="container">
         <!-- Brand -->
         <a class="navbar-brand d-flex align-items-center gap-2 fw-bold" href="#/">
-          <span class="vm-brand-icon">
-            <svg width="32" height="32" viewBox="0 0 64 64" fill="none">
-              <defs>
-                <linearGradient id="nb" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" style="stop-color:#22c55e"/>
-                  <stop offset="100%" style="stop-color:#f97316"/>
-                </linearGradient>
-              </defs>
-              <circle cx="32" cy="32" r="30" fill="url(#nb)"/>
-              <text x="32" y="44" text-anchor="middle" font-size="32" font-weight="bold" fill="#fff" font-family="Arial,sans-serif">V</text>
-            </svg>
-          </span>
+          <img src="/src/assets/images/logo/icon.svg" alt="Votamin" width="32" height="32" class="vm-brand-icon">
           <span class="vm-gradient-text fs-4">Votamin</span>
         </a>
 
