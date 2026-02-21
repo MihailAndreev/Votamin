@@ -1,0 +1,65 @@
+<section class="container vm-section" style="max-width:780px;">
+  <a href="#/polls" class="text-muted small mb-3 d-inline-block">← Обратно към анкети</a>
+
+  <div class="vm-card p-4 mb-4">
+    <div class="d-flex justify-content-between align-items-start mb-2">
+      <h3 class="fw-bold mb-0" id="poll-title">Коя е любимата ви програмна технология?</h3>
+      <span class="vm-badge ms-3">Активна</span>
+    </div>
+    <p class="text-muted" id="poll-desc">Изберете една от предложените технологии.</p>
+    <small class="text-muted">Код за споделяне: <strong id="poll-code">AX3K9P</strong>
+      · <a href="#" id="copy-link" class="fw-semibold">Копирай линк</a>
+    </small>
+  </div>
+
+  <!-- Results -->
+  <div class="vm-card p-4 mb-4">
+    <h5 class="fw-bold mb-4">Резултати <span class="text-muted fw-normal small">(42 гласа)</span></h5>
+
+    <div class="mb-3">
+      <div class="d-flex justify-content-between mb-1">
+        <span class="fw-semibold small">JavaScript</span>
+        <span class="small text-muted">45%</span>
+      </div>
+      <div class="progress" style="height:10px; border-radius:var(--vm-radius-full);">
+        <div class="progress-bar" style="width:45%; background: linear-gradient(90deg,var(--vm-green),var(--vm-teal));" role="progressbar"></div>
+      </div>
+    </div>
+
+    <div class="mb-3">
+      <div class="d-flex justify-content-between mb-1">
+        <span class="fw-semibold small">Python</span>
+        <span class="small text-muted">30%</span>
+      </div>
+      <div class="progress" style="height:10px; border-radius:var(--vm-radius-full);">
+        <div class="progress-bar" style="width:30%; background: linear-gradient(90deg,var(--vm-orange),var(--vm-yellow));" role="progressbar"></div>
+      </div>
+    </div>
+
+    <div class="mb-3">
+      <div class="d-flex justify-content-between mb-1">
+        <span class="fw-semibold small">C#</span>
+        <span class="small text-muted">15%</span>
+      </div>
+      <div class="progress" style="height:10px; border-radius:var(--vm-radius-full);">
+        <div class="progress-bar" style="width:15%; background: var(--vm-teal);" role="progressbar"></div>
+      </div>
+    </div>
+
+    <div class="mb-3">
+      <div class="d-flex justify-content-between mb-1">
+        <span class="fw-semibold small">Go</span>
+        <span class="small text-muted">10%</span>
+      </div>
+      <div class="progress" style="height:10px; border-radius:var(--vm-radius-full);">
+        <div class="progress-bar" style="width:10%; background: var(--vm-gray-300);" role="progressbar"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Actions -->
+  <div class="d-flex gap-3">
+    <button class="btn btn-votamin-secondary" id="btn-close-poll">Затвори анкетата</button>
+    <button class="btn btn-votamin-outline" id="btn-delete-poll">Изтрий</button>
+  </div>
+</section>

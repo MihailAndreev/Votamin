@@ -1,0 +1,44 @@
+<div class="min-vh-100 d-flex align-items-center justify-content-center"
+     style="background: linear-gradient(135deg, var(--vm-green-light) 0%, var(--vm-white) 50%, var(--vm-orange-light) 100%);">
+  <div style="width:100%; max-width:520px; padding:1rem;">
+    <div class="vm-card p-4 p-md-5">
+      <div class="text-center mb-4">
+        <span class="vm-gradient-text fs-4 fw-bold">Votamin</span>
+        <h4 class="mt-2 fw-bold" id="public-poll-title">Коя е любимата ви програмна технология?</h4>
+        <p class="text-muted small" id="public-poll-desc">Изберете една от предложените технологии.</p>
+      </div>
+
+      <form id="public-vote-form">
+        <div class="d-grid gap-2 mb-4" id="public-options">
+          <label class="vm-vote-option vm-card p-3 d-flex align-items-center gap-3">
+            <input type="radio" name="vote" value="1" class="form-check-input mt-0" style="width:1.2em;height:1.2em;" />
+            <span class="fw-semibold">JavaScript</span>
+          </label>
+          <label class="vm-vote-option vm-card p-3 d-flex align-items-center gap-3">
+            <input type="radio" name="vote" value="2" class="form-check-input mt-0" style="width:1.2em;height:1.2em;" />
+            <span class="fw-semibold">Python</span>
+          </label>
+          <label class="vm-vote-option vm-card p-3 d-flex align-items-center gap-3">
+            <input type="radio" name="vote" value="3" class="form-check-input mt-0" style="width:1.2em;height:1.2em;" />
+            <span class="fw-semibold">C#</span>
+          </label>
+          <label class="vm-vote-option vm-card p-3 d-flex align-items-center gap-3">
+            <input type="radio" name="vote" value="4" class="form-check-input mt-0" style="width:1.2em;height:1.2em;" />
+            <span class="fw-semibold">Go</span>
+          </label>
+        </div>
+        <button type="submit" class="btn btn-votamin w-100 btn-lg">Гласувай 🗳️</button>
+      </form>
+
+      <!-- Thank you (hidden initially) -->
+      <div id="public-thanks" class="text-center d-none py-4">
+        <div class="fs-1 mb-2">🎉</div>
+        <h4 class="fw-bold">Благодарим ти!</h4>
+        <p class="text-muted">Гласът ти е записан успешно.</p>
+      </div>
+    </div>
+    <p class="text-center mt-3 small text-muted">
+      Задвижвано от <a href="#/" class="fw-semibold">Votamin</a>
+    </p>
+  </div>
+</div>

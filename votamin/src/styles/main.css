@@ -1,0 +1,200 @@
+/* ============================================================
+   Votamin – Global Styles
+   ============================================================ */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700;800&display=swap');
+@import './theme.css';
+
+/* ── Reset / Base ─────────────────────────────────── */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  font-family: var(--vm-font-sans);
+  color: var(--vm-text);
+  background-color: var(--vm-bg);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--vm-font-display);
+  font-weight: 700;
+  line-height: 1.2;
+  color: var(--vm-gray-900);
+}
+
+a {
+  color: var(--vm-green-dark);
+  text-decoration: none;
+  transition: color var(--vm-transition);
+}
+
+a:hover {
+  color: var(--vm-primary);
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* ── App Shell ────────────────────────────────────── */
+#app {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+#page-content {
+  flex: 1;
+}
+
+/* ── Brand Button ─────────────────────────────────── */
+.btn-votamin {
+  background: linear-gradient(135deg, var(--vm-green) 0%, var(--vm-teal) 100%);
+  color: var(--vm-white);
+  border: none;
+  border-radius: var(--vm-radius-full);
+  padding: 0.625rem 1.75rem;
+  font-weight: 600;
+  font-size: 0.95rem;
+  transition: all var(--vm-transition);
+  box-shadow: var(--vm-shadow-sm);
+}
+
+.btn-votamin:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--vm-shadow);
+  color: var(--vm-white);
+  filter: brightness(1.06);
+}
+
+.btn-votamin-outline {
+  background: transparent;
+  color: var(--vm-green);
+  border: 2px solid var(--vm-green);
+  border-radius: var(--vm-radius-full);
+  padding: 0.5rem 1.5rem;
+  font-weight: 600;
+  transition: all var(--vm-transition);
+}
+
+.btn-votamin-outline:hover {
+  background: var(--vm-green);
+  color: var(--vm-white);
+}
+
+.btn-votamin-secondary {
+  background: linear-gradient(135deg, var(--vm-orange) 0%, var(--vm-yellow) 100%);
+  color: var(--vm-white);
+  border: none;
+  border-radius: var(--vm-radius-full);
+  padding: 0.625rem 1.75rem;
+  font-weight: 600;
+  transition: all var(--vm-transition);
+}
+
+.btn-votamin-secondary:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--vm-shadow);
+  color: var(--vm-white);
+  filter: brightness(1.06);
+}
+
+/* ── Card ─────────────────────────────────────────── */
+.vm-card {
+  background: var(--vm-surface);
+  border: 1px solid var(--vm-border);
+  border-radius: var(--vm-radius);
+  box-shadow: var(--vm-shadow-sm);
+  transition: box-shadow var(--vm-transition), transform var(--vm-transition);
+}
+
+.vm-card:hover {
+  box-shadow: var(--vm-shadow);
+  transform: translateY(-2px);
+}
+
+/* ── Badge ────────────────────────────────────────── */
+.vm-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.2rem 0.7rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  border-radius: var(--vm-radius-full);
+  background: var(--vm-green-light);
+  color: var(--vm-green-dark);
+}
+
+.vm-badge--orange {
+  background: var(--vm-orange-light);
+  color: var(--vm-orange-dark);
+}
+
+/* ── Form Styles ──────────────────────────────────── */
+.vm-input {
+  border: 2px solid var(--vm-border);
+  border-radius: var(--vm-radius-sm);
+  padding: 0.625rem 1rem;
+  font-size: 0.95rem;
+  transition: border-color var(--vm-transition), box-shadow var(--vm-transition);
+  width: 100%;
+}
+
+.vm-input:focus {
+  outline: none;
+  border-color: var(--vm-green);
+  box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.15);
+}
+
+/* ── Section helpers ──────────────────────────────── */
+.vm-section {
+  padding: 3rem 0;
+}
+
+.vm-gradient-text {
+  background: linear-gradient(135deg, var(--vm-green) 0%, var(--vm-teal) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ── Page transition ──────────────────────────────── */
+.vm-page-enter {
+  animation: vmFadeIn .3s ease both;
+}
+
+@keyframes vmFadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Loader ───────────────────────────────────────── */
+.vm-loader-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 200px;
+}
+
+.vm-loader {
+  width: 40px;
+  height: 40px;
+  border: 4px solid var(--vm-gray-200);
+  border-top-color: var(--vm-green);
+  border-radius: 50%;
+  animation: vmSpin .7s linear infinite;
+}
+
+@keyframes vmSpin {
+  to { transform: rotate(360deg); }
+}

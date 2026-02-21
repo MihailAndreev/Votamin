@@ -1,0 +1,16 @@
+/* Public poll page styles */
+
+.vm-vote-option {
+  cursor: pointer;
+  transition: border-color var(--vm-transition), box-shadow var(--vm-transition);
+}
+
+.vm-vote-option:hover {
+  border-color: var(--vm-green);
+}
+
+.vm-vote-option:has(input:checked) {
+  border-color: var(--vm-green);
+  box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.15);
+  background: var(--vm-green-light);
+}

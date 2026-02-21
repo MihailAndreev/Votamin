@@ -1,0 +1,38 @@
+<section class="container vm-section" style="max-width:720px;">
+  <a href="#/polls" class="text-muted small mb-3 d-inline-block">← Обратно към анкети</a>
+  <h2 class="fw-bold mb-1">Нова анкета ✨</h2>
+  <p class="text-muted mb-4">Попълни детайлите и я сподели с публиката</p>
+
+  <form id="poll-new-form" novalidate>
+    <div class="vm-card p-4 mb-4">
+      <div class="mb-3">
+        <label for="poll-title" class="form-label fw-semibold">Заглавие</label>
+        <input type="text" class="vm-input" id="poll-title" placeholder="Напр. Коя технология предпочитате?" required />
+      </div>
+      <div class="mb-3">
+        <label for="poll-desc" class="form-label fw-semibold">Описание <span class="text-muted">(по избор)</span></label>
+        <textarea class="vm-input" id="poll-desc" rows="2" placeholder="Кратко описание..."></textarea>
+      </div>
+    </div>
+
+    <div class="vm-card p-4 mb-4">
+      <label class="form-label fw-semibold mb-3">Опции за отговор</label>
+      <div id="poll-options">
+        <div class="input-group mb-2">
+          <span class="input-group-text bg-white border-end-0" style="border-color:var(--vm-border);">1.</span>
+          <input type="text" class="vm-input border-start-0" placeholder="Опция 1" required />
+        </div>
+        <div class="input-group mb-2">
+          <span class="input-group-text bg-white border-end-0" style="border-color:var(--vm-border);">2.</span>
+          <input type="text" class="vm-input border-start-0" placeholder="Опция 2" required />
+        </div>
+      </div>
+      <button type="button" class="btn btn-sm btn-votamin-outline mt-2" id="btn-add-option">+ Добави опция</button>
+    </div>
+
+    <div class="d-flex gap-3">
+      <button type="submit" class="btn btn-votamin btn-lg">Публикувай</button>
+      <a href="#/polls" class="btn btn-votamin-outline btn-lg">Отказ</a>
+    </div>
+  </form>
+</section>

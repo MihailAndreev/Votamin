@@ -1,0 +1,10 @@
+/* Home page styles */
+
+.vm-hero {
+  background: linear-gradient(160deg, var(--vm-gray-50) 0%, var(--vm-white) 60%, var(--vm-green-light) 100%);
+  padding-top: 2rem;
+}
+
+.vm-hero-graphic svg {
+  filter: drop-shadow(0 8px 24px rgba(0,0,0,.10));
+}

@@ -1,0 +1,5 @@
+/* Register page styles */
+
+#register-form .vm-input:focus {
+  border-color: var(--vm-green);
+}
