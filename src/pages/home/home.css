@@ -5,6 +5,124 @@
   padding-top: 2rem;
 }
 
+.vm-hero-content {
+  animation: fadeInUp 0.8s ease-out;
+}
+
+.vm-logo-hero {
+  animation: fadeIn 0.6s ease-out;
+}
+
 .vm-hero-graphic svg {
   filter: drop-shadow(0 8px 24px rgba(0,0,0,.10));
+}
+
+/* Inline Logo in Text */
+.vm-logo-inline {
+  height: 0.75em;
+  vertical-align: baseline;
+  margin: 0 0.08em;
+  position: relative;
+  top: -0.05em;
+}
+
+/* Feature Cards */
+.vm-feature-card {
+  transition: all 0.3s ease;
+  border: 1px solid rgba(0,0,0,0.05);
+}
+
+.vm-feature-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 12px 24px rgba(0,0,0,0.1);
+  border-color: var(--vm-green);
+}
+
+/* Step Numbers */
+.vm-step-number {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--vm-green), var(--vm-teal));
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.75rem;
+  font-weight: bold;
+  box-shadow: 0 4px 12px rgba(20, 184, 166, 0.3);
+}
+
+/* CTA Section */
+.vm-cta {
+  background: linear-gradient(135deg, var(--vm-green) 0%, var(--vm-teal) 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+.vm-cta::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  right: -10%;
+  width: 40%;
+  height: 200%;
+  background: rgba(255, 255, 255, 0.05);
+  transform: rotate(15deg);
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.vm-bar-animate {
+  animation: barGrow 0.6s ease-out forwards;
+  transform-origin: bottom;
+}
+
+@keyframes barGrow {
+  from {
+    transform: scaleY(0);
+    opacity: 0;
+  }
+  to {
+    transform: scaleY(1);
+    opacity: 0.85;
+  }
+}
+
+.vm-check-animate {
+  animation: checkPop 0.4s ease-out forwards;
+  transform-origin: center;
+}
+
+@keyframes checkPop {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.2);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
 }

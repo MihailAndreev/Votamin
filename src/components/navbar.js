@@ -11,9 +11,8 @@ export function renderNavbar(container) {
     <nav class="navbar navbar-expand-lg vm-navbar sticky-top">
       <div class="container">
         <!-- Brand -->
-        <a class="navbar-brand d-flex align-items-center gap-2 fw-bold" href="#/">
-          <img src="/src/assets/images/logo/icon.svg" alt="Votamin" width="32" height="32" class="vm-brand-icon">
-          <span class="vm-gradient-text fs-4">Votamin</span>
+        <a class="navbar-brand d-flex align-items-center" href="#/">
+          <img src="/src/assets/images/logo/logo.svg" alt="Votamin" height="36" class="vm-brand-logo">
         </a>
 
         <!-- Toggler -->

@@ -57,6 +57,73 @@ img {
   flex: 1;
 }
 
+/* ── Navbar ───────────────────────────────────────── */
+.vm-navbar {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  padding: 0.75rem 0;
+  transition: all 0.3s ease;
+}
+
+.vm-navbar .navbar-brand {
+  font-size: 1.5rem;
+  transition: transform 0.2s ease;
+}
+
+.vm-navbar .navbar-brand:hover {
+  transform: scale(1.05);
+}
+
+.vm-brand-logo {
+  transition: transform 0.3s ease;
+  max-height: 36px;
+  width: auto;
+}
+
+.vm-navbar .navbar-brand:hover .vm-brand-logo {
+  transform: scale(1.05);
+}
+
+.vm-navbar .nav-link {
+  color: var(--vm-gray-700);
+  font-weight: 500;
+  padding: 0.5rem 1rem;
+  border-radius: var(--vm-radius-sm);
+  transition: all 0.2s ease;
+}
+
+.vm-navbar .nav-link:hover {
+  color: var(--vm-green);
+  background: var(--vm-green-light);
+}
+
+.vm-navbar .nav-link.active {
+  color: var(--vm-green);
+  font-weight: 600;
+}
+
+/* ── Footer ───────────────────────────────────────── */
+.vm-footer {
+  margin-top: 4rem;
+}
+
+.vm-footer a {
+  transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.vm-footer a:hover {
+  color: var(--vm-green) !important;
+}
+
+.vm-footer a img {
+  transition: transform 0.3s ease;
+}
+
+.vm-footer a:hover img {
+  transform: scale(1.05);
+}
+
 /* ── Brand Button ─────────────────────────────────── */
 .btn-votamin {
   background: linear-gradient(135deg, var(--vm-green) 0%, var(--vm-teal) 100%);

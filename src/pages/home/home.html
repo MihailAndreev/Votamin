@@ -1,8 +1,9 @@
+<!-- Hero Section -->
 <section class="vm-hero position-relative overflow-hidden">
   <div class="container py-5">
     <div class="row align-items-center gy-5">
-      <div class="col-lg-6">
-        <img src="/src/assets/images/logo/logo.svg" alt="Votamin Logo" class="mb-4" style="max-width: 180px; height: auto;">
+      <div class="col-lg-6 vm-hero-content">
+        <img src="/src/assets/images/logo/logo.svg" alt="Votamin Logo" class="mb-4 vm-logo-hero" style="max-width: 180px; height: auto;">
         <h1 class="display-4 fw-bold mb-3">
           Зареди <span class="vm-gradient-text">енергия</span> за твоите решения
         </h1>
@@ -10,28 +11,37 @@
           Votamin е платформа за бързи и лесни анкети — създавай, споделяй и
           анализирай гласувания само с няколко клика.
         </p>
-        <div class="d-flex flex-wrap gap-3">
-          <a href="#/register" class="btn btn-votamin btn-lg">Започни безплатно</a>
-          <a href="#/login" class="btn btn-votamin-outline btn-lg">Вече имам акаунт</a>
+        <div class="d-flex flex-wrap gap-3 mb-4">
+          <a href="#/register" class="btn btn-votamin btn-lg px-4 py-3">
+            <span class="fw-semibold">Започни безплатно</span>
+          </a>
+          <a href="#/login" class="btn btn-votamin-outline btn-lg px-4 py-3">
+            <span class="fw-semibold">Вече имам акаунт</span>
+          </a>
+        </div>
+        <div class="d-flex gap-4 text-muted small">
+          <span>✓ Без кредитна карта</span>
+          <span>✓ Безплатен план</span>
+          <span>✓ Неограничени анкети</span>
         </div>
       </div>
       <div class="col-lg-6 text-center">
         <div class="vm-hero-graphic">
           <svg viewBox="0 0 400 320" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-100" style="max-width:420px">
             <!-- Illustrative bar chart -->
-            <rect x="40"  y="180" width="55" height="120" rx="12" fill="#22c55e" opacity="0.85"/>
-            <rect x="115" y="120" width="55" height="180" rx="12" fill="#0d9488" opacity="0.85"/>
-            <rect x="190" y="150" width="55" height="150" rx="12" fill="#f97316" opacity="0.85"/>
-            <rect x="265" y="80"  width="55" height="220" rx="12" fill="#facc15" opacity="0.85"/>
+            <rect x="40"  y="180" width="55" height="120" rx="12" fill="#22c55e" opacity="0.85" class="vm-bar-animate" style="animation-delay: 0.1s"/>
+            <rect x="115" y="120" width="55" height="180" rx="12" fill="#0d9488" opacity="0.85" class="vm-bar-animate" style="animation-delay: 0.2s"/>
+            <rect x="190" y="150" width="55" height="150" rx="12" fill="#f97316" opacity="0.85" class="vm-bar-animate" style="animation-delay: 0.3s"/>
+            <rect x="265" y="80"  width="55" height="220" rx="12" fill="#facc15" opacity="0.85" class="vm-bar-animate" style="animation-delay: 0.4s"/>
             <!-- Check marks -->
-            <circle cx="67"  cy="160" r="16" fill="#fff"/>
-            <path d="M59 160l6 6 12-12" stroke="#22c55e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
-            <circle cx="142" cy="100" r="16" fill="#fff"/>
-            <path d="M134 100l6 6 12-12" stroke="#0d9488" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
-            <circle cx="217" cy="130" r="16" fill="#fff"/>
-            <path d="M209 130l6 6 12-12" stroke="#f97316" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
-            <circle cx="292" cy="60" r="16" fill="#fff"/>
-            <path d="M284 60l6 6 12-12" stroke="#facc15" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="67"  cy="160" r="16" fill="#fff" class="vm-check-animate" style="animation-delay: 0.5s"/>
+            <path d="M59 160l6 6 12-12" stroke="#22c55e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="vm-check-animate" style="animation-delay: 0.6s"/>
+            <circle cx="142" cy="100" r="16" fill="#fff" class="vm-check-animate" style="animation-delay: 0.7s"/>
+            <path d="M134 100l6 6 12-12" stroke="#0d9488" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="vm-check-animate" style="animation-delay: 0.8s"/>
+            <circle cx="217" cy="130" r="16" fill="#fff" class="vm-check-animate" style="animation-delay: 0.9s"/>
+            <path d="M209 130l6 6 12-12" stroke="#f97316" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="vm-check-animate" style="animation-delay: 1.0s"/>
+            <circle cx="292" cy="60" r="16" fill="#fff" class="vm-check-animate" style="animation-delay: 1.1s"/>
+            <path d="M284 60l6 6 12-12" stroke="#facc15" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="vm-check-animate" style="animation-delay: 1.2s"/>
           </svg>
         </div>
       </div>
@@ -39,43 +49,132 @@
   </div>
 </section>
 
-<!-- Features -->
-<section class="vm-section" style="background:var(--vm-white);">
+<!-- Stats Section -->
+<section class="py-5 bg-light border-top border-bottom">
   <div class="container">
-    <h2 class="text-center mb-2">Защо <span class="vm-gradient-text">Votamin</span>?</h2>
-    <p class="text-center text-muted mb-5">Всичко, от което се нуждаеш за ефективни анкети</p>
+    <div class="row text-center g-4">
+      <div class="col-6 col-md-3">
+        <div class="h2 fw-bold vm-gradient-text mb-1">1000+</div>
+        <div class="text-muted small">Активни потребители</div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="h2 fw-bold vm-gradient-text mb-1">5000+</div>
+        <div class="text-muted small">Създадени анкети</div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="h2 fw-bold vm-gradient-text mb-1">50K+</div>
+        <div class="text-muted small">Отдадени гласове</div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="h2 fw-bold vm-gradient-text mb-1">99.9%</div>
+        <div class="text-muted small">Uptime</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Features Section -->
+<section class="py-5">
+  <div class="container">
+    <div class="text-center mb-5">
+      <h2 class="display-6 fw-bold mb-2">
+        Защо <img src="/src/assets/images/logo/logo-text.svg" alt="Votamin" class="vm-logo-inline">?
+      </h2>
+      <p class="lead text-muted">Всичко, от което се нуждаеш за ефективни анкети</p>
+    </div>
     <div class="row g-4">
       <div class="col-md-4">
-        <div class="vm-card p-4 text-center h-100">
+        <div class="vm-card p-4 text-center h-100 vm-feature-card">
           <div class="mb-3 fs-1">⚡</div>
-          <h5>Бърза настройка</h5>
-          <p class="text-muted small">Създай анкета за секунди — без сложни формуляри и настройки.</p>
+          <h5 class="fw-bold mb-3">Бърза настройка</h5>
+          <p class="text-muted mb-0">Създай анкета за секунди — без сложни формуляри и настройки.</p>
         </div>
       </div>
       <div class="col-md-4">
-        <div class="vm-card p-4 text-center h-100">
+        <div class="vm-card p-4 text-center h-100 vm-feature-card">
           <div class="mb-3 fs-1">📊</div>
-          <h5>Резултати в реално време</h5>
-          <p class="text-muted small">Следи гласуването на живо с красиви графики и статистики.</p>
+          <h5 class="fw-bold mb-3">Резултати в реално време</h5>
+          <p class="text-muted mb-0">Следи гласуването на живо с красиви графики и статистики.</p>
         </div>
       </div>
       <div class="col-md-4">
-        <div class="vm-card p-4 text-center h-100">
+        <div class="vm-card p-4 text-center h-100 vm-feature-card">
           <div class="mb-3 fs-1">🔗</div>
-          <h5>Лесно споделяне</h5>
-          <p class="text-muted small">Генерирай кратък линк и сподели с приятели, колеги или общност.</p>
+          <h5 class="fw-bold mb-3">Лесно споделяне</h5>
+          <p class="text-muted mb-0">Генерирай кратък линк и сподели с приятели, колеги или общност.</p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="vm-card p-4 text-center h-100 vm-feature-card">
+          <div class="mb-3 fs-1">🔒</div>
+          <h5 class="fw-bold mb-3">Сигурност</h5>
+          <p class="text-muted mb-0">Твоите данни са защитени с най-високи стандарти за сигурност.</p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="vm-card p-4 text-center h-100 vm-feature-card">
+          <div class="mb-3 fs-1">📱</div>
+          <h5 class="fw-bold mb-3">Мобилна версия</h5>
+          <p class="text-muted mb-0">Работи безупречно на всички устройства — телефон, таблет, компютър.</p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="vm-card p-4 text-center h-100 vm-feature-card">
+          <div class="mb-3 fs-1">🎨</div>
+          <h5 class="fw-bold mb-3">Персонализация</h5>
+          <p class="text-muted mb-0">Настрой анкетата по твой вкус — цветове, шрифтове, лого.</p>
         </div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- CTA -->
-<section class="vm-section text-center" id="home-cta"
-  style="background: linear-gradient(135deg, var(--vm-green) 0%, var(--vm-teal) 100%); color:#fff;">
-  <div class="container py-4">
-    <h2 class="fw-bold mb-3">Готов ли си да започнеш?</h2>
-    <p class="mb-4 opacity-75">Безплатна регистрация, без кредитна карта.</p>
-    <a href="#/register" class="btn btn-light btn-lg fw-semibold px-5 rounded-pill">Създай акаунт</a>
+<!-- How It Works -->
+<section class="py-5 bg-light">
+  <div class="container">
+    <div class="text-center mb-5">
+      <h2 class="display-6 fw-bold mb-2">Как работи?</h2>
+      <p class="lead text-muted">Три прости стъпки до твоята анкета</p>
+    </div>
+    <div class="row g-4">
+      <div class="col-md-4">
+        <div class="text-center">
+          <div class="vm-step-number mx-auto mb-3">1</div>
+          <h5 class="fw-bold mb-2">Създай анкета</h5>
+          <p class="text-muted">Въведи въпрос и опции за отговор</p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="text-center">
+          <div class="vm-step-number mx-auto mb-3">2</div>
+          <h5 class="fw-bold mb-2">Сподели линк</h5>
+          <p class="text-muted">Изпрати на хора, които искаш да гласуват</p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="text-center">
+          <div class="vm-step-number mx-auto mb-3">3</div>
+          <h5 class="fw-bold mb-2">Виж резултатите</h5>
+          <p class="text-muted">Анализирай гласуванията в реално време</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA Section -->
+<section class="vm-cta py-5 text-white text-center">
+  <div class="container py-5">
+    <h2 class="display-5 fw-bold mb-3">Готов ли си да започнеш?</h2>
+    <p class="lead mb-4 opacity-90">Присъедини се към хиляди потребители, които вече използват Votamin</p>
+    <div class="d-flex flex-wrap gap-3 justify-content-center mb-4">
+      <a href="#/register" class="btn btn-light btn-lg fw-semibold px-5 py-3 rounded-pill">
+        Създай акаунт безплатно
+      </a>
+      <a href="#/polls" class="btn btn-outline-light btn-lg fw-semibold px-5 py-3 rounded-pill">
+        Виж примерни анкети
+      </a>
+    </div>
+    <p class="small opacity-75 mb-0">Безплатна регистрация • Без кредитна карта • Отмени по всяко време</p>
   </div>
 </section>
