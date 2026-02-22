@@ -36,6 +36,37 @@ export default {
     passwordsMismatch: 'Passwords do not match',
     registerAutoLoginFailed: 'Registration succeeded, but automatic login was not possible.'
   },
+  auth: {
+    fields: {
+      email: 'Email',
+      password: 'Password',
+      confirmPassword: 'Confirm password'
+    },
+    placeholders: {
+      email: 'name@example.com',
+      password: '••••••••',
+      passwordMin: 'Minimum 6 characters'
+    },
+    actions: {
+      login: 'Login',
+      register: 'Sign Up',
+      loginLoading: 'Logging in...',
+      registerLoading: 'Signing up...',
+      showPassword: 'Show password',
+      hidePassword: 'Hide password'
+    },
+    login: {
+      title: 'Login',
+      subtitle: 'Log into your account and continue',
+      noAccount: "Don't have an account?",
+      forgotPassword: 'Forgot password?'
+    },
+    register: {
+      title: 'Create account',
+      subtitle: 'Free and fast — get started in seconds',
+      haveAccount: 'Already have an account?'
+    }
+  },
   home: {
     hero: {
       title: 'Charge up',

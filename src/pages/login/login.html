@@ -1,24 +1,28 @@
 <div class="vm-card p-4 p-md-5">
   <div class="text-center mb-4">
-    <span class="vm-gradient-text fs-3 fw-bold">Votamin</span>
-    <h4 class="mt-2 fw-bold">Добре дошъл обратно 👋</h4>
-    <p class="text-muted small">Влез в акаунта си и продължи да гласуваш</p>
+    <img src="/src/assets/images/logo/logo.svg" alt="Votamin" height="40" class="mb-3">
+    <h4 class="mt-1 fw-bold" data-i18n="auth.login.title">Вход</h4>
+    <p class="text-muted small" data-i18n="auth.login.subtitle">Влез в акаунта си и продължи</p>
   </div>
 
   <form id="login-form" novalidate>
     <div id="login-error" class="alert alert-danger d-none mb-3" role="alert"></div>
     
     <div class="mb-3">
-      <label for="login-email" class="form-label fw-semibold small">Имейл</label>
-      <input type="email" class="vm-input" id="login-email" placeholder="name@example.com" required />
+      <label for="login-email" class="form-label fw-semibold small" data-i18n="auth.fields.email">Имейл</label>
+      <input type="email" class="vm-input" id="login-email" placeholder="name@example.com" required data-i18n-placeholder="auth.placeholders.email" />
     </div>
     <div class="mb-4">
-      <label for="login-password" class="form-label fw-semibold small">Парола</label>
-      <input type="password" class="vm-input" id="login-password" placeholder="••••••••" required />
+      <label for="login-password" class="form-label fw-semibold small" data-i18n="auth.fields.password">Парола</label>
+      <div class="vm-password-field">
+        <input type="password" class="vm-input" id="login-password" placeholder="••••••••" required data-i18n-placeholder="auth.placeholders.password" />
+        <button type="button" class="vm-password-toggle" data-toggle-password="login-password" data-i18n-aria-label="auth.actions.showPassword" aria-label="Покажи парола">👁</button>
+      </div>
+      <button type="button" class="btn btn-link p-0 mt-2 vm-forgot-password" id="forgot-password-btn" data-i18n="auth.login.forgotPassword">Забравена парола?</button>
     </div>
-    <button type="submit" class="btn btn-votamin w-100 mb-3" id="login-btn">Вход</button>
+    <button type="submit" class="btn btn-votamin w-100 mb-3" id="login-btn" data-i18n="auth.actions.login">Вход</button>
     <p class="text-center text-muted small mb-0">
-      Нямаш акаунт? <a href="/register" class="fw-semibold">Регистрирай се</a>
+      <span data-i18n="auth.login.noAccount">Нямаш акаунт?</span> <a href="/register" class="fw-semibold" data-i18n="auth.actions.register">Регистрирай се</a>
     </p>
   </form>
 </div>

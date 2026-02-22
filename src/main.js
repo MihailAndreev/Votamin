@@ -16,15 +16,14 @@ import { initAuth, isLoggedIn } from '@utils/auth.js';
 
 /* ── Layouts ──────────────────────────────────────── */
 import { renderMainLayout }  from '@layouts/mainLayout.js';
-import { renderAuthLayout }  from '@layouts/authLayout.js';
 
 /* ────────────────────────────────────────────────── *
  *  Register all routes
  * ────────────────────────────────────────────────── */
 
 addRoute('/',             () => import('@pages/home/home.js'),            { layout: 'main' });
-addRoute('/login',        () => import('@pages/login/login.js'),          { layout: 'auth' });
-addRoute('/register',     () => import('@pages/register/register.js'),    { layout: 'auth' });
+addRoute('/login',        () => import('@pages/home/home.js'),            { layout: 'main', authModal: 'login' });
+addRoute('/register',     () => import('@pages/home/home.js'),            { layout: 'main', authModal: 'register' });
 addRoute('/dashboard',    () => import('@pages/dashboard/dashboard.js'),  { layout: 'main', auth: true });
 addRoute('/polls',        () => import('@pages/polls/polls.js'),          { layout: 'main', auth: true });
 addRoute('/polls/new',    () => import('@pages/polls/new/pollNew.js'),    { layout: 'main', auth: true });
@@ -44,6 +43,12 @@ const app = document.getElementById('app');
 await initAuth();
 
 startRouter(async (pageModule, params, route) => {
+  const activeAuthModal = document.getElementById('vm-auth-modal-root-global');
+  if (activeAuthModal) {
+    activeAuthModal.remove();
+  }
+  document.body.classList.remove('vm-auth-modal-open');
+
   // Route guard: redirect to login if auth required but not logged in
   if (route.auth && !isLoggedIn()) {
     navigateTo('/login');
@@ -54,9 +59,7 @@ startRouter(async (pageModule, params, route) => {
 
   /* Pick the right layout shell */
   let contentContainer;
-  if (layoutName === 'auth') {
-    contentContainer = renderAuthLayout(app);
-  } else if (layoutName === 'blank') {
+  if (layoutName === 'blank') {
     app.innerHTML = '<div id="page-content" class="vm-page-enter"></div>';
     contentContainer = app.querySelector('#page-content');
   } else {
@@ -65,6 +68,6 @@ startRouter(async (pageModule, params, route) => {
 
   /* Render the page into the content container */
   if (pageModule.default) {
-    await pageModule.default(contentContainer, params);
+    await pageModule.default(contentContainer, params, route);
   }
 });

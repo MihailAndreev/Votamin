@@ -36,6 +36,37 @@ export default {
     passwordsMismatch: 'Паролите не съвпадат',
     registerAutoLoginFailed: 'Регистрацията е успешна, но автоматичният вход не беше възможен.'
   },
+  auth: {
+    fields: {
+      email: 'Имейл',
+      password: 'Парола',
+      confirmPassword: 'Потвърди парола'
+    },
+    placeholders: {
+      email: 'name@example.com',
+      password: '••••••••',
+      passwordMin: 'Минимум 6 символа'
+    },
+    actions: {
+      login: 'Вход',
+      register: 'Регистрация',
+      loginLoading: 'Вход...',
+      registerLoading: 'Регистрация...',
+      showPassword: 'Покажи парола',
+      hidePassword: 'Скрий парола'
+    },
+    login: {
+      title: 'Вход',
+      subtitle: 'Влез в акаунта си и продължи',
+      noAccount: 'Нямаш акаунт?',
+      forgotPassword: 'Забравена парола?'
+    },
+    register: {
+      title: 'Създай акаунт',
+      subtitle: 'Безплатно и бързо — започни за секунди',
+      haveAccount: 'Вече имаш акаунт?'
+    }
+  },
   home: {
     hero: {
       title: 'Зареди',

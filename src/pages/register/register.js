@@ -10,10 +10,13 @@ import { navigateTo } from '../../router.js';
 
 export default function render(container) {
   container.innerHTML = htmlContent;
+  i18n.loadTranslations();
 
   const form = container.querySelector('#register-form');
   const errorDiv = container.querySelector('#register-error');
   const submitBtn = container.querySelector('#register-btn');
+
+  setupPasswordToggles(container);
 
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -79,5 +82,24 @@ function showError(message, errorDiv) {
 
 function setLoading(loading, btn) {
   btn.disabled = loading;
-  btn.textContent = loading ? '⏳ Регистрация...' : 'Регистрация';
+  btn.textContent = loading
+    ? i18n.t('auth.actions.registerLoading')
+    : i18n.t('auth.actions.register');
+}
+
+function setupPasswordToggles(container) {
+  container.querySelectorAll('[data-toggle-password]').forEach((toggleBtn) => {
+    toggleBtn.addEventListener('click', () => {
+      const targetId = toggleBtn.getAttribute('data-toggle-password');
+      const input = container.querySelector(`#${targetId}`);
+      if (!input) return;
+
+      const isPassword = input.type === 'password';
+      input.type = isPassword ? 'text' : 'password';
+      toggleBtn.setAttribute(
+        'aria-label',
+        isPassword ? i18n.t('auth.actions.hidePassword') : i18n.t('auth.actions.showPassword')
+      );
+    });
+  });
 }

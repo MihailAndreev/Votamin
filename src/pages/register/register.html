@@ -1,28 +1,34 @@
 <div class="vm-card p-4 p-md-5">
   <div class="text-center mb-4">
-    <span class="vm-gradient-text fs-3 fw-bold">Votamin</span>
-    <h4 class="mt-2 fw-bold">Създай акаунт 🚀</h4>
-    <p class="text-muted small">Безплатно и бързо — започни за секунди</p>
+    <img src="/src/assets/images/logo/logo.svg" alt="Votamin" height="40" class="mb-3">
+    <h4 class="mt-1 fw-bold" data-i18n="auth.register.title">Създай акаунт</h4>
+    <p class="text-muted small" data-i18n="auth.register.subtitle">Безплатно и бързо — започни за секунди</p>
   </div>
 
   <form id="register-form" novalidate>
     <div id="register-error" class="alert alert-danger d-none mb-3" role="alert"></div>
     
     <div class="mb-3">
-      <label for="reg-email" class="form-label fw-semibold small">Имейл</label>
-      <input type="email" class="vm-input" id="reg-email" placeholder="name@example.com" required />
+      <label for="reg-email" class="form-label fw-semibold small" data-i18n="auth.fields.email">Имейл</label>
+      <input type="email" class="vm-input" id="reg-email" placeholder="name@example.com" required data-i18n-placeholder="auth.placeholders.email" />
     </div>
     <div class="mb-3">
-      <label for="reg-password" class="form-label fw-semibold small">Парола</label>
-      <input type="password" class="vm-input" id="reg-password" placeholder="Минимум 6 символа" required />
+      <label for="reg-password" class="form-label fw-semibold small" data-i18n="auth.fields.password">Парола</label>
+      <div class="vm-password-field">
+        <input type="password" class="vm-input" id="reg-password" placeholder="Минимум 6 символа" required data-i18n-placeholder="auth.placeholders.passwordMin" />
+        <button type="button" class="vm-password-toggle" data-toggle-password="reg-password" data-i18n-aria-label="auth.actions.showPassword" aria-label="Покажи парола">👁</button>
+      </div>
     </div>
     <div class="mb-4">
-      <label for="reg-password2" class="form-label fw-semibold small">Потвърди парола</label>
-      <input type="password" class="vm-input" id="reg-password2" placeholder="••••••••" required />
+      <label for="reg-password2" class="form-label fw-semibold small" data-i18n="auth.fields.confirmPassword">Потвърди парола</label>
+      <div class="vm-password-field">
+        <input type="password" class="vm-input" id="reg-password2" placeholder="••••••••" required data-i18n-placeholder="auth.placeholders.password" />
+        <button type="button" class="vm-password-toggle" data-toggle-password="reg-password2" data-i18n-aria-label="auth.actions.showPassword" aria-label="Покажи парола">👁</button>
+      </div>
     </div>
-    <button type="submit" class="btn btn-votamin w-100 mb-3" id="register-btn">Регистрация</button>
+    <button type="submit" class="btn btn-votamin w-100 mb-3" id="register-btn" data-i18n="auth.actions.register">Регистрация</button>
     <p class="text-center text-muted small mb-0">
-      Вече имаш акаунт? <a href="/login" class="fw-semibold">Вход</a>
+      <span data-i18n="auth.register.haveAccount">Вече имаш акаунт?</span> <a href="/login" class="fw-semibold" data-i18n="auth.actions.login">Вход</a>
     </p>
   </form>
 </div>

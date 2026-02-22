@@ -103,6 +103,44 @@ img {
   font-weight: 600;
 }
 
+.vm-navbar-user-name {
+  position: relative;
+  display: inline-block;
+  font-size: 1.05rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  background: linear-gradient(135deg, var(--vm-green) 0%, var(--vm-teal) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  transition: transform var(--vm-transition), filter var(--vm-transition);
+}
+
+.vm-navbar-user-name::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: -0.2rem;
+  width: 100%;
+  height: 2px;
+  border-radius: var(--vm-radius-full);
+  background: linear-gradient(135deg, var(--vm-green) 0%, var(--vm-teal) 100%);
+  transform: scaleX(0.35);
+  transform-origin: left;
+  opacity: 0.45;
+  transition: transform var(--vm-transition), opacity var(--vm-transition);
+}
+
+.vm-navbar-user-name:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.05);
+}
+
+.vm-navbar-user-name:hover::after {
+  transform: scaleX(1);
+  opacity: 0.95;
+}
+
 /* ── Footer ───────────────────────────────────────── */
 .vm-footer {
   margin-top: 4rem;

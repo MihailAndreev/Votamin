@@ -3,3 +3,35 @@
 #register-form .vm-input:focus {
   border-color: var(--vm-green);
 }
+
+.vm-password-field {
+  position: relative;
+}
+
+.vm-password-field .vm-input {
+  padding-right: 2.75rem;
+}
+
+.vm-password-toggle {
+  position: absolute;
+  right: 0.5rem;
+  top: 50%;
+  transform: translateY(-50%);
+  border: none;
+  background: transparent;
+  color: var(--vm-text-muted);
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.vm-password-toggle:hover {
+  color: var(--vm-teal);
+  background: var(--vm-gray-100);
+}
+
+.vm-password-toggle:focus-visible {
+  outline: 2px solid var(--vm-teal);
+  outline-offset: 2px;
+}

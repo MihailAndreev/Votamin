@@ -10,10 +10,18 @@ import { navigateTo } from '../../router.js';
 
 export default function render(container) {
   container.innerHTML = htmlContent;
+  i18n.loadTranslations();
 
   const form = container.querySelector('#login-form');
   const errorDiv = container.querySelector('#login-error');
   const submitBtn = container.querySelector('#login-btn');
+  const forgotBtn = container.querySelector('#forgot-password-btn');
+
+  setupPasswordToggles(container);
+
+  forgotBtn?.addEventListener('click', () => {
+    // TODO: add forgot-password flow
+  });
 
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -53,5 +61,24 @@ function showError(message, errorDiv) {
 
 function setLoading(loading, btn) {
   btn.disabled = loading;
-  btn.textContent = loading ? '⏳ Вход...' : 'Вход';
+  btn.textContent = loading
+    ? i18n.t('auth.actions.loginLoading')
+    : i18n.t('auth.actions.login');
+}
+
+function setupPasswordToggles(container) {
+  container.querySelectorAll('[data-toggle-password]').forEach((toggleBtn) => {
+    toggleBtn.addEventListener('click', () => {
+      const targetId = toggleBtn.getAttribute('data-toggle-password');
+      const input = container.querySelector(`#${targetId}`);
+      if (!input) return;
+
+      const isPassword = input.type === 'password';
+      input.type = isPassword ? 'text' : 'password';
+      toggleBtn.setAttribute(
+        'aria-label',
+        isPassword ? i18n.t('auth.actions.hidePassword') : i18n.t('auth.actions.showPassword')
+      );
+    });
+  });
 }

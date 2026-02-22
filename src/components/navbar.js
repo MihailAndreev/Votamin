@@ -57,7 +57,7 @@ export function renderNavbar(container) {
             <img src="/src/assets/images/logo/logo.svg" alt="Votamin" height="36" class="vm-brand-logo">
           </a>
           ${loggedIn ? `
-            <span class="small text-muted fw-semibold d-none d-md-inline" id="navbar-user-name">${displayName}</span>
+            <span class="vm-navbar-user-name d-none d-md-inline" id="navbar-user-name">${displayName}</span>
           ` : ''}
         </div>
 

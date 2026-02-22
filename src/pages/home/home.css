@@ -113,6 +113,40 @@
   transform-origin: center;
 }
 
+.vm-home-content {
+  transition: filter var(--vm-transition), opacity var(--vm-transition);
+}
+
+.vm-home-content--blur {
+  filter: blur(6px);
+  opacity: 0.8;
+  pointer-events: none;
+  user-select: none;
+}
+
+.vm-auth-modal-backdrop {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 1070;
+  background: rgba(17, 24, 39, 0.28);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.vm-auth-modal-card {
+  width: 100%;
+  max-width: 460px;
+}
+
+body.vm-auth-modal-open {
+  overflow: hidden;
+}
+
 @keyframes checkPop {
   0% {
     transform: scale(0);
