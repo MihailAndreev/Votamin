@@ -22,6 +22,20 @@ export default {
     logout: 'Изход',
     rights: 'Всички права запазени.'
   },
+  notifications: {
+    userCreated: 'Потребителят е създаден успешно.',
+    pollCreated: 'Анкетата е създадена.',
+    pollClosed: 'Анкетата е затворена.',
+    pollDeleted: 'Анкетата е изтрита.',
+    linkCopied: 'Линкът е копиран.',
+    linkCopyFailed: 'Неуспешно копиране на линк.',
+    logoutFailed: 'Неуспешен изход от профила.',
+    selectOption: 'Моля, избери опция',
+    fillAllFields: 'Попълни всички полета',
+    passwordMinLength: 'Паролата трябва да е минимум 6 символа',
+    passwordsMismatch: 'Паролите не съвпадат',
+    registerAutoLoginFailed: 'Регистрацията е успешна, но автоматичният вход не беше възможен.'
+  },
   home: {
     hero: {
       title: 'Зареди',

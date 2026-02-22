@@ -3,6 +3,7 @@
    ============================================================ */
 import { i18n } from '../i18n/index.js';
 import { isLoggedIn, logout } from '@utils/auth.js';
+import { showToast } from '@utils/toast.js';
 import { navigateTo } from '../router.js';
 
 export function renderFooter(container) {
@@ -45,7 +46,9 @@ export function renderFooter(container) {
       const { error } = await logout();
       if (!error) {
         navigateTo('/');
+        return;
       }
+      showToast(error?.message || i18n.t('notifications.logoutFailed'), 'error');
     });
   }
 

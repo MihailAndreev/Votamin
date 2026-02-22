@@ -4,6 +4,8 @@
 import htmlContent from './pollNew.html?raw';
 import './pollNew.css';
 import { getCurrentUser } from '@utils/auth.js';
+import { showToast } from '@utils/toast.js';
+import { i18n } from '../../../i18n/index.js';
 import { navigateTo } from '../../../router.js';
 
 export default function render(container) {
@@ -37,8 +39,7 @@ export default function render(container) {
   /* Submit */
   container.querySelector('#poll-new-form').addEventListener('submit', (e) => {
     e.preventDefault();
-    /* Stub: would POST to API */
-    alert('Анкетата е създадена!');
+    showToast(i18n.t('notifications.pollCreated'), 'info');
     navigateTo('/polls');
   });
 }

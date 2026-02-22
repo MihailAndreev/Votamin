@@ -3,6 +3,8 @@
    ============================================================ */
 import htmlContent from './pollPublic.html?raw';
 import './pollPublic.css';
+import { showToast } from '@utils/toast.js';
+import { i18n } from '../../i18n/index.js';
 
 export default function render(container, params) {
   container.innerHTML = htmlContent;
@@ -14,7 +16,7 @@ export default function render(container, params) {
     e.preventDefault();
     const selected = form.querySelector('input[name="vote"]:checked');
     if (!selected) {
-      alert('Моля, избери опция');
+      showToast(i18n.t('notifications.selectOption'), 'error');
       return;
     }
 

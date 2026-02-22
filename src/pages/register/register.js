@@ -4,6 +4,8 @@
 import htmlContent from './register.html?raw';
 import './register.css';
 import { login, register } from '@utils/auth.js';
+import { showToast } from '@utils/toast.js';
+import { i18n } from '../../i18n/index.js';
 import { navigateTo } from '../../router.js';
 
 export default function render(container) {
@@ -22,17 +24,17 @@ export default function render(container) {
 
     // Валидация
     if (!email || !password) {
-      showError('Попълни всички полета', errorDiv);
+      showError(i18n.t('notifications.fillAllFields'), errorDiv);
       return;
     }
 
     if (password.length < 6) {
-      showError('Паролата трябва да е минимум 6 символа', errorDiv);
+      showError(i18n.t('notifications.passwordMinLength'), errorDiv);
       return;
     }
 
     if (password !== password2) {
-      showError('Паролите не съвпадат', errorDiv);
+      showError(i18n.t('notifications.passwordsMismatch'), errorDiv);
       return;
     }
 
@@ -49,6 +51,7 @@ export default function render(container) {
     }
 
     if (data?.session) {
+      showToast(i18n.t('notifications.userCreated'), 'info');
       navigateTo('/dashboard');
       return;
     }
@@ -57,17 +60,19 @@ export default function render(container) {
       const { data: loginData, error: loginError } = await login(email, password);
 
       if (loginError || !loginData?.session) {
-        showError('Регистрацията е успешна, но автоматичният вход не беше възможен.', errorDiv);
+        showError(i18n.t('notifications.registerAutoLoginFailed'), errorDiv);
         setLoading(false, submitBtn);
         return;
       }
 
+      showToast(i18n.t('notifications.userCreated'), 'info');
       navigateTo('/dashboard');
     }
   });
 }
 
 function showError(message, errorDiv) {
+  showToast(message, 'error');
   errorDiv.textContent = message;
   errorDiv.classList.remove('d-none');
 }

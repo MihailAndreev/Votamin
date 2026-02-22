@@ -2,6 +2,7 @@
    Votamin – Navbar Component
    ============================================================ */
 import { getCurrentUser, isAdmin, isLoggedIn, logout } from '@utils/auth.js';
+import { showToast } from '@utils/toast.js';
 import { navigateTo } from '../router.js';
 import { i18n } from '../i18n/index.js';
 import { supabaseClient } from '@utils/supabase.js';
@@ -139,7 +140,9 @@ export function renderNavbar(container) {
       const { error } = await logout();
       if (!error) {
         navigateTo('/');
+        return;
       }
+      showToast(error?.message || i18n.t('notifications.logoutFailed'), 'error');
     });
   }
 

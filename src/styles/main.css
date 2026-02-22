@@ -283,3 +283,64 @@ img {
 @keyframes vmSpin {
   to { transform: rotate(360deg); }
 }
+
+/* ── Toast Notifications ─────────────────────────── */
+.vm-toast-root {
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  z-index: 1080;
+  display: flex;
+  flex-direction: column;
+  gap: 0.625rem;
+  pointer-events: none;
+}
+
+.vm-toast {
+  min-width: 260px;
+  max-width: 420px;
+  border-radius: var(--vm-radius-sm);
+  border: 1px solid var(--vm-border);
+  background: var(--vm-surface);
+  color: var(--vm-text);
+  box-shadow: var(--vm-shadow);
+  padding: 0.75rem 0.875rem;
+  font-size: 0.92rem;
+  line-height: 1.35;
+  opacity: 0;
+  transform: translateY(-8px);
+  transition: opacity var(--vm-transition), transform var(--vm-transition);
+  pointer-events: auto;
+  cursor: pointer;
+}
+
+.vm-toast.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.vm-toast--info {
+  border-left: 4px solid var(--vm-teal);
+}
+
+.vm-toast--success {
+  border-left: 4px solid var(--vm-green);
+}
+
+.vm-toast--error {
+  border-left: 4px solid var(--bs-danger);
+}
+
+@media (max-width: 576px) {
+  .vm-toast-root {
+    left: 0.75rem;
+    right: 0.75rem;
+    top: 0.75rem;
+  }
+
+  .vm-toast {
+    min-width: 0;
+    width: 100%;
+    max-width: none;
+  }
+}

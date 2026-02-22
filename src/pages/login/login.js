@@ -4,6 +4,8 @@
 import htmlContent from './login.html?raw';
 import './login.css';
 import { login } from '@utils/auth.js';
+import { showToast } from '@utils/toast.js';
+import { i18n } from '../../i18n/index.js';
 import { navigateTo } from '../../router.js';
 
 export default function render(container) {
@@ -20,7 +22,7 @@ export default function render(container) {
     const password = form.querySelector('#login-password').value;
 
     if (!email || !password) {
-      showError('Попълни всички полета', errorDiv);
+      showError(i18n.t('notifications.fillAllFields'), errorDiv);
       return;
     }
 
@@ -44,6 +46,7 @@ export default function render(container) {
 }
 
 function showError(message, errorDiv) {
+  showToast(message, 'error');
   errorDiv.textContent = message;
   errorDiv.classList.remove('d-none');
 }

@@ -22,6 +22,20 @@ export default {
     logout: 'Logout',
     rights: 'All rights reserved.'
   },
+  notifications: {
+    userCreated: 'User created successfully.',
+    pollCreated: 'Poll created.',
+    pollClosed: 'Poll closed.',
+    pollDeleted: 'Poll deleted.',
+    linkCopied: 'Link copied.',
+    linkCopyFailed: 'Failed to copy link.',
+    logoutFailed: 'Failed to log out.',
+    selectOption: 'Please select an option',
+    fillAllFields: 'Please fill in all fields',
+    passwordMinLength: 'Password must be at least 6 characters',
+    passwordsMismatch: 'Passwords do not match',
+    registerAutoLoginFailed: 'Registration succeeded, but automatic login was not possible.'
+  },
   home: {
     hero: {
       title: 'Charge up',
