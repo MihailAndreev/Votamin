@@ -1,9 +1,10 @@
 /* ============================================================
    Votamin – Navbar Component
    ============================================================ */
-import { isAdmin, isLoggedIn, logout } from '@utils/auth.js';
+import { getCurrentUser, isAdmin, isLoggedIn, logout } from '@utils/auth.js';
 import { navigateTo } from '../router.js';
 import { i18n } from '../i18n/index.js';
+import { supabaseClient } from '@utils/supabase.js';
 
 function getCurrentLanguageFlag() {
   const currentLang = i18n.getCurrentLang();
@@ -13,8 +14,36 @@ function getCurrentLanguageFlag() {
   return `<img src="${flagSrc}" alt="${currentLang}" width="20" height="15" style="border-radius: 2px;">`;
 }
 
+function getDisplayName(user) {
+  const fullName = user?.user_metadata?.full_name?.trim();
+  if (fullName) return fullName;
+  return user?.email || '';
+}
+
+function getAvatarInitials(nameOrEmail) {
+  const value = nameOrEmail?.trim();
+  if (!value) return '?';
+
+  if (value.includes('@')) {
+    return value.charAt(0).toUpperCase();
+  }
+
+  const nameParts = value.split(/\s+/).filter(Boolean);
+  if (nameParts.length) {
+    if (nameParts.length === 1) {
+      return nameParts[0].charAt(0).toUpperCase();
+    }
+    return `${nameParts[0].charAt(0)}${nameParts[1].charAt(0)}`.toUpperCase();
+  }
+
+  return '?';
+}
+
 export function renderNavbar(container) {
   const loggedIn = isLoggedIn();
+  const currentUser = getCurrentUser();
+  const displayName = getDisplayName(currentUser);
+  const avatarInitials = getAvatarInitials(displayName);
   const homeHref = loggedIn ? '/dashboard' : '/';
   const brandHref = loggedIn ? '/dashboard' : '/';
 
@@ -22,9 +51,14 @@ export function renderNavbar(container) {
     <nav class="navbar navbar-expand-lg vm-navbar sticky-top">
       <div class="container">
         <!-- Brand -->
-        <a class="navbar-brand d-flex align-items-center" href="${brandHref}">
-          <img src="/src/assets/images/logo/logo.svg" alt="Votamin" height="36" class="vm-brand-logo">
-        </a>
+        <div class="d-flex align-items-center gap-3">
+          <a class="navbar-brand d-flex align-items-center" href="${brandHref}">
+            <img src="/src/assets/images/logo/logo.svg" alt="Votamin" height="36" class="vm-brand-logo">
+          </a>
+          ${loggedIn ? `
+            <span class="small text-muted fw-semibold d-none d-md-inline" id="navbar-user-name">${displayName}</span>
+          ` : ''}
+        </div>
 
         <!-- Toggler -->
         <button class="navbar-toggler border-0" type="button"
@@ -35,7 +69,7 @@ export function renderNavbar(container) {
 
         <!-- Links -->
         <div class="collapse navbar-collapse" id="vmNav">
-          <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-1">
+          <ul class="navbar-nav ms-auto me-lg-2 align-items-lg-center gap-lg-1">
             <li class="nav-item">
               <a class="nav-link" href="${homeHref}" data-i18n="navbar.home">Начало</a>
             </li>
@@ -61,7 +95,7 @@ export function renderNavbar(container) {
               </li>
             `}
             <!-- Language Switcher -->
-            <li class="nav-item dropdown ms-lg-2">
+            <li class="nav-item dropdown ms-lg-2 me-lg-1">
               <a class="nav-link dropdown-toggle px-2 d-flex align-items-center" href="#" id="langDropdown" 
                  role="button" data-bs-toggle="dropdown" aria-expanded="false">
                 <span id="currentLangFlag">${getCurrentLanguageFlag()}</span>
@@ -81,6 +115,17 @@ export function renderNavbar(container) {
                 </li>
               </ul>
             </li>
+            ${loggedIn ? `
+              <li class="nav-item ms-lg-1">
+                <button
+                  type="button"
+                  id="navbar-avatar-btn"
+                  class="btn border rounded-circle d-inline-flex align-items-center justify-content-center fw-semibold"
+                  aria-label="User profile"
+                  style="width:36px;height:36px;border-color:var(--vm-border);color:var(--vm-teal);background:var(--vm-gray-100);"
+                >${avatarInitials}</button>
+              </li>
+            ` : ''}
           </ul>
         </div>
       </div>
@@ -99,6 +144,35 @@ export function renderNavbar(container) {
   }
 
   if (loggedIn) {
+    const userNameEl = container.querySelector('#navbar-user-name');
+    const avatarBtnEl = container.querySelector('#navbar-avatar-btn');
+
+    const applyIdentity = (name) => {
+      const resolvedName = name?.trim() || currentUser?.email || '';
+      if (userNameEl) {
+        userNameEl.textContent = resolvedName;
+      }
+      if (avatarBtnEl) {
+        avatarBtnEl.textContent = getAvatarInitials(resolvedName);
+        avatarBtnEl.title = resolvedName;
+      }
+    };
+
+    applyIdentity(displayName);
+
+    if (currentUser?.id) {
+      supabaseClient
+        .from('profiles')
+        .select('full_name')
+        .eq('user_id', currentUser.id)
+        .maybeSingle()
+        .then(({ data, error }) => {
+          if (!error && data?.full_name?.trim()) {
+            applyIdentity(data.full_name);
+          }
+        });
+    }
+
     const adminNavItem = container.querySelector('#admin-nav-item');
     isAdmin().then((admin) => {
       if (admin && adminNavItem) {
