@@ -126,6 +126,9 @@ img {
 
 /* ── Brand Button ─────────────────────────────────── */
 .btn-votamin {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   background: linear-gradient(135deg, var(--vm-green) 0%, var(--vm-teal) 100%);
   color: var(--vm-white);
   border: none;
@@ -133,8 +136,15 @@ img {
   padding: 0.625rem 1.75rem;
   font-weight: 600;
   font-size: 0.95rem;
+  line-height: 1;
   transition: all var(--vm-transition);
   box-shadow: var(--vm-shadow-sm);
+}
+
+.btn-votamin.btn-lg,
+.btn-votamin-outline.btn-lg,
+.btn-votamin-secondary.btn-lg {
+  font-size: 1rem;
 }
 
 .btn-votamin:hover {
@@ -145,12 +155,16 @@ img {
 }
 
 .btn-votamin-outline {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   background: transparent;
   color: var(--vm-green);
   border: 2px solid var(--vm-green);
   border-radius: var(--vm-radius-full);
   padding: 0.5rem 1.5rem;
   font-weight: 600;
+  line-height: 1;
   transition: all var(--vm-transition);
 }
 
@@ -160,12 +174,16 @@ img {
 }
 
 .btn-votamin-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   background: linear-gradient(135deg, var(--vm-orange) 0%, var(--vm-yellow) 100%);
   color: var(--vm-white);
   border: none;
   border-radius: var(--vm-radius-full);
   padding: 0.625rem 1.75rem;
   font-weight: 600;
+  line-height: 1;
   transition: all var(--vm-transition);
 }
 
