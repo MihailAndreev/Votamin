@@ -16,12 +16,13 @@ function getCurrentLanguageFlag() {
 export function renderNavbar(container) {
   const loggedIn = isLoggedIn();
   const homeHref = loggedIn ? '/dashboard' : '/';
+  const brandHref = loggedIn ? '/dashboard' : '/';
 
   container.innerHTML = `
     <nav class="navbar navbar-expand-lg vm-navbar sticky-top">
       <div class="container">
         <!-- Brand -->
-        <a class="navbar-brand d-flex align-items-center" href="/">
+        <a class="navbar-brand d-flex align-items-center" href="${brandHref}">
           <img src="/src/assets/images/logo/logo.svg" alt="Votamin" height="36" class="vm-brand-logo">
         </a>
 

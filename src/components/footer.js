@@ -9,13 +9,14 @@ export function renderFooter(container) {
   const year = new Date().getFullYear();
   const loggedIn = isLoggedIn();
   const homeHref = loggedIn ? '/dashboard' : '/';
+  const brandHref = loggedIn ? '/dashboard' : '/';
 
   container.innerHTML = `
     <div class="vm-footer py-4 mt-auto border-top" style="background:var(--vm-gray-100);">
       <div class="container">
         <div class="row align-items-center gy-3">
           <div class="col-md-4 text-center text-md-start">
-            <a href="/" class="d-inline-flex align-items-center justify-content-center justify-content-md-start text-decoration-none">
+            <a href="${brandHref}" class="d-inline-flex align-items-center justify-content-center justify-content-md-start text-decoration-none">
               <img src="/src/assets/images/logo/logo.svg" alt="Votamin" height="36" class="vm-brand-logo">
             </a>
           </div>
