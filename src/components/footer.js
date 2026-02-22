@@ -2,9 +2,13 @@
    Votamin – Footer Component
    ============================================================ */
 import { i18n } from '../i18n/index.js';
+import { isLoggedIn, logout } from '@utils/auth.js';
+import { navigateTo } from '../router.js';
 
 export function renderFooter(container) {
   const year = new Date().getFullYear();
+  const loggedIn = isLoggedIn();
+  const homeHref = loggedIn ? '#/dashboard' : '#/';
 
   container.innerHTML = `
     <div class="vm-footer py-4 mt-auto border-top" style="background:var(--vm-gray-100);">
@@ -16,9 +20,14 @@ export function renderFooter(container) {
             </a>
           </div>
           <div class="col-md-4 text-center">
-            <a href="#/" class="text-muted small me-3" data-i18n="footer.home">Начало</a>
-            <a href="#/login" class="text-muted small me-3" data-i18n="footer.login">Вход</a>
-            <a href="#/register" class="text-muted small" data-i18n="footer.register">Регистрация</a>
+            <a href="${homeHref}" class="text-muted small me-3" data-i18n="footer.home">Начало</a>
+            ${loggedIn ? `
+              <a href="#/dashboard" class="text-muted small me-3" data-i18n="footer.dashboard">Табло</a>
+              <a href="#" class="text-muted small" id="footer-logout" data-i18n="footer.logout">Изход</a>
+            ` : `
+              <a href="#/login" class="text-muted small me-3" data-i18n="footer.login">Вход</a>
+              <a href="#/register" class="text-muted small" data-i18n="footer.register">Регистрация</a>
+            `}
           </div>
           <div class="col-md-4 text-center text-md-end">
             <small class="text-muted">&copy; ${year} Votamin. <span data-i18n="footer.rights">Всички права запазени.</span></small>
@@ -27,6 +36,17 @@ export function renderFooter(container) {
       </div>
     </div>
   `;
+
+  const footerLogout = container.querySelector('#footer-logout');
+  if (footerLogout) {
+    footerLogout.addEventListener('click', async (e) => {
+      e.preventDefault();
+      const { error } = await logout();
+      if (!error) {
+        navigateTo('/');
+      }
+    });
+  }
 
   i18n.loadTranslations();
 }

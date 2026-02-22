@@ -16,8 +16,10 @@ export default {
   },
   footer: {
     home: 'Home',
+    dashboard: 'Dashboard',
     login: 'Login',
     register: 'Sign Up',
+    logout: 'Logout',
     rights: 'All rights reserved.'
   },
   home: {

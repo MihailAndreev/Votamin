@@ -16,8 +16,10 @@ export default {
   },
   footer: {
     home: 'Начало',
+    dashboard: 'Табло',
     login: 'Вход',
     register: 'Регистрация',
+    logout: 'Изход',
     rights: 'Всички права запазени.'
   },
   home: {

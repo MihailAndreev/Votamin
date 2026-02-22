@@ -1,7 +1,7 @@
 /* ============================================================
    Votamin – Navbar Component
    ============================================================ */
-import { isLoggedIn, logout } from '@utils/auth.js';
+import { isAdmin, isLoggedIn, logout } from '@utils/auth.js';
 import { navigateTo } from '../router.js';
 import { i18n } from '../i18n/index.js';
 
@@ -15,6 +15,7 @@ function getCurrentLanguageFlag() {
 
 export function renderNavbar(container) {
   const loggedIn = isLoggedIn();
+  const homeHref = loggedIn ? '#/dashboard' : '#/';
 
   container.innerHTML = `
     <nav class="navbar navbar-expand-lg vm-navbar sticky-top">
@@ -35,7 +36,7 @@ export function renderNavbar(container) {
         <div class="collapse navbar-collapse" id="vmNav">
           <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-1">
             <li class="nav-item">
-              <a class="nav-link" href="#/" data-i18n="navbar.home">Начало</a>
+              <a class="nav-link" href="${homeHref}" data-i18n="navbar.home">Начало</a>
             </li>
             ${loggedIn ? `
               <li class="nav-item">
@@ -44,7 +45,7 @@ export function renderNavbar(container) {
               <li class="nav-item">
                 <a class="nav-link" href="#/polls" data-i18n="navbar.polls">Анкети</a>
               </li>
-              <li class="nav-item">
+              <li class="nav-item d-none" id="admin-nav-item">
                 <a class="nav-link" href="#/admin" data-i18n="navbar.admin">Админ</a>
               </li>
               <li class="nav-item ms-lg-2">
@@ -88,9 +89,20 @@ export function renderNavbar(container) {
   /* Logout handler */
   const btnLogout = container.querySelector('#btn-logout');
   if (btnLogout) {
-    btnLogout.addEventListener('click', () => {
-      logout();
-      navigateTo('/');
+    btnLogout.addEventListener('click', async () => {
+      const { error } = await logout();
+      if (!error) {
+        navigateTo('/');
+      }
+    });
+  }
+
+  if (loggedIn) {
+    const adminNavItem = container.querySelector('#admin-nav-item');
+    isAdmin().then((admin) => {
+      if (admin && adminNavItem) {
+        adminNavItem.classList.remove('d-none');
+      }
     });
   }
 
