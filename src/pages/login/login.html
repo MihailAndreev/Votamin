@@ -6,6 +6,8 @@
   </div>
 
   <form id="login-form" novalidate>
+    <div id="login-error" class="alert alert-danger d-none mb-3" role="alert"></div>
+    
     <div class="mb-3">
       <label for="login-email" class="form-label fw-semibold small">Имейл</label>
       <input type="email" class="vm-input" id="login-email" placeholder="name@example.com" required />
@@ -14,7 +16,7 @@
       <label for="login-password" class="form-label fw-semibold small">Парола</label>
       <input type="password" class="vm-input" id="login-password" placeholder="••••••••" required />
     </div>
-    <button type="submit" class="btn btn-votamin w-100 mb-3">Вход</button>
+    <button type="submit" class="btn btn-votamin w-100 mb-3" id="login-btn">Вход</button>
     <p class="text-center text-muted small mb-0">
       Нямаш акаунт? <a href="#/register" class="fw-semibold">Регистрирай се</a>
     </p>

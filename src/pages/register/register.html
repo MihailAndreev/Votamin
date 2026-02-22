@@ -6,10 +6,8 @@
   </div>
 
   <form id="register-form" novalidate>
-    <div class="mb-3">
-      <label for="reg-name" class="form-label fw-semibold small">Име</label>
-      <input type="text" class="vm-input" id="reg-name" placeholder="Иван Иванов" required />
-    </div>
+    <div id="register-error" class="alert alert-danger d-none mb-3" role="alert"></div>
+    
     <div class="mb-3">
       <label for="reg-email" class="form-label fw-semibold small">Имейл</label>
       <input type="email" class="vm-input" id="reg-email" placeholder="name@example.com" required />
@@ -22,7 +20,7 @@
       <label for="reg-password2" class="form-label fw-semibold small">Потвърди парола</label>
       <input type="password" class="vm-input" id="reg-password2" placeholder="••••••••" required />
     </div>
-    <button type="submit" class="btn btn-votamin w-100 mb-3">Регистрация</button>
+    <button type="submit" class="btn btn-votamin w-100 mb-3" id="register-btn">Регистрация</button>
     <p class="text-center text-muted small mb-0">
       Вече имаш акаунт? <a href="#/login" class="fw-semibold">Вход</a>
     </p>
