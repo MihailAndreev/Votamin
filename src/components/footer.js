@@ -8,25 +8,25 @@ import { navigateTo } from '../router.js';
 export function renderFooter(container) {
   const year = new Date().getFullYear();
   const loggedIn = isLoggedIn();
-  const homeHref = loggedIn ? '#/dashboard' : '#/';
+  const homeHref = loggedIn ? '/dashboard' : '/';
 
   container.innerHTML = `
     <div class="vm-footer py-4 mt-auto border-top" style="background:var(--vm-gray-100);">
       <div class="container">
         <div class="row align-items-center gy-3">
           <div class="col-md-4 text-center text-md-start">
-            <a href="#/" class="d-inline-flex align-items-center justify-content-center justify-content-md-start text-decoration-none">
+            <a href="/" class="d-inline-flex align-items-center justify-content-center justify-content-md-start text-decoration-none">
               <img src="/src/assets/images/logo/logo.svg" alt="Votamin" height="36" class="vm-brand-logo">
             </a>
           </div>
           <div class="col-md-4 text-center">
             <a href="${homeHref}" class="text-muted small me-3" data-i18n="footer.home">Начало</a>
             ${loggedIn ? `
-              <a href="#/dashboard" class="text-muted small me-3" data-i18n="footer.dashboard">Табло</a>
+              <a href="/dashboard" class="text-muted small me-3" data-i18n="footer.dashboard">Табло</a>
               <a href="#" class="text-muted small" id="footer-logout" data-i18n="footer.logout">Изход</a>
             ` : `
-              <a href="#/login" class="text-muted small me-3" data-i18n="footer.login">Вход</a>
-              <a href="#/register" class="text-muted small" data-i18n="footer.register">Регистрация</a>
+              <a href="/login" class="text-muted small me-3" data-i18n="footer.login">Вход</a>
+              <a href="/register" class="text-muted small" data-i18n="footer.register">Регистрация</a>
             `}
           </div>
           <div class="col-md-4 text-center text-md-end">

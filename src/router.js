@@ -1,6 +1,6 @@
 /* ============================================================
-   Votamin – Simple SPA Router (hash-based)
-   ============================================================ */
+  Votamin – Simple SPA Router (history-based)
+  ============================================================ */
 
 /**
  * @typedef {Object} Route
@@ -24,15 +24,18 @@ export function setNotFound(loader) {
 }
 
 export function navigateTo(path) {
-  window.location.hash = '#' + path;
+  if (window.location.pathname !== path) {
+    window.history.pushState({}, '', path);
+  }
+  window.dispatchEvent(new PopStateEvent('popstate'));
 }
 
 export function currentPath() {
-  return window.location.hash.slice(1) || '/';
+  return window.location.pathname || '/';
 }
 
 /**
- * Start listening for hash changes and do the initial render.
+ * Start listening for browser history changes and do the initial render.
  * @param {Function} renderFn – (pageModule, params, route) => void
  */
 export function startRouter(renderFn) {
@@ -49,7 +52,24 @@ export function startRouter(renderFn) {
     }
   };
 
-  window.addEventListener('hashchange', handle);
+  window.addEventListener('popstate', handle);
+
+  document.addEventListener('click', (event) => {
+    if (event.defaultPrevented) return;
+    if (event.button !== 0) return;
+    if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+
+    const link = event.target.closest('a[href]');
+    if (!link) return;
+
+    const href = link.getAttribute('href');
+    if (!href || !href.startsWith('/')) return;
+    if (link.target === '_blank' || link.hasAttribute('download')) return;
+
+    event.preventDefault();
+    navigateTo(href);
+  });
+
   handle(); // initial
 }
 

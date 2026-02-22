@@ -9,7 +9,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import '@styles/main.css';
 
 /* ── Router ───────────────────────────────────────── */
-import { addRoute, setNotFound, startRouter } from './router.js';
+import { addRoute, navigateTo, setNotFound, startRouter } from './router.js';
 
 /* ── Auth ───────────────────────────────────────── */
 import { initAuth, isLoggedIn } from '@utils/auth.js';
@@ -46,7 +46,7 @@ await initAuth();
 startRouter(async (pageModule, params, route) => {
   // Route guard: redirect to login if auth required but not logged in
   if (route.auth && !isLoggedIn()) {
-    window.location.hash = '#/login';
+    navigateTo('/login');
     return;
   }
 

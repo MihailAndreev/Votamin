@@ -18,7 +18,7 @@ export default function render(container, params) {
   container.querySelector('#copy-link')?.addEventListener('click', (e) => {
     e.preventDefault();
     const code = container.querySelector('#poll-code').textContent;
-    const url  = `${location.origin}${location.pathname}#/p/${code}`;
+    const url  = `${location.origin}/p/${code}`;
     navigator.clipboard.writeText(url).then(() => {
       e.target.textContent = 'Копирано ✓';
       setTimeout(() => e.target.textContent = 'Копирай линк', 2000);

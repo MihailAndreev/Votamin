@@ -15,13 +15,13 @@ function getCurrentLanguageFlag() {
 
 export function renderNavbar(container) {
   const loggedIn = isLoggedIn();
-  const homeHref = loggedIn ? '#/dashboard' : '#/';
+  const homeHref = loggedIn ? '/dashboard' : '/';
 
   container.innerHTML = `
     <nav class="navbar navbar-expand-lg vm-navbar sticky-top">
       <div class="container">
         <!-- Brand -->
-        <a class="navbar-brand d-flex align-items-center" href="#/">
+        <a class="navbar-brand d-flex align-items-center" href="/">
           <img src="/src/assets/images/logo/logo.svg" alt="Votamin" height="36" class="vm-brand-logo">
         </a>
 
@@ -40,23 +40,23 @@ export function renderNavbar(container) {
             </li>
             ${loggedIn ? `
               <li class="nav-item">
-                <a class="nav-link" href="#/dashboard" data-i18n="navbar.dashboard">Табло</a>
+                <a class="nav-link" href="/dashboard" data-i18n="navbar.dashboard">Табло</a>
               </li>
               <li class="nav-item">
-                <a class="nav-link" href="#/polls" data-i18n="navbar.polls">Анкети</a>
+                <a class="nav-link" href="/polls" data-i18n="navbar.polls">Анкети</a>
               </li>
               <li class="nav-item d-none" id="admin-nav-item">
-                <a class="nav-link" href="#/admin" data-i18n="navbar.admin">Админ</a>
+                <a class="nav-link" href="/admin" data-i18n="navbar.admin">Админ</a>
               </li>
               <li class="nav-item ms-lg-2">
                 <button class="btn btn-votamin-outline btn-sm" id="btn-logout" data-i18n="navbar.logout">Изход</button>
               </li>
             ` : `
               <li class="nav-item ms-lg-2">
-                <a class="btn btn-votamin-outline btn-sm" href="#/login" data-i18n="navbar.login">Вход</a>
+                <a class="btn btn-votamin-outline btn-sm" href="/login" data-i18n="navbar.login">Вход</a>
               </li>
               <li class="nav-item">
-                <a class="btn btn-votamin btn-sm" href="#/register" data-i18n="navbar.register">Регистрация</a>
+                <a class="btn btn-votamin btn-sm" href="/register" data-i18n="navbar.register">Регистрация</a>
               </li>
             `}
             <!-- Language Switcher -->
