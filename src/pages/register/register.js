@@ -3,7 +3,7 @@
    ============================================================ */
 import htmlContent from './register.html?raw';
 import './register.css';
-import { register } from '@utils/auth.js';
+import { login, register } from '@utils/auth.js';
 import { navigateTo } from '../../router.js';
 
 export default function render(container) {
@@ -48,11 +48,21 @@ export default function render(container) {
       return;
     }
 
+    if (data?.session) {
+      navigateTo('/dashboard');
+      return;
+    }
+
     if (data?.user) {
-      // Успешна регистрация
-      // User трябва да потвърди email преди да може да влезе
-      alert('✅ Регистрация успешна! Проверете вашия email за потвърждение.');
-      navigateTo('/login');
+      const { data: loginData, error: loginError } = await login(email, password);
+
+      if (loginError || !loginData?.session) {
+        showError('Регистрацията е успешна, но автоматичният вход не беше възможен.', errorDiv);
+        setLoading(false, submitBtn);
+        return;
+      }
+
+      navigateTo('/dashboard');
     }
   });
 }
@@ -64,5 +74,5 @@ function showError(message, errorDiv) {
 
 function setLoading(loading, btn) {
   btn.disabled = loading;
-  btn.textContent = loading ? '⏳ Регистрација...' : 'Регистрация';
+  btn.textContent = loading ? '⏳ Регистрация...' : 'Регистрация';
 }
