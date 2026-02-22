@@ -14,6 +14,12 @@ export default {
     register: 'Регистрация',
     logout: 'Изход'
   },
+  footer: {
+    home: 'Начало',
+    login: 'Вход',
+    register: 'Регистрация',
+    rights: 'Всички права запазени.'
+  },
   home: {
     hero: {
       title: 'Зареди',

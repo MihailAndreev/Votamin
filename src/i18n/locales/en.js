@@ -14,6 +14,12 @@ export default {
     register: 'Sign Up',
     logout: 'Logout'
   },
+  footer: {
+    home: 'Home',
+    login: 'Login',
+    register: 'Sign Up',
+    rights: 'All rights reserved.'
+  },
   home: {
     hero: {
       title: 'Charge up',

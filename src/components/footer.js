@@ -1,8 +1,11 @@
 /* ============================================================
    Votamin – Footer Component
    ============================================================ */
+import { i18n } from '../i18n/index.js';
 
 export function renderFooter(container) {
+  const year = new Date().getFullYear();
+
   container.innerHTML = `
     <div class="vm-footer py-4 mt-auto border-top" style="background:var(--vm-gray-100);">
       <div class="container">
@@ -13,15 +16,17 @@ export function renderFooter(container) {
             </a>
           </div>
           <div class="col-md-4 text-center">
-            <a href="#/" class="text-muted small me-3">Начало</a>
-            <a href="#/login" class="text-muted small me-3">Вход</a>
-            <a href="#/register" class="text-muted small">Регистрация</a>
+            <a href="#/" class="text-muted small me-3" data-i18n="footer.home">Начало</a>
+            <a href="#/login" class="text-muted small me-3" data-i18n="footer.login">Вход</a>
+            <a href="#/register" class="text-muted small" data-i18n="footer.register">Регистрация</a>
           </div>
           <div class="col-md-4 text-center text-md-end">
-            <small class="text-muted">&copy; ${new Date().getFullYear()} Votamin. Всички права запазени.</small>
+            <small class="text-muted">&copy; ${year} Votamin. <span data-i18n="footer.rights">Всички права запазени.</span></small>
           </div>
         </div>
       </div>
     </div>
   `;
+
+  i18n.loadTranslations();
 }
