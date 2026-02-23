@@ -67,6 +67,82 @@ export default {
       haveAccount: 'Вече имаш акаунт?'
     }
   },
+  dashboard: {
+    sidebar: {
+      myPolls: 'Моите анкети',
+      sharedWithMe: 'Споделени с мен',
+      account: 'Акаунт',
+      logout: 'Изход',
+      adminUsers: 'Админ — Потребители',
+      adminPolls: 'Админ — Анкети',
+      collapse: 'Свий менюто'
+    },
+    table: {
+      columns: {
+        title: 'Заглавие',
+        type: 'Тип',
+        responses: 'Отговори',
+        deadline: 'Краен срок',
+        status: 'Статус',
+        myResponse: 'Мой отговор',
+        actions: 'Действия',
+        owner: 'Автор'
+      }
+    },
+    filters: {
+      all: 'Всички',
+      draft: 'Чернова',
+      open: 'Отворена',
+      closed: 'Затворена'
+    },
+    status: {
+      draft: 'Чернова',
+      open: 'Отворена',
+      closed: 'Затворена'
+    },
+    kind: {
+      single_choice: 'Единичен избор',
+      multiple_choice: 'Множествен избор',
+      rating: 'Рейтинг',
+      image: 'С изображения',
+      slider: 'Плъзгач',
+      numeric: 'Числов вход'
+    },
+    empty: {
+      myPolls: {
+        title: 'Все още нямаш анкети.',
+        cta: 'Създай първата си анкета'
+      },
+      shared: {
+        title: 'Все още не си участвал в чужди анкети.',
+        subtitle: 'Когато гласуваш в анкета на друг потребител, тя ще се появи тук.'
+      }
+    },
+    actions: {
+      view: 'Преглед',
+      edit: 'Редактирай',
+      share: 'Сподели',
+      delete: 'Изтрий',
+      viewResults: 'Виж резултати',
+      createPoll: '+ Нова анкета'
+    },
+    myResponse: {
+      yes: 'Да',
+      no: 'Не'
+    },
+    account: {
+      title: 'Акаунт',
+      emailLabel: 'Имейл',
+      changePassword: 'Смяна на парола',
+      currentPassword: 'Текуща парола',
+      newPassword: 'Нова парола',
+      confirmPassword: 'Потвърди нова парола',
+      savePassword: 'Запази парола',
+      passwordChanged: 'Паролата е сменена успешно.',
+      passwordError: 'Неуспешна смяна на парола.'
+    },
+    noDeadline: '—'
+  },
   home: {
     hero: {
       title: 'Зареди',

@@ -1,1 +1,437 @@
-/* Dashboard page styles */
+/* ============================================================
+   Votamin – Dashboard Layout & Page Styles
+   ============================================================ */
+
+/* ── Wrapper ──────────────────────────────────────── */
+.vm-dash-wrapper {
+  display: flex;
+  min-height: calc(100vh - 120px);
+  position: relative;
+}
+
+/* ── Sidebar ──────────────────────────────────────── */
+.vm-sidebar {
+  width: 240px;
+  min-width: 240px;
+  background: var(--vm-surface);
+  border-right: 1px solid var(--vm-border);
+  display: flex;
+  flex-direction: column;
+  transition: width 0.25s ease, min-width 0.25s ease;
+  z-index: 1040;
+}
+
+.vm-sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+  padding: 1rem 0.5rem;
+}
+
+.vm-sidebar-top {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.vm-sidebar-bottom {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  margin-top: auto;
+  padding-top: 1rem;
+  border-top: 1px solid var(--vm-border);
+}
+
+/* ── Sidebar link ─────────────────────────────────── */
+.vm-sidebar-link {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.55rem 0.85rem;
+  border-radius: var(--vm-radius-sm);
+  color: var(--vm-gray-700);
+  font-weight: 500;
+  font-size: 0.92rem;
+  text-decoration: none;
+  transition: background 0.15s ease, color 0.15s ease;
+  border: none;
+  background: none;
+  cursor: pointer;
+  width: 100%;
+  text-align: left;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.vm-sidebar-link:hover {
+  background: var(--vm-green-light);
+  color: var(--vm-green-dark);
+}
+
+.vm-sidebar-link.active {
+  background: var(--vm-green-light);
+  color: var(--vm-green);
+  font-weight: 600;
+}
+
+.vm-sidebar-icon {
+  flex-shrink: 0;
+  width: 1.25rem;
+  text-align: center;
+  font-size: 1.1rem;
+}
+
+.vm-sidebar-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: opacity 0.2s ease;
+}
+
+/* ── Collapsed state (desktop) ────────────────────── */
+.vm-sidebar-collapsed .vm-sidebar {
+  width: 56px;
+  min-width: 56px;
+}
+
+.vm-sidebar-collapsed .vm-sidebar-label {
+  opacity: 0;
+  width: 0;
+  overflow: hidden;
+}
+
+.vm-sidebar-collapsed .vm-sidebar-link {
+  justify-content: center;
+  padding: 0.55rem 0;
+}
+
+.vm-sidebar-collapsed .vm-sidebar-link[data-i18n-title] {
+  position: relative;
+}
+
+/* tooltip on hover when collapsed */
+.vm-sidebar-collapsed .vm-sidebar-link:hover::after {
+  content: attr(data-i18n-title);
+  position: absolute;
+  left: 100%;
+  top: 50%;
+  transform: translateY(-50%);
+  margin-left: 0.5rem;
+  background: var(--vm-gray-900);
+  color: var(--vm-white);
+  font-size: 0.8rem;
+  font-weight: 500;
+  padding: 0.25rem 0.6rem;
+  border-radius: var(--vm-radius-sm);
+  white-space: nowrap;
+  z-index: 1050;
+  pointer-events: none;
+}
+
+/* ── Dashboard content area ───────────────────────── */
+.vm-dash-content {
+  flex: 1;
+  min-width: 0;
+  padding: 1.5rem 2rem;
+  overflow-x: auto;
+}
+
+/* ── Mobile sidebar ───────────────────────────────── */
+.vm-sidebar-mobile-toggle {
+  position: fixed;
+  bottom: 1rem;
+  left: 1rem;
+  z-index: 1050;
+  border-radius: 50%;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--vm-shadow);
+}
+
+.vm-sidebar-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.35);
+  z-index: 1039;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+}
+
+.vm-sidebar-backdrop.vm-backdrop-visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+@media (max-width: 991.98px) {
+  .vm-sidebar {
+    position: fixed;
+    top: 0;
+    left: -260px;
+    height: 100vh;
+    width: 240px;
+    min-width: 240px;
+    transition: left 0.3s ease;
+    box-shadow: var(--vm-shadow-lg);
+  }
+
+  .vm-sidebar.vm-sidebar-open {
+    left: 0;
+  }
+
+  /* On mobile, no collapsed state */
+  .vm-sidebar-collapsed .vm-sidebar {
+    width: 240px;
+    min-width: 240px;
+  }
+  .vm-sidebar-collapsed .vm-sidebar-label {
+    opacity: 1;
+    width: auto;
+  }
+  .vm-sidebar-collapsed .vm-sidebar-link {
+    justify-content: flex-start;
+    padding: 0.55rem 0.85rem;
+  }
+
+  .vm-dash-content {
+    padding: 1rem;
+  }
+}
+
+/* ── Dashboard tables ─────────────────────────────── */
+.vm-dash-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 0.9rem;
+}
+
+.vm-dash-table th {
+  background: var(--vm-gray-50);
+  color: var(--vm-gray-500);
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  letter-spacing: 0.04em;
+  padding: 0.65rem 0.75rem;
+  border-bottom: 2px solid var(--vm-border);
+  white-space: nowrap;
+}
+
+.vm-dash-table td {
+  padding: 0.65rem 0.75rem;
+  border-bottom: 1px solid var(--vm-border);
+  vertical-align: middle;
+}
+
+.vm-dash-table tbody tr:hover {
+  background: var(--vm-gray-50);
+}
+
+/* ── Status badges (dashboard) ────────────────────── */
+.vm-status-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.15rem 0.55rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  border-radius: var(--vm-radius-full);
+}
+
+.vm-status-badge--draft {
+  background: var(--vm-gray-200);
+  color: var(--vm-gray-700);
+}
+
+.vm-status-badge--open {
+  background: var(--vm-green-light);
+  color: var(--vm-green-dark);
+}
+
+.vm-status-badge--closed {
+  background: var(--vm-orange-light);
+  color: var(--vm-orange-dark);
+}
+
+/* ── Kind badge ───────────────────────────────────── */
+.vm-kind-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.15rem 0.5rem;
+  font-size: 0.72rem;
+  font-weight: 500;
+  border-radius: var(--vm-radius-full);
+  background: var(--vm-teal-light);
+  color: var(--vm-teal);
+}
+
+/* ── Actions dropdown ─────────────────────────────── */
+.vm-actions-btn {
+  background: none;
+  border: 1px solid var(--vm-border);
+  border-radius: var(--vm-radius-sm);
+  padding: 0.2rem 0.5rem;
+  font-size: 1rem;
+  cursor: pointer;
+  line-height: 1;
+  color: var(--vm-gray-500);
+  transition: background 0.15s;
+}
+
+.vm-actions-btn:hover {
+  background: var(--vm-gray-100);
+}
+
+/* ── Filter bar ───────────────────────────────────── */
+.vm-dash-filters {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.vm-filter-btn {
+  border: 1px solid var(--vm-border);
+  background: var(--vm-surface);
+  color: var(--vm-gray-700);
+  padding: 0.3rem 0.85rem;
+  font-size: 0.82rem;
+  font-weight: 500;
+  border-radius: var(--vm-radius-full);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.vm-filter-btn:hover {
+  border-color: var(--vm-green);
+  color: var(--vm-green);
+}
+
+.vm-filter-btn.active {
+  background: var(--vm-green);
+  color: var(--vm-white);
+  border-color: var(--vm-green);
+}
+
+/* ── Empty state ──────────────────────────────────── */
+.vm-empty-state {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: var(--vm-gray-500);
+}
+
+.vm-empty-state .vm-empty-icon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
+
+.vm-empty-state .vm-empty-title {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--vm-gray-700);
+  margin-bottom: 0.25rem;
+}
+
+.vm-empty-state .vm-empty-subtitle {
+  font-size: 0.88rem;
+}
+
+/* ── Dashboard section header ─────────────────────── */
+.vm-dash-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.vm-dash-header h3 {
+  margin: 0;
+  font-size: 1.25rem;
+}
+
+/* ── Responsive: tables → cards on mobile ─────────── */
+@media (max-width: 767.98px) {
+  .vm-dash-table-wrap {
+    display: none;
+  }
+
+  .vm-dash-cards {
+    display: flex !important;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .vm-dash-card {
+    background: var(--vm-surface);
+    border: 1px solid var(--vm-border);
+    border-radius: var(--vm-radius);
+    padding: 1rem;
+    box-shadow: var(--vm-shadow-sm);
+  }
+
+  .vm-dash-card-title {
+    font-weight: 600;
+    font-size: 0.95rem;
+    margin-bottom: 0.5rem;
+    color: var(--vm-gray-900);
+  }
+
+  .vm-dash-card-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1rem;
+    font-size: 0.82rem;
+    color: var(--vm-gray-500);
+    margin-bottom: 0.5rem;
+  }
+
+  .vm-dash-card-actions {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  .vm-dash-card-actions a,
+  .vm-dash-card-actions button {
+    font-size: 0.8rem;
+    padding: 0.25rem 0.6rem;
+  }
+}
+
+@media (min-width: 768px) {
+  .vm-dash-cards {
+    display: none !important;
+  }
+}
+
+/* ── Account page ─────────────────────────────────── */
+.vm-account-section {
+  max-width: 520px;
+}
+
+.vm-account-section .vm-account-field {
+  margin-bottom: 1.25rem;
+}
+
+.vm-account-section label {
+  display: block;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--vm-gray-500);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 0.3rem;
+}
+
+.vm-account-section .vm-account-value {
+  font-size: 0.95rem;
+  color: var(--vm-gray-900);
+  padding: 0.5rem 0;
+}

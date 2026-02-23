@@ -230,6 +230,13 @@ DELETE auth.users(id)
 | File | Purpose |
 |------|---------|
 | `001_initial_schema.sql` | Complete schema: types, tables, triggers, RLS policies |
+| `009_fix_rls_recursion_plpgsql.sql` | Break `polls` ↔ `votes` recursion via hardened helper functions |
+| `010_fix_remaining_rls_functions.sql` | Harden remaining helper functions (`is_admin`, `poll_is_open_for_voting`) |
+| `011_fix_rls_recursion_polls_poll_shares.sql` | Break `polls` ↔ `poll_shares` recursion via helper function + policy updates |
+
+## RLS Recursion Safety
+
+See `../docs/RLS_RECURSION_GUARDRAILS.md` for architecture notes, fixed cycles, and guardrails for writing future policies safely.
 
 ## How to Apply
 

@@ -67,6 +67,82 @@ export default {
       haveAccount: 'Already have an account?'
     }
   },
+  dashboard: {
+    sidebar: {
+      myPolls: 'My Polls',
+      sharedWithMe: 'Shared With Me',
+      account: 'Account',
+      logout: 'Logout',
+      adminUsers: 'Admin — Users',
+      adminPolls: 'Admin — Polls',
+      collapse: 'Collapse sidebar'
+    },
+    table: {
+      columns: {
+        title: 'Title',
+        type: 'Type',
+        responses: 'Responses',
+        deadline: 'Deadline',
+        status: 'Status',
+        myResponse: 'My Response',
+        actions: 'Actions',
+        owner: 'Owner'
+      }
+    },
+    filters: {
+      all: 'All',
+      draft: 'Draft',
+      open: 'Open',
+      closed: 'Closed'
+    },
+    status: {
+      draft: 'Draft',
+      open: 'Open',
+      closed: 'Closed'
+    },
+    kind: {
+      single_choice: 'Single Choice',
+      multiple_choice: 'Multiple Choice',
+      rating: 'Rating',
+      image: 'Image Poll',
+      slider: 'Slider',
+      numeric: 'Numeric Input'
+    },
+    empty: {
+      myPolls: {
+        title: "You don't have any polls yet.",
+        cta: 'Create your first poll'
+      },
+      shared: {
+        title: "You haven't participated in any polls yet.",
+        subtitle: 'When you vote in a poll created by someone else, it will appear here.'
+      }
+    },
+    actions: {
+      view: 'View',
+      edit: 'Edit',
+      share: 'Share',
+      delete: 'Delete',
+      viewResults: 'View Results',
+      createPoll: '+ New Poll'
+    },
+    myResponse: {
+      yes: 'Yes',
+      no: 'No'
+    },
+    account: {
+      title: 'Account',
+      emailLabel: 'Email',
+      changePassword: 'Change Password',
+      currentPassword: 'Current password',
+      newPassword: 'New password',
+      confirmPassword: 'Confirm new password',
+      savePassword: 'Save Password',
+      passwordChanged: 'Password changed successfully.',
+      passwordError: 'Failed to change password.'
+    },
+    noDeadline: '—'
+  },
   home: {
     hero: {
       title: 'Charge up',
