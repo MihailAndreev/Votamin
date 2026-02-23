@@ -98,7 +98,11 @@ function renderEmpty() {
 }
 
 export default async function render(container) {
-  container.innerHTML = `
+  let activeStatus = 'all';
+  const contentEl = container.querySelector('#my-polls-content') || document.createElement('div');
+
+  function renderHeader() {
+    return `
     <div class="vm-dash-header">
       <h3>${i18n.t('dashboard.sidebar.myPolls')}</h3>
       <a href="/polls/new" class="btn btn-votamin btn-sm">${i18n.t('dashboard.actions.createPoll')}</a>
@@ -112,11 +116,12 @@ export default async function render(container) {
     <div id="my-polls-content">
       <div class="vm-loader-wrapper"><div class="vm-loader"></div></div>
     </div>`;
+  }
 
-  const contentEl = container.querySelector('#my-polls-content');
-  let activeStatus = 'all';
+  container.innerHTML = renderHeader();
 
   async function loadPolls(status) {
+    const contentEl = container.querySelector('#my-polls-content');
     contentEl.innerHTML = '<div class="vm-loader-wrapper"><div class="vm-loader"></div></div>';
     try {
       const polls = await fetchDashboardMyPolls({ status });
@@ -127,7 +132,7 @@ export default async function render(container) {
       }
     } catch (err) {
       console.error('Failed to load My Polls:', err);
-      contentEl.innerHTML = `<div class="vm-empty-state"><div class="vm-empty-title text-danger">Error loading polls</div></div>`;
+      contentEl.innerHTML = `<div class="vm-empty-state"><div class="vm-empty-title text-danger">${i18n.t('dashboard.error') || 'Error loading polls'}</div></div>`;
     }
   }
 
@@ -147,10 +152,24 @@ export default async function render(container) {
     if (!deleteBtn) return;
     e.preventDefault();
     const pollId = deleteBtn.dataset.pollId;
-    if (confirm('Are you sure you want to delete this poll?')) {
+    if (confirm(i18n.t('dashboard.confirmDelete') || 'Are you sure you want to delete this poll?')) {
       // TODO: implement actual delete via supabase
       showToast(i18n.t('notifications.pollDeleted'), 'info');
     }
+  });
+
+  /* Listen for language changes */
+  window.addEventListener('votamin:language-changed', () => {
+    container.innerHTML = renderHeader();
+    container.querySelector('#my-polls-filters')?.addEventListener('click', (e) => {
+      const btn = e.target.closest('[data-status]');
+      if (!btn) return;
+      activeStatus = btn.dataset.status;
+      container.querySelectorAll('.vm-filter-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      loadPolls(activeStatus);
+    });
+    loadPolls(activeStatus);
   });
 
   await loadPolls(activeStatus);

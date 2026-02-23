@@ -141,6 +141,8 @@ export default {
       passwordChanged: 'Паролата е сменена успешно.',
       passwordError: 'Неуспешна смяна на парола.'
     },
+    confirmDelete: 'Сигурен ли си, че искаш да изтриеш тази анкета?',
+    error: 'Грешка при зареждане на анкетите',
     noDeadline: '—'
   },
   home: {

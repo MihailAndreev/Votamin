@@ -29,6 +29,8 @@ export const i18n = {
       localStorage.setItem('votamin_lang', lang);
       document.documentElement.lang = lang;
       this.loadTranslations();
+      // Dispatch custom event for components to react to language change
+      window.dispatchEvent(new CustomEvent('votamin:language-changed', { detail: { lang } }));
     }
   },
 

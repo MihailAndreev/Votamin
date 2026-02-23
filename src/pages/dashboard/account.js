@@ -11,7 +11,8 @@ export default async function render(container) {
   const user = getCurrentUser();
   const email = user?.email || '';
 
-  container.innerHTML = `
+  function renderContent() {
+    return `
     <div class="vm-dash-header">
       <h3>${i18n.t('dashboard.account.title')}</h3>
     </div>
@@ -41,39 +42,52 @@ export default async function render(container) {
       <hr class="mt-4">
       <button class="btn btn-votamin-outline mt-2" id="account-logout-btn">${i18n.t('dashboard.sidebar.logout')}</button>
     </div>`;
+  }
 
-  /* Change password */
-  container.querySelector('#change-password-form')?.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const newPw = container.querySelector('#new-password').value;
-    const confirmPw = container.querySelector('#confirm-password').value;
+  container.innerHTML = renderContent();
 
-    if (newPw.length < 6) {
-      showToast(i18n.t('notifications.passwordMinLength'), 'error');
-      return;
-    }
-    if (newPw !== confirmPw) {
-      showToast(i18n.t('notifications.passwordsMismatch'), 'error');
-      return;
-    }
+  function attachEventListeners() {
+    /* Change password */
+    container.querySelector('#change-password-form')?.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const newPw = container.querySelector('#new-password').value;
+      const confirmPw = container.querySelector('#confirm-password').value;
 
-    const { error } = await supabaseClient.auth.updateUser({ password: newPw });
-    if (error) {
-      showToast(i18n.t('dashboard.account.passwordError'), 'error');
-    } else {
-      showToast(i18n.t('dashboard.account.passwordChanged'), 'success');
-      container.querySelector('#new-password').value = '';
-      container.querySelector('#confirm-password').value = '';
-    }
-  });
+      if (newPw.length < 6) {
+        showToast(i18n.t('notifications.passwordMinLength'), 'error');
+        return;
+      }
+      if (newPw !== confirmPw) {
+        showToast(i18n.t('notifications.passwordsMismatch'), 'error');
+        return;
+      }
 
-  /* Logout */
-  container.querySelector('#account-logout-btn')?.addEventListener('click', async () => {
-    const { error } = await logout();
-    if (!error) {
-      navigateTo('/');
-    } else {
-      showToast(error?.message || i18n.t('notifications.logoutFailed'), 'error');
-    }
+      const { error } = await supabaseClient.auth.updateUser({ password: newPw });
+      if (error) {
+        showToast(i18n.t('dashboard.account.passwordError'), 'error');
+      } else {
+        showToast(i18n.t('dashboard.account.passwordChanged'), 'success');
+        container.querySelector('#new-password').value = '';
+        container.querySelector('#confirm-password').value = '';
+      }
+    });
+
+    /* Logout */
+    container.querySelector('#account-logout-btn')?.addEventListener('click', async () => {
+      const { error } = await logout();
+      if (!error) {
+        navigateTo('/');
+      } else {
+        showToast(error?.message || i18n.t('notifications.logoutFailed'), 'error');
+      }
+    });
+  }
+
+  attachEventListeners();
+
+  /* Listen for language changes */
+  window.addEventListener('votamin:language-changed', () => {
+    container.innerHTML = renderContent();
+    attachEventListeners();
   });
 }

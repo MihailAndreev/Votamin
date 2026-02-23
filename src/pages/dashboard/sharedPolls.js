@@ -73,7 +73,10 @@ function renderEmpty() {
 }
 
 export default async function render(container) {
-  container.innerHTML = `
+  let activeStatus = 'all';
+
+  function renderHeader() {
+    return `
     <div class="vm-dash-header">
       <h3>${i18n.t('dashboard.sidebar.sharedWithMe')}</h3>
     </div>
@@ -85,11 +88,14 @@ export default async function render(container) {
     <div id="shared-content">
       <div class="vm-loader-wrapper"><div class="vm-loader"></div></div>
     </div>`;
+  }
+
+  container.innerHTML = renderHeader();
 
   const contentEl = container.querySelector('#shared-content');
-  let activeStatus = 'all';
 
   async function loadPolls(status) {
+    const contentEl = container.querySelector('#shared-content');
     contentEl.innerHTML = '<div class="vm-loader-wrapper"><div class="vm-loader"></div></div>';
     try {
       const polls = await fetchDashboardSharedPolls({ status });
@@ -100,7 +106,7 @@ export default async function render(container) {
       }
     } catch (err) {
       console.error('Failed to load Shared polls:', err);
-      contentEl.innerHTML = `<div class="vm-empty-state"><div class="vm-empty-title text-danger">Error loading polls</div></div>`;
+      contentEl.innerHTML = `<div class="vm-empty-state"><div class="vm-empty-title text-danger">${i18n.t('dashboard.error') || 'Error loading polls'}</div></div>`;
     }
   }
 
@@ -111,6 +117,20 @@ export default async function render(container) {
     activeStatus = btn.dataset.status;
     container.querySelectorAll('.vm-filter-btn').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
+    loadPolls(activeStatus);
+  });
+
+  /* Listen for language changes */
+  window.addEventListener('votamin:language-changed', () => {
+    container.innerHTML = renderHeader();
+    container.querySelector('#shared-filters')?.addEventListener('click', (e) => {
+      const btn = e.target.closest('[data-status]');
+      if (!btn) return;
+      activeStatus = btn.dataset.status;
+      container.querySelectorAll('.vm-filter-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      loadPolls(activeStatus);
+    });
     loadPolls(activeStatus);
   });
 

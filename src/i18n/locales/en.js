@@ -141,6 +141,8 @@ export default {
       passwordChanged: 'Password changed successfully.',
       passwordError: 'Failed to change password.'
     },
+    confirmDelete: 'Are you sure you want to delete this poll?',
+    error: 'Error loading polls',
     noDeadline: '—'
   },
   home: {
