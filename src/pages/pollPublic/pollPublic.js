@@ -80,7 +80,7 @@ function renderOptions(poll) {
 
 function renderPublicPollMarkup(poll) {
   const isClosed = poll.status === 'closed';
-  const description = poll.description || t('fallbackDescription');
+  const description = poll.description || '';
   const poweredByHref = getCurrentUser() ? '/dashboard' : '/';
 
   return `
@@ -90,8 +90,8 @@ function renderPublicPollMarkup(poll) {
         <div class="vm-card p-4 p-md-5">
           <div class="text-center mb-4">
             <img src="/src/assets/images/logo/logo.svg" alt="Votamin" class="vm-public-brand-logo" />
-            <h4 class="mt-2 fw-bold" id="public-poll-title">${escapeHtml(poll.title)}</h4>
-            <p class="text-muted small" id="public-poll-desc">${escapeHtml(description)}</p>
+            <h4 class="vm-public-poll-title fw-bold" id="public-poll-title">${escapeHtml(poll.title)}</h4>
+            ${description ? `<p class="text-muted small" id="public-poll-desc">${escapeHtml(description)}</p>` : ''}
           </div>
 
           ${isClosed ? `<div class="alert alert-secondary">${escapeHtml(t('closedAlert'))}</div>` : ''}
@@ -102,9 +102,9 @@ function renderPublicPollMarkup(poll) {
           </form>
 
           <div id="public-thanks" class="text-center d-none py-4">
-            <div class="fs-1 mb-2">🎉</div>
             <h4 class="fw-bold">${escapeHtml(t('thanksTitle'))}</h4>
             <p class="text-muted">${escapeHtml(t('thanksText'))}</p>
+            <a href="/dashboard" class="btn btn-votamin mt-2" id="public-return-dashboard">${escapeHtml(t('returnToDashboard'))}</a>
           </div>
         </div>
         <p class="text-center mt-3 small text-muted">

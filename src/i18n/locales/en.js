@@ -223,10 +223,11 @@ export default {
     numericLabel: 'Enter a value',
     numericPlaceholder: 'For example: 10',
     closedAlert: 'This poll is closed.',
-    voteButton: 'Vote 🗳️',
+    voteButton: 'Vote',
     submitting: 'Submitting...',
     thanksTitle: 'Thank you!',
     thanksText: 'Your vote has been received.',
+    returnToDashboard: 'Back to dashboard',
     poweredBy: 'Powered by',
     errors: {
       missingCode: 'Missing share code.',

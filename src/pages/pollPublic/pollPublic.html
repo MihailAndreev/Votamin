@@ -4,8 +4,7 @@
     <div class="vm-card p-4 p-md-5">
       <div class="text-center mb-4">
         <img src="/src/assets/images/logo/logo.svg" alt="Votamin" class="vm-public-brand-logo" />
-        <h4 class="mt-2 fw-bold" id="public-poll-title">Коя е любимата ви програмна технология?</h4>
-        <p class="text-muted small" id="public-poll-desc">Изберете една от предложените технологии.</p>
+        <h4 class="vm-public-poll-title fw-bold" id="public-poll-title">Коя е любимата ви програмна технология?</h4>
       </div>
 
       <form id="public-vote-form">
@@ -27,14 +26,14 @@
             <span class="fw-semibold">Go</span>
           </label>
         </div>
-        <button type="submit" class="btn btn-votamin w-100 btn-lg">Гласувай 🗳️</button>
+        <button type="submit" class="btn btn-votamin w-100 btn-lg">Гласувай</button>
       </form>
 
       <!-- Thank you (hidden initially) -->
       <div id="public-thanks" class="text-center d-none py-4">
-        <div class="fs-1 mb-2">🎉</div>
         <h4 class="fw-bold">Благодарим ти!</h4>
         <p class="text-muted">Гласът ти е записан успешно.</p>
+        <a href="/dashboard" class="btn btn-votamin mt-2" id="public-return-dashboard">Към Dashboard</a>
       </div>
     </div>
     <p class="text-center mt-3 small text-muted">

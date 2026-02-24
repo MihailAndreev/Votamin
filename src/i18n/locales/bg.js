@@ -223,10 +223,11 @@ export default {
     numericLabel: 'Въведи стойност',
     numericPlaceholder: 'Например: 10',
     closedAlert: 'Тази анкета е затворена.',
-    voteButton: 'Гласувай 🗳️',
+    voteButton: 'Гласувай',
     submitting: 'Изпращане...',
     thanksTitle: 'Благодарим ти!',
     thanksText: 'Гласът ти е получен.',
+    returnToDashboard: 'Към Dashboard',
     poweredBy: 'Задвижвано от',
     errors: {
       missingCode: 'Липсва код за споделяне.',

@@ -5,6 +5,14 @@
   width: auto;
 }
 
+.vm-public-poll-title {
+  margin-top: 1.15rem;
+}
+
+#public-return-dashboard {
+  min-width: 220px;
+}
+
 .vm-powered-by-link {
   vertical-align: middle;
 }
