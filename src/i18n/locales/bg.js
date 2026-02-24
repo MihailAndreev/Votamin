@@ -96,7 +96,10 @@ export default {
       all: 'Всички',
       draft: 'Чернова',
       open: 'Отворена',
-      closed: 'Затворена'
+      closed: 'Затворена',
+      searchPlaceholder: 'Търси по заглавие...',
+      selectAll: 'Избери всички',
+      reset: 'Изчисти филтри'
     },
     status: {
       draft: 'Чернова',

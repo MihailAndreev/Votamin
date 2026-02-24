@@ -10,6 +10,13 @@ import { showConfirmModal } from '@components/confirmModal.js';
 import { showShareModal } from '@components/shareModal.js';
 
 const POLLS_PER_PAGE = 10;
+const STATUS_FILTER_VALUES = ['draft', 'open', 'closed'];
+const KIND_FILTER_VALUES = ['single_choice', 'multiple_choice', 'rating', 'image', 'slider', 'numeric'];
+const RESPONSE_FILTER_VALUES = ['yes', 'no'];
+
+function escapeHtmlAttr(value) {
+  return String(value ?? '').replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
 
 function statusBadge(status) {
   const label = i18n.t(`dashboard.status.${status}`) || status;
@@ -159,22 +166,90 @@ function renderPagination(totalItems, currentPage) {
 }
 
 export default async function render(container) {
-  let activeStatus = 'all';
+  let activeStatuses = new Set(STATUS_FILTER_VALUES);
+  let activeKinds = new Set(KIND_FILTER_VALUES);
+  let activeMyResponses = new Set(RESPONSE_FILTER_VALUES);
+  let searchQuery = '';
+  let allPolls = [];
   let activePolls = [];
   let currentPage = 1;
 
+  const allLabel = () => i18n.t('dashboard.filters.all');
+
+  function getStatusOptions() {
+    return STATUS_FILTER_VALUES.map((value) => ({ value, label: i18n.t(`dashboard.filters.${value}`) }));
+  }
+
+  function getKindOptions() {
+    return KIND_FILTER_VALUES.map((value) => ({ value, label: i18n.t(`dashboard.kind.${value}`) }));
+  }
+
+  function getResponseOptions() {
+    return RESPONSE_FILTER_VALUES.map((value) => ({ value, label: i18n.t(`dashboard.myResponse.${value}`) }));
+  }
+
+  function summarizeSelection(title, selectedValues, options) {
+    if (selectedValues.size === options.length) return `${title}: ${allLabel()}`;
+    if (selectedValues.size === 0) return `${title}: 0`;
+    if (selectedValues.size === 1) {
+      const selected = options.find((option) => selectedValues.has(option.value));
+      return `${title}: ${selected?.label || '—'}`;
+    }
+    return `${title}: ${selectedValues.size}`;
+  }
+
+  function renderMultiSelectFilter({ id, title, group, options, selectedValues }) {
+    const allSelected = selectedValues.size === options.length;
+
+    return `
+      <div class="dropdown vm-filter-dropdown" data-bs-auto-close="outside" data-filter-group="${group}">
+        <button class="vm-filter-btn vm-filter-btn--dropdown" id="${id}" type="button" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
+          <span class="vm-filter-summary">${summarizeSelection(title, selectedValues, options)}</span>
+          <span class="vm-filter-caret">▾</span>
+        </button>
+        <div class="dropdown-menu vm-filter-menu" aria-labelledby="${id}">
+          <button type="button" class="dropdown-item vm-filter-item" data-filter-group="${group}" data-filter-value="__all__">
+            <span class="vm-filter-check ${allSelected ? 'active' : ''}">✓</span>
+            <span>${i18n.t('dashboard.filters.selectAll') || 'Select all'}</span>
+          </button>
+          <div class="vm-filter-divider" role="separator"></div>
+          ${options.map((option) => `
+            <button type="button" class="dropdown-item vm-filter-item" data-filter-group="${group}" data-filter-value="${option.value}">
+              <span class="vm-filter-check ${selectedValues.has(option.value) ? 'active' : ''}">✓</span>
+              <span>${option.label}</span>
+            </button>
+          `).join('')}
+        </div>
+      </div>
+    `;
+  }
+
   function renderHeader() {
+    const searchPlaceholder = i18n.t('dashboard.filters.searchPlaceholder') || 'Search poll titles...';
+    const statusTitle = i18n.t('dashboard.table.columns.status');
+    const typeTitle = i18n.t('dashboard.table.columns.type');
+    const responseTitle = i18n.t('dashboard.table.columns.myResponse');
+
     return `
     <div class="vm-my-polls-page">
     <div class="vm-dash-header">
       <h3>${i18n.t('dashboard.sidebar.myPolls')}</h3>
       <a href="/polls/new" class="btn btn-votamin btn-sm">${i18n.t('dashboard.actions.createPoll')}</a>
     </div>
-    <div class="vm-dash-filters mb-3" id="my-polls-filters">
-      <button class="vm-filter-btn active" data-status="all">${i18n.t('dashboard.filters.all')}</button>
-      <button class="vm-filter-btn" data-status="draft">${i18n.t('dashboard.filters.draft')}</button>
-      <button class="vm-filter-btn" data-status="open">${i18n.t('dashboard.filters.open')}</button>
-      <button class="vm-filter-btn" data-status="closed">${i18n.t('dashboard.filters.closed')}</button>
+    <div class="vm-dash-tools mb-3" id="my-polls-filters">
+      <div class="vm-dash-search-wrap">
+        <input
+          type="search"
+          class="vm-dash-search"
+          id="my-polls-search"
+          value="${escapeHtmlAttr(searchQuery)}"
+          placeholder="${escapeHtmlAttr(searchPlaceholder)}"
+        >
+      </div>
+      ${renderMultiSelectFilter({ id: 'my-polls-status-btn', title: statusTitle, group: 'status', options: getStatusOptions(), selectedValues: activeStatuses })}
+      ${renderMultiSelectFilter({ id: 'my-polls-kind-btn', title: typeTitle, group: 'kind', options: getKindOptions(), selectedValues: activeKinds })}
+      ${renderMultiSelectFilter({ id: 'my-polls-response-btn', title: responseTitle, group: 'response', options: getResponseOptions(), selectedValues: activeMyResponses })}
+      <button type="button" class="vm-filter-btn vm-filter-btn--reset" id="my-polls-reset">${i18n.t('dashboard.filters.reset') || 'Reset filters'}</button>
     </div>
     <div id="my-polls-content" class="vm-my-polls-content">
       <div class="vm-loader-wrapper"><div class="vm-loader"></div></div>
@@ -184,6 +259,100 @@ export default async function render(container) {
   }
 
   container.innerHTML = renderHeader();
+
+  function applyClientFilters() {
+    const normalizedQuery = searchQuery
+      .trim()
+      .toLocaleLowerCase()
+      .split(/\s+/)
+      .filter(Boolean);
+
+    activePolls = allPolls.filter((poll) => {
+      const title = String(poll.title || '').toLocaleLowerCase();
+      const matchesSearch = normalizedQuery.every((word) => title.includes(word));
+      const matchesStatus = activeStatuses.has(poll.status);
+      const matchesKind = activeKinds.has(poll.kind);
+      const hasMyResponse = Boolean(poll.my_response);
+      const responseValue = hasMyResponse ? 'yes' : 'no';
+      const matchesResponse = activeMyResponses.has(responseValue);
+
+      return matchesSearch && matchesStatus && matchesKind && matchesResponse;
+    });
+  }
+
+  function updateFilterDropdowns() {
+    const groups = [
+      {
+        key: 'status',
+        title: i18n.t('dashboard.table.columns.status'),
+        options: getStatusOptions(),
+        selected: activeStatuses
+      },
+      {
+        key: 'kind',
+        title: i18n.t('dashboard.table.columns.type'),
+        options: getKindOptions(),
+        selected: activeKinds
+      },
+      {
+        key: 'response',
+        title: i18n.t('dashboard.table.columns.myResponse'),
+        options: getResponseOptions(),
+        selected: activeMyResponses
+      }
+    ];
+
+    groups.forEach((group) => {
+      const dropdown = container.querySelector(`.vm-filter-dropdown[data-filter-group="${group.key}"]`);
+      if (!dropdown) return;
+
+      const summaryEl = dropdown.querySelector('.vm-filter-summary');
+      if (summaryEl) {
+        summaryEl.textContent = summarizeSelection(group.title, group.selected, group.options);
+      }
+
+      const allCheck = dropdown.querySelector('[data-filter-value="__all__"] .vm-filter-check');
+      if (allCheck) {
+        allCheck.classList.toggle('active', group.selected.size === group.options.length);
+      }
+
+      dropdown.querySelectorAll('[data-filter-value]').forEach((item) => {
+        const value = item.dataset.filterValue;
+        if (!value || value === '__all__') return;
+        const check = item.querySelector('.vm-filter-check');
+        if (check) {
+          check.classList.toggle('active', group.selected.has(value));
+        }
+      });
+    });
+  }
+
+  function toggleGroupValue(group, value) {
+    const groupMap = {
+      status: { selected: activeStatuses, allValues: STATUS_FILTER_VALUES },
+      kind: { selected: activeKinds, allValues: KIND_FILTER_VALUES },
+      response: { selected: activeMyResponses, allValues: RESPONSE_FILTER_VALUES }
+    };
+
+    const entry = groupMap[group];
+    if (!entry) return;
+
+    if (value === '__all__') {
+      const allSelected = entry.selected.size === entry.allValues.length;
+      entry.selected.clear();
+      if (!allSelected) {
+        entry.allValues.forEach((item) => entry.selected.add(item));
+      }
+      return;
+    }
+
+    if (entry.selected.has(value)) {
+      entry.selected.delete(value);
+      return;
+    }
+
+    entry.selected.add(value);
+  }
 
   function renderPollsPage() {
     const contentEl = container.querySelector('#my-polls-content');
@@ -209,27 +378,57 @@ export default async function render(container) {
   }
 
   function bindFilterEvents() {
-    container.querySelector('#my-polls-filters')?.addEventListener('click', (e) => {
-      const btn = e.target.closest('[data-status]');
-      if (!btn) return;
-      activeStatus = btn.dataset.status;
+    const searchEl = container.querySelector('#my-polls-search');
+    const filtersRoot = container.querySelector('#my-polls-filters');
+    const resetEl = container.querySelector('#my-polls-reset');
+
+    searchEl?.addEventListener('input', (e) => {
+      searchQuery = e.target.value || '';
       currentPage = 1;
-      container.querySelectorAll('.vm-filter-btn').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      loadPolls(activeStatus);
+      applyClientFilters();
+      renderPollsPage();
+    });
+
+    filtersRoot?.addEventListener('click', (e) => {
+      const optionBtn = e.target.closest('[data-filter-group][data-filter-value]');
+      if (!optionBtn) return;
+
+      e.preventDefault();
+      e.stopPropagation();
+      const group = optionBtn.dataset.filterGroup;
+      const value = optionBtn.dataset.filterValue;
+      toggleGroupValue(group, value);
+      currentPage = 1;
+      updateFilterDropdowns();
+      applyClientFilters();
+      renderPollsPage();
+    });
+
+    resetEl?.addEventListener('click', () => {
+      searchQuery = '';
+      activeStatuses = new Set(STATUS_FILTER_VALUES);
+      activeKinds = new Set(KIND_FILTER_VALUES);
+      activeMyResponses = new Set(RESPONSE_FILTER_VALUES);
+      currentPage = 1;
+
+      if (searchEl) searchEl.value = '';
+      updateFilterDropdowns();
+      applyClientFilters();
+      renderPollsPage();
     });
   }
 
   bindFilterEvents();
 
-  async function loadPolls(status) {
+  async function loadPolls() {
     const contentEl = container.querySelector('#my-polls-content');
     const paginationEl = container.querySelector('#my-polls-pagination');
     contentEl.innerHTML = '<div class="vm-loader-wrapper"><div class="vm-loader"></div></div>';
     if (paginationEl) paginationEl.innerHTML = '';
     try {
-      const polls = await fetchDashboardMyPolls({ status });
-      activePolls = Array.isArray(polls) ? polls : [];
+      const polls = await fetchDashboardMyPolls({ status: 'all' });
+      allPolls = Array.isArray(polls) ? polls : [];
+      applyClientFilters();
       currentPage = 1;
       renderPollsPage();
     } catch (err) {
@@ -281,7 +480,7 @@ export default async function render(container) {
     deletePollById(pollId)
       .then(() => {
         showToast(i18n.t('notifications.pollDeleted'), 'info');
-        loadPolls(activeStatus);
+        loadPolls();
       })
       .catch((error) => {
         console.error('Failed to delete poll:', error);
@@ -293,17 +492,14 @@ export default async function render(container) {
   window.addEventListener('votamin:language-changed', () => {
     container.innerHTML = renderHeader();
 
-    const activeFilterBtn = container.querySelector(`.vm-filter-btn[data-status="${activeStatus}"]`);
-    container.querySelectorAll('.vm-filter-btn').forEach(b => b.classList.remove('active'));
-    activeFilterBtn?.classList.add('active');
-
     bindFilterEvents();
-    if (activePolls.length) {
+    if (allPolls.length) {
+      applyClientFilters();
       renderPollsPage();
       return;
     }
-    loadPolls(activeStatus);
+    loadPolls();
   });
 
-  await loadPolls(activeStatus);
+  await loadPolls();
 }

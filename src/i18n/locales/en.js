@@ -96,7 +96,10 @@ export default {
       all: 'All',
       draft: 'Draft',
       open: 'Open',
-      closed: 'Closed'
+      closed: 'Closed',
+      searchPlaceholder: 'Search by title...',
+      selectAll: 'Select all',
+      reset: 'Clear filters'
     },
     status: {
       draft: 'Draft',
