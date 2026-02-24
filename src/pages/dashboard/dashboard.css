@@ -262,6 +262,20 @@
   overflow-wrap: anywhere;
 }
 
+.vm-my-polls-table th:nth-child(n + 2),
+.vm-my-polls-table td:nth-child(n + 2) {
+  text-align: center;
+}
+
+.vm-my-polls-table td:last-child .dropdown {
+  display: inline-block;
+}
+
+.vm-shared-polls-table th:nth-child(n + 2),
+.vm-shared-polls-table td:nth-child(n + 2) {
+  text-align: center;
+}
+
 /* ── Status badges (dashboard) ────────────────────── */
 .vm-status-badge {
   display: inline-flex;
@@ -301,13 +315,19 @@
 
 /* ── Actions dropdown ─────────────────────────────── */
 .vm-actions-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   background: none;
   border: 1px solid var(--vm-border);
   border-radius: var(--vm-radius-sm);
-  padding: 0.2rem 0.5rem;
-  font-size: 1rem;
-  cursor: pointer;
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+  font-size: 1.25rem;
+  font-weight: 700;
   line-height: 1;
+  cursor: pointer;
   color: var(--vm-gray-500);
   transition: background 0.15s;
 }

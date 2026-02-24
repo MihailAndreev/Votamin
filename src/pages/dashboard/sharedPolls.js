@@ -19,7 +19,7 @@ function renderTable(polls) {
   const t = (k) => i18n.t(`dashboard.table.columns.${k}`);
   return `
     <div class="vm-dash-table-wrap">
-      <table class="vm-dash-table">
+      <table class="vm-dash-table vm-shared-polls-table">
         <thead>
           <tr>
             <th>${t('title')}</th>
