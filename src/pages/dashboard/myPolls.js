@@ -5,8 +5,9 @@ import { fetchDashboardMyPolls } from '@utils/dashboardData.js';
 import { i18n } from '../../i18n/index.js';
 import { showToast } from '@utils/toast.js';
 import { formatDate } from '@utils/helpers.js';
-import { deletePollById } from '@utils/pollsData.js';
+import { deletePollById, getOrCreatePollShareCode } from '@utils/pollsData.js';
 import { showConfirmModal } from '@components/confirmModal.js';
+import { showShareModal } from '@components/shareModal.js';
 
 function statusBadge(status) {
   const label = i18n.t(`dashboard.status.${status}`) || status;
@@ -148,6 +149,26 @@ export default async function render(container) {
 
   /* Delete handler */
   container.addEventListener('click', async (e) => {
+    const shareBtn = e.target.closest('[data-action="share"]');
+    if (shareBtn) {
+      e.preventDefault();
+      const pollId = shareBtn.dataset.pollId;
+
+      try {
+        const shareCode = await getOrCreatePollShareCode(pollId);
+        const shareUrl = `${window.location.origin}/p/${shareCode}`;
+        const copied = await showShareModal(shareUrl);
+        if (copied) {
+          showToast(i18n.t('notifications.linkCopied') || 'Link copied.', 'info');
+        }
+      } catch (error) {
+        console.error('Failed to share poll:', error);
+        showToast(i18n.t('dashboard.shareError') || 'Error generating share link', 'error');
+      }
+
+      return;
+    }
+
     const deleteBtn = e.target.closest('[data-action="delete"]');
     if (!deleteBtn) return;
     e.preventDefault();

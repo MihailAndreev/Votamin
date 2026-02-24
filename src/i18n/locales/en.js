@@ -129,6 +129,14 @@ export default {
       viewResults: 'View Results',
       createPoll: '+ New Poll'
     },
+    shareModal: {
+      title: 'Share poll',
+      subtitle: 'Copy the link and send it to participants.',
+      linkLabel: 'Poll link',
+      copy: 'Copy link',
+      copied: 'Copied ✓',
+      close: 'Close'
+    },
     myResponse: {
       yes: 'Yes',
       no: 'No'
@@ -145,6 +153,7 @@ export default {
       passwordError: 'Failed to change password.'
     },
     confirmDelete: 'Are you sure you want to delete this poll?',
+    shareError: 'Failed to generate share link.',
     error: 'Error loading polls',
     noDeadline: '—'
   },

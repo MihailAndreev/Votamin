@@ -129,6 +129,14 @@ export default {
       viewResults: 'Виж резултати',
       createPoll: '+ Нова анкета'
     },
+    shareModal: {
+      title: 'Споделяне на анкета',
+      subtitle: 'Копирай линка и го изпрати на участниците.',
+      linkLabel: 'Линк към анкета',
+      copy: 'Копирай линк',
+      copied: 'Копирано ✓',
+      close: 'Затвори'
+    },
     myResponse: {
       yes: 'Да',
       no: 'Не'
@@ -145,6 +153,7 @@ export default {
       passwordError: 'Неуспешна смяна на парола.'
     },
     confirmDelete: 'Сигурен ли си, че искаш да изтриеш тази анкета?',
+    shareError: 'Неуспешно генериране на линк за споделяне.',
     error: 'Грешка при зареждане на анкетите',
     noDeadline: '—'
   },

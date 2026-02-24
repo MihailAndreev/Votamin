@@ -19,6 +19,15 @@ function applyStatusFilter(query, status) {
   return query.eq('status', status);
 }
 
+function generateShareCode(length = 8) {
+  const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
+  let code = '';
+  for (let i = 0; i < length; i++) {
+    code += chars[Math.floor(Math.random() * chars.length)];
+  }
+  return code;
+}
+
 export async function fetchMyPollsList({ status = 'all' } = {}) {
   const user = requireCurrentUser();
 
@@ -195,4 +204,55 @@ export async function deletePollById(pollId) {
     .eq('id', pollId);
 
   if (error) throw error;
+}
+
+export async function getOrCreatePollShareCode(pollId) {
+  const user = requireCurrentUser();
+
+  if (!pollId) {
+    throw new Error('Missing poll id');
+  }
+
+  const { data: existingShare, error: fetchError } = await supabaseClient
+    .from('poll_shares')
+    .select('share_code')
+    .eq('poll_id', pollId)
+    .order('created_at', { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  if (fetchError) throw fetchError;
+  if (existingShare?.share_code) return existingShare.share_code;
+
+  for (let attempt = 0; attempt < 3; attempt++) {
+    const candidateCode = generateShareCode();
+    const { data: insertedShare, error: insertError } = await supabaseClient
+      .from('poll_shares')
+      .insert({
+        poll_id: pollId,
+        share_code: candidateCode,
+        created_by: user.id,
+      })
+      .select('share_code')
+      .single();
+
+    if (!insertError && insertedShare?.share_code) {
+      return insertedShare.share_code;
+    }
+  }
+
+  const { data: fallbackShare, error: fallbackError } = await supabaseClient
+    .from('poll_shares')
+    .select('share_code')
+    .eq('poll_id', pollId)
+    .order('created_at', { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  if (fallbackError) throw fallbackError;
+  if (!fallbackShare?.share_code) {
+    throw new Error('Failed to create share code');
+  }
+
+  return fallbackShare.share_code;
 }
