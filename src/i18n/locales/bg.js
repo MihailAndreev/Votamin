@@ -15,7 +15,11 @@ export default {
     admin: 'Админ',
     login: 'Вход',
     register: 'Регистрация',
-    logout: 'Изход'
+    logout: 'Изход',
+    account: 'Акаунт',
+    accountMenu: 'Акаунт меню',
+    editFullName: 'Редакция на име',
+    uploadAvatar: 'Качи снимка'
   },
   footer: {
     home: 'Начало',
@@ -37,7 +41,10 @@ export default {
     fillAllFields: 'Попълни всички полета',
     passwordMinLength: 'Паролата трябва да е минимум 6 символа',
     passwordsMismatch: 'Паролите не съвпадат',
-    registerAutoLoginFailed: 'Регистрацията е успешна, но автоматичният вход не беше възможен.'
+    registerAutoLoginFailed: 'Регистрацията е успешна, но автоматичният вход не беше възможен.',
+    fullNameRequired: 'Моля, въведи име.',
+    avatarInvalidType: 'Моля, избери изображение.',
+    avatarFileTooLarge: 'Снимката трябва да е до 2MB.'
   },
   auth: {
     fields: {
@@ -154,6 +161,16 @@ export default {
     account: {
       title: 'Акаунт',
       emailLabel: 'Имейл',
+      photoLabel: 'Снимка',
+      uploadPhoto: 'Качи снимка',
+      fullNameLabel: 'Име',
+      fullNamePlaceholder: 'Въведи име и фамилия',
+      saveName: 'Запази име',
+      fullNamePrompt: 'Въведи ново име',
+      nameUpdated: 'Името е обновено успешно.',
+      nameUpdateError: 'Неуспешно обновяване на името.',
+      avatarUpdated: 'Снимката е обновена успешно.',
+      avatarUpdateError: 'Неуспешно качване на снимка.',
       changePassword: 'Смяна на парола',
       currentPassword: 'Текуща парола',
       newPassword: 'Нова парола',

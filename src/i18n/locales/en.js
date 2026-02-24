@@ -15,7 +15,11 @@ export default {
     admin: 'Admin',
     login: 'Login',
     register: 'Sign Up',
-    logout: 'Logout'
+    logout: 'Logout',
+    account: 'Account',
+    accountMenu: 'Account menu',
+    editFullName: 'Edit name',
+    uploadAvatar: 'Upload photo'
   },
   footer: {
     home: 'Home',
@@ -37,7 +41,10 @@ export default {
     fillAllFields: 'Please fill in all fields',
     passwordMinLength: 'Password must be at least 6 characters',
     passwordsMismatch: 'Passwords do not match',
-    registerAutoLoginFailed: 'Registration succeeded, but automatic login was not possible.'
+    registerAutoLoginFailed: 'Registration succeeded, but automatic login was not possible.',
+    fullNameRequired: 'Please enter your name.',
+    avatarInvalidType: 'Please choose an image file.',
+    avatarFileTooLarge: 'Image must be up to 2MB.'
   },
   auth: {
     fields: {
@@ -154,6 +161,16 @@ export default {
     account: {
       title: 'Account',
       emailLabel: 'Email',
+      photoLabel: 'Photo',
+      uploadPhoto: 'Upload photo',
+      fullNameLabel: 'Full name',
+      fullNamePlaceholder: 'Enter your full name',
+      saveName: 'Save name',
+      fullNamePrompt: 'Enter your new name',
+      nameUpdated: 'Name updated successfully.',
+      nameUpdateError: 'Failed to update name.',
+      avatarUpdated: 'Photo updated successfully.',
+      avatarUpdateError: 'Failed to upload photo.',
       changePassword: 'Change Password',
       currentPassword: 'Current password',
       newPassword: 'New password',

@@ -5,7 +5,9 @@ import { getCurrentUser, isAdmin, isLoggedIn, logout } from '@utils/auth.js';
 import { showToast } from '@utils/toast.js';
 import { navigateTo } from '../router.js';
 import { i18n } from '../i18n/index.js';
-import { supabaseClient } from '@utils/supabase.js';
+import { emitProfileUpdated, fetchProfile, getAvatarInitials, resolveDisplayName, updateProfile, uploadAvatar } from '@utils/profile.js';
+
+let activeProfileUpdatedHandler = null;
 
 function getCurrentLanguageFlag() {
   const currentLang = i18n.getCurrentLang();
@@ -21,30 +23,17 @@ function getDisplayName(user) {
   return user?.email || '';
 }
 
-function getAvatarInitials(nameOrEmail) {
-  const value = nameOrEmail?.trim();
-  if (!value) return '?';
-
-  if (value.includes('@')) {
-    return value.charAt(0).toUpperCase();
+function renderAvatarInner(displayName, avatarUrl) {
+  if (avatarUrl) {
+    return `<img src="${avatarUrl}" alt="${displayName}" class="vm-navbar-avatar-image">`;
   }
-
-  const nameParts = value.split(/\s+/).filter(Boolean);
-  if (nameParts.length) {
-    if (nameParts.length === 1) {
-      return nameParts[0].charAt(0).toUpperCase();
-    }
-    return `${nameParts[0].charAt(0)}${nameParts[1].charAt(0)}`.toUpperCase();
-  }
-
-  return '?';
+  return `<span class="vm-navbar-avatar-initials">${getAvatarInitials(displayName)}</span>`;
 }
 
 export function renderNavbar(container) {
   const loggedIn = isLoggedIn();
   const currentUser = getCurrentUser();
   const displayName = getDisplayName(currentUser);
-  const avatarInitials = getAvatarInitials(displayName);
   const homeHref = loggedIn ? '/dashboard' : '/';
   const brandHref = loggedIn ? '/dashboard' : '/';
   const navContainerClass = loggedIn ? 'container-fluid px-3 px-lg-4' : 'container';
@@ -118,14 +107,28 @@ export function renderNavbar(container) {
               </ul>
             </li>
             ${loggedIn ? `
-              <li class="nav-item ms-lg-1">
+              <li class="nav-item dropdown ms-lg-1 vm-navbar-avatar-dropdown">
                 <button
                   type="button"
                   id="navbar-avatar-btn"
-                  class="btn border rounded-circle d-inline-flex align-items-center justify-content-center fw-semibold"
-                  aria-label="User profile"
-                  style="width:36px;height:36px;border-color:var(--vm-border);color:var(--vm-teal);background:var(--vm-gray-100);"
-                >${avatarInitials}</button>
+                  class="btn vm-navbar-avatar-btn dropdown-toggle"
+                  data-bs-toggle="dropdown"
+                  aria-expanded="false"
+                  data-i18n-aria-label="navbar.accountMenu"
+                  aria-label="${i18n.t('navbar.accountMenu')}"
+                >${renderAvatarInner(displayName, null)}</button>
+                <ul class="dropdown-menu dropdown-menu-end">
+                  <li>
+                    <a class="dropdown-item" href="/dashboard/account" data-i18n="navbar.account">${i18n.t('navbar.account')}</a>
+                  </li>
+                  <li>
+                    <button type="button" class="dropdown-item" id="navbar-edit-name-action" data-i18n="navbar.editFullName">${i18n.t('navbar.editFullName')}</button>
+                  </li>
+                  <li>
+                    <button type="button" class="dropdown-item" id="navbar-upload-avatar-action" data-i18n="navbar.uploadAvatar">${i18n.t('navbar.uploadAvatar')}</button>
+                  </li>
+                </ul>
+                <input id="navbar-avatar-file-input" type="file" accept="image/*" class="d-none" />
               </li>
             ` : ''}
           </ul>
@@ -150,32 +153,109 @@ export function renderNavbar(container) {
   if (loggedIn) {
     const userNameEl = container.querySelector('#navbar-user-name');
     const avatarBtnEl = container.querySelector('#navbar-avatar-btn');
+    const editNameBtn = container.querySelector('#navbar-edit-name-action');
+    const uploadAvatarBtn = container.querySelector('#navbar-upload-avatar-action');
+    const avatarFileInput = container.querySelector('#navbar-avatar-file-input');
 
-    const applyIdentity = (name) => {
-      const resolvedName = name?.trim() || currentUser?.email || '';
+    const profileState = {
+      fullName: displayName,
+      avatarUrl: null
+    };
+
+    const applyIdentity = (name, avatarUrl = null) => {
+      const resolvedName = resolveDisplayName(name, currentUser?.email || '');
+      const resolvedAvatar = avatarUrl || null;
+      profileState.fullName = resolvedName;
+      profileState.avatarUrl = resolvedAvatar;
+
       if (userNameEl) {
         userNameEl.textContent = resolvedName;
       }
       if (avatarBtnEl) {
-        avatarBtnEl.textContent = getAvatarInitials(resolvedName);
+        avatarBtnEl.innerHTML = renderAvatarInner(resolvedName, resolvedAvatar);
         avatarBtnEl.title = resolvedName;
       }
     };
 
-    applyIdentity(displayName);
+    applyIdentity(displayName, null);
 
     if (currentUser?.id) {
-      supabaseClient
-        .from('profiles')
-        .select('full_name')
-        .eq('user_id', currentUser.id)
-        .maybeSingle()
+      fetchProfile(currentUser.id)
         .then(({ data, error }) => {
-          if (!error && data?.full_name?.trim()) {
-            applyIdentity(data.full_name);
+          if (!error) {
+            applyIdentity(data?.full_name, data?.avatar_url);
           }
         });
     }
+
+    if (currentUser?.id && editNameBtn) {
+      editNameBtn.addEventListener('click', async () => {
+        const nextName = window.prompt(i18n.t('dashboard.account.fullNamePrompt'), profileState.fullName || '');
+        if (nextName === null) return;
+
+        const trimmedName = nextName.trim();
+        if (!trimmedName) {
+          showToast(i18n.t('notifications.fullNameRequired'), 'error');
+          return;
+        }
+
+        const { data, error } = await updateProfile(currentUser.id, { full_name: trimmedName });
+        if (error) {
+          showToast(i18n.t('dashboard.account.nameUpdateError'), 'error');
+          return;
+        }
+
+        applyIdentity(data?.full_name, data?.avatar_url);
+        emitProfileUpdated({ full_name: data?.full_name, avatar_url: data?.avatar_url });
+        showToast(i18n.t('dashboard.account.nameUpdated'), 'success');
+      });
+    }
+
+    uploadAvatarBtn?.addEventListener('click', () => {
+      avatarFileInput?.click();
+    });
+
+    if (currentUser?.id && avatarFileInput) {
+      avatarFileInput.addEventListener('change', async (event) => {
+        const selectedFile = event.target.files?.[0];
+        if (!selectedFile) return;
+
+        try {
+          const avatarUrl = await uploadAvatar(currentUser.id, selectedFile);
+          const { data, error } = await updateProfile(currentUser.id, { avatar_url: avatarUrl });
+
+          if (error) {
+            showToast(i18n.t('dashboard.account.avatarUpdateError'), 'error');
+            return;
+          }
+
+          applyIdentity(data?.full_name, data?.avatar_url);
+          emitProfileUpdated({ full_name: data?.full_name, avatar_url: data?.avatar_url });
+          showToast(i18n.t('dashboard.account.avatarUpdated'), 'success');
+        } catch (error) {
+          const message = error?.message;
+          if (message === 'invalid_file_type') {
+            showToast(i18n.t('notifications.avatarInvalidType'), 'error');
+          } else if (message === 'file_too_large') {
+            showToast(i18n.t('notifications.avatarFileTooLarge'), 'error');
+          } else {
+            showToast(i18n.t('dashboard.account.avatarUpdateError'), 'error');
+          }
+        } finally {
+          avatarFileInput.value = '';
+        }
+      });
+    }
+
+    if (activeProfileUpdatedHandler) {
+      window.removeEventListener('votamin:profile-updated', activeProfileUpdatedHandler);
+    }
+
+    activeProfileUpdatedHandler = (event) => {
+      const detail = event?.detail || {};
+      applyIdentity(detail.full_name, detail.avatar_url);
+    };
+    window.addEventListener('votamin:profile-updated', activeProfileUpdatedHandler);
 
     const adminNavItem = container.querySelector('#admin-nav-item');
     isAdmin().then((admin) => {

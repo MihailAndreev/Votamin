@@ -152,6 +152,39 @@ img {
   opacity: 0.95;
 }
 
+.vm-navbar-avatar-btn {
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border-radius: 999px;
+  border: 1px solid var(--vm-border);
+  color: var(--vm-teal);
+  background: var(--vm-gray-100);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.vm-navbar-avatar-btn.dropdown-toggle::after {
+  display: none;
+}
+
+.vm-navbar-avatar-initials {
+  font-weight: 600;
+  line-height: 1;
+}
+
+.vm-navbar-avatar-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.vm-navbar-avatar-dropdown .dropdown-menu {
+  min-width: 13rem;
+}
+
 /* ── Footer ───────────────────────────────────────── */
 .vm-footer {
   margin-top: 2.25rem;
