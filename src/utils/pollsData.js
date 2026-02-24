@@ -164,6 +164,8 @@ export async function fetchPollById(pollId) {
     visibility: poll.visibility,
     status: poll.status,
     ends_at: poll.ends_at,
+    created_at: poll.created_at,
+    updated_at: poll.updated_at,
     response_count: poll.response_count,
     owner_id: poll.owner_id,
     share_code: shareRow?.share_code || null,
@@ -172,6 +174,60 @@ export async function fetchPollById(pollId) {
     total_votes: totalVotes,
     numeric_summary: numericSummary,
   };
+}
+
+export async function fetchPollVoters(pollId) {
+  if (!pollId) return [];
+
+  const { data: votes, error: votesError } = await supabaseClient
+    .from('votes')
+    .select('id, voter_user_id, created_at')
+    .eq('poll_id', pollId)
+    .order('created_at', { ascending: false });
+
+  if (votesError) throw votesError;
+  if (!votes || votes.length === 0) return [];
+
+  const voteIds = votes.map((v) => v.id);
+  const voterIds = [...new Set(votes.map((v) => v.voter_user_id))];
+
+  // Fetch selected options per vote
+  const { data: selections, error: selError } = await supabaseClient
+    .from('vote_options')
+    .select('vote_id, option_id')
+    .in('vote_id', voteIds);
+
+  if (selError) throw selError;
+
+  // Fetch option texts
+  const { data: options } = await supabaseClient
+    .from('poll_options')
+    .select('id, text')
+    .eq('poll_id', pollId);
+
+  const optionTextMap = new Map((options || []).map((o) => [o.id, o.text]));
+
+  // Fetch voter profiles
+  const { data: profiles } = await supabaseClient
+    .from('profiles')
+    .select('user_id, full_name')
+    .in('user_id', voterIds);
+
+  const profileMap = new Map((profiles || []).map((p) => [p.user_id, p.full_name || 'Анонимен']));
+
+  // Build selections per vote
+  const selectionsByVote = new Map();
+  (selections || []).forEach((s) => {
+    const arr = selectionsByVote.get(s.vote_id) || [];
+    arr.push(optionTextMap.get(s.option_id) || '—');
+    selectionsByVote.set(s.vote_id, arr);
+  });
+
+  return votes.map((v) => ({
+    voter_name: profileMap.get(v.voter_user_id) || 'Анонимен',
+    selections: selectionsByVote.get(v.id) || [],
+    voted_at: v.created_at,
+  }));
 }
 
 export async function updatePollById(pollId, updates) {

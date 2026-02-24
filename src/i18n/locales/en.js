@@ -433,6 +433,11 @@ export default {
     titleLabel: 'Title',
     descriptionLabel: 'Description',
     statusLabel: 'Status',
+    visibilityLabel: 'Visibility',
+    visibility: {
+      public: 'Public',
+      private: 'Private'
+    },
     saveChanges: 'Save changes',
     editHint: 'Use "Edit" to change title, description, and status.',
     resultsTitle: 'Results',
@@ -446,7 +451,28 @@ export default {
     updateFailed: 'Failed to update poll.',
     closeFailed: 'Failed to close poll.',
     deleteConfirm: 'Are you sure you want to delete this poll?',
-    deleteFailed: 'Failed to delete poll.'
+    deleteFailed: 'Failed to delete poll.',
+    sidebar: {
+      metricsTitle: 'Metrics',
+      participants: 'Participants',
+      status: 'Status',
+      modified: 'Modified',
+      lastActivity: 'Last Activity',
+      created: 'Created',
+      adminTitle: 'Administration',
+      shareCode: 'Share Code',
+      visibility: 'Visibility',
+      kind: 'Type',
+      justNow: 'just now',
+      minutesAgo: 'min ago',
+      hoursAgo: 'h ago',
+      daysAgo: 'days ago'
+    },
+    voters: {
+      title: 'Voters',
+      noVoters: 'No voters yet.',
+      showMore: 'Show more'
+    }
   },
   pollsList: {
     title: 'Polls',

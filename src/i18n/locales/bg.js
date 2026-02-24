@@ -433,6 +433,11 @@ export default {
     titleLabel: 'Заглавие',
     descriptionLabel: 'Описание',
     statusLabel: 'Статус',
+    visibilityLabel: 'Видимост',
+    visibility: {
+      public: 'Публична',
+      private: 'Частна'
+    },
     saveChanges: 'Запази промените',
     editHint: 'Използвай "Редактирай", за да промениш заглавие, описание и статус.',
     resultsTitle: 'Резултати',
@@ -446,7 +451,28 @@ export default {
     updateFailed: 'Неуспешно обновяване на анкетата.',
     closeFailed: 'Неуспешно затваряне на анкетата.',
     deleteConfirm: 'Сигурен ли си, че искаш да изтриеш тази анкета?',
-    deleteFailed: 'Неуспешно изтриване на анкетата.'
+    deleteFailed: 'Неуспешно изтриване на анкетата.',
+    sidebar: {
+      metricsTitle: 'Метрики',
+      participants: 'Участници',
+      status: 'Статус',
+      modified: 'Модификация',
+      lastActivity: 'Последна активност',
+      created: 'Създадена',
+      adminTitle: 'Администрация',
+      shareCode: 'Код за споделяне',
+      visibility: 'Видимост',
+      kind: 'Тип',
+      justNow: 'току-що',
+      minutesAgo: 'мин. назад',
+      hoursAgo: 'ч. назад',
+      daysAgo: 'дни назад'
+    },
+    voters: {
+      title: 'Гласували',
+      noVoters: 'Все още няма гласували.',
+      showMore: 'Покажи още'
+    }
   },
   pollsList: {
     title: 'Анкети',
