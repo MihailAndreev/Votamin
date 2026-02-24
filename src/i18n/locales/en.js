@@ -235,9 +235,9 @@ export default {
         title: 'Mobile Version',
         description: 'Works flawlessly on all devices — phone, tablet, computer.'
       },
-      customization: {
-        title: 'Customization',
-        description: 'Customize your poll — colors, fonts, logo.'
+      pollTypes: {
+        title: 'Multiple Poll Types',
+        description: 'Use single choice, multiple choice, rating, and numeric input.'
       }
     },
     howItWorks: {
@@ -260,7 +260,6 @@ export default {
       title: 'Ready to get started?',
       subtitle: 'Join thousands of users already using Votamin',
       register: 'Create free account',
-      viewPolls: 'View sample polls',
       notice: 'Free registration • No credit card • Cancel anytime'
     }
   },
