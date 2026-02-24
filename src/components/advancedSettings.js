@@ -3,7 +3,7 @@ import { i18n } from '../i18n/index.js';
 /**
  * Advanced Settings Component (Collapsible)
  * - Visibility (public/private)
- * - Results Visibility (after_vote/after_close/owner_only)
+ * - Results Visibility (after_vote/always/creator_only)
  * - End Date (optional)
  * - Theme (default/blue/green/purple/orange)
  */
@@ -280,18 +280,18 @@ export function renderAdvancedSettings(settings = {}, onChange) {
                 <span class="radio-description">${i18n.t('createPoll.resultsVisibility.after_voteDesc')}</span>
               </div>
             </div>
-            <div class="radio-option ${defaultSettings.resultsVisibility === 'after_close' ? 'selected' : ''}" data-value="after_close">
-              <input type="radio" name="resultsVisibility" value="after_close" class="radio-input" ${defaultSettings.resultsVisibility === 'after_close' ? 'checked' : ''}>
+            <div class="radio-option ${defaultSettings.resultsVisibility === 'always' ? 'selected' : ''}" data-value="always">
+              <input type="radio" name="resultsVisibility" value="always" class="radio-input" ${defaultSettings.resultsVisibility === 'always' ? 'checked' : ''}>
               <div class="radio-label-wrapper">
-                <span class="radio-label">${i18n.t('createPoll.resultsVisibility.after_close')}</span>
-                <span class="radio-description">${i18n.t('createPoll.resultsVisibility.after_closeDesc')}</span>
+                <span class="radio-label">${i18n.t('createPoll.resultsVisibility.always')}</span>
+                <span class="radio-description">${i18n.t('createPoll.resultsVisibility.alwaysDesc')}</span>
               </div>
             </div>
-            <div class="radio-option ${defaultSettings.resultsVisibility === 'owner_only' ? 'selected' : ''}" data-value="owner_only">
-              <input type="radio" name="resultsVisibility" value="owner_only" class="radio-input" ${defaultSettings.resultsVisibility === 'owner_only' ? 'checked' : ''}>
+            <div class="radio-option ${defaultSettings.resultsVisibility === 'creator_only' ? 'selected' : ''}" data-value="creator_only">
+              <input type="radio" name="resultsVisibility" value="creator_only" class="radio-input" ${defaultSettings.resultsVisibility === 'creator_only' ? 'checked' : ''}>
               <div class="radio-label-wrapper">
-                <span class="radio-label">${i18n.t('createPoll.resultsVisibility.owner_only')}</span>
-                <span class="radio-description">${i18n.t('createPoll.resultsVisibility.owner_onlyDesc')}</span>
+                <span class="radio-label">${i18n.t('createPoll.resultsVisibility.creator_only')}</span>
+                <span class="radio-description">${i18n.t('createPoll.resultsVisibility.creator_onlyDesc')}</span>
               </div>
             </div>
           </div>

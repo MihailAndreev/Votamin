@@ -158,12 +158,18 @@ export function validateForPublish(pollData) {
  * @returns {Object} Sanitized poll data
  */
 export function sanitizePollData(pollData) {
+  const mapResultsVisibilityToDb = (value) => {
+    if (value === 'owner_only') return 'creator_only';
+    if (value === 'after_close') return 'always';
+    return value || 'after_vote';
+  };
+
   const sanitized = {
     question: pollData.question?.trim() || '',
     description: pollData.description?.trim() || null,
     kind: pollData.kind,
     visibility: pollData.visibility || 'public',
-    results_visibility: pollData.resultsVisibility || 'after_vote',
+    results_visibility: mapResultsVisibilityToDb(pollData.resultsVisibility),
     theme: pollData.theme || 'default',
     ends_at: pollData.endDate || null
   };

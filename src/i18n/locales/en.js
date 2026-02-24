@@ -308,11 +308,11 @@ export default {
     },
     resultsVisibility: {
       after_vote: 'After Vote',
-      after_close: 'After Close',
-      owner_only: 'Owner Only',
+      always: 'Always',
+      creator_only: 'Creator Only',
       after_voteDesc: 'Voters see results immediately',
-      after_closeDesc: 'Results visible when poll closes',
-      owner_onlyDesc: 'Only you can see the results'
+      alwaysDesc: 'Results are visible to everyone',
+      creator_onlyDesc: 'Only you can see the results'
     },
     themes: {
       default: 'Default',

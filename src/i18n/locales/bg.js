@@ -308,11 +308,11 @@ export default {
     },
     resultsVisibility: {
       after_vote: 'След гласуване',
-      after_close: 'След затваряне',
-      owner_only: 'Само автор',
+      always: 'Винаги',
+      creator_only: 'Само автор',
       after_voteDesc: 'Гласувалите виждат резултатите веднага',
-      after_closeDesc: 'Резултатите са видими след затваряне',
-      owner_onlyDesc: 'Само ти можеш да видиш резултатите'
+      alwaysDesc: 'Резултатите са видими за всички',
+      creator_onlyDesc: 'Само ти можеш да видиш резултатите'
     },
     themes: {
       default: 'По подразбиране',
