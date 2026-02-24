@@ -75,6 +75,7 @@ function renderOptions(poll) {
 function renderPublicPollMarkup(poll) {
   const isClosed = poll.status === 'closed';
   const description = poll.description || 'Избери своя отговор.';
+  const poweredByHref = getCurrentUser() ? '/dashboard' : '/';
 
   return `
     <div class="min-vh-100 d-flex align-items-center justify-content-center"
@@ -82,7 +83,7 @@ function renderPublicPollMarkup(poll) {
       <div style="width:100%; max-width:520px; padding:1rem;">
         <div class="vm-card p-4 p-md-5">
           <div class="text-center mb-4">
-            <span class="vm-gradient-text fs-4 fw-bold">Votamin</span>
+            <img src="/src/assets/images/logo/logo.svg" alt="Votamin" class="vm-public-brand-logo" />
             <h4 class="mt-2 fw-bold" id="public-poll-title">${escapeHtml(poll.title)}</h4>
             <p class="text-muted small" id="public-poll-desc">${escapeHtml(description)}</p>
           </div>
@@ -101,7 +102,10 @@ function renderPublicPollMarkup(poll) {
           </div>
         </div>
         <p class="text-center mt-3 small text-muted">
-          Задвижвано от <a href="/" class="fw-semibold">Votamin</a>
+          Задвижвано от
+          <a href="${poweredByHref}" class="fw-semibold d-inline-flex align-items-center vm-powered-by-link" aria-label="Votamin">
+            <img src="/src/assets/images/logo/logo.svg" alt="Votamin" class="vm-powered-by-logo" />
+          </a>
         </p>
       </div>
     </div>

@@ -1,5 +1,19 @@
 /* Public poll page styles */
 
+.vm-public-brand-logo {
+  height: 38px;
+  width: auto;
+}
+
+.vm-powered-by-link {
+  vertical-align: middle;
+}
+
+.vm-powered-by-logo {
+  height: 20px;
+  width: auto;
+}
+
 .vm-vote-option {
   cursor: pointer;
   transition: border-color var(--vm-transition), box-shadow var(--vm-transition);
