@@ -67,7 +67,7 @@ function renderPollDetailMarkup(poll, { isEditMode }) {
 
   return `
   <section class="container vm-section" style="max-width:780px;">
-    <a href="/dashboard/polls" class="text-muted small mb-3 d-inline-block">${i18n.t('pollDetail.backToMyPolls')}</a>
+    <a href="/dashboard/polls" class="vm-poll-back-link mb-3 d-inline-flex align-items-center">${i18n.t('pollDetail.backToMyPolls')}</a>
 
     <div class="vm-card p-4 mb-4">
       <div class="d-flex justify-content-between align-items-start mb-2">

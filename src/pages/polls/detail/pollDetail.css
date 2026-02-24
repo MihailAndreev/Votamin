@@ -1,1 +1,27 @@
 /* Poll detail page styles */
+
+.vm-poll-back-link {
+	text-decoration: none;
+	color: var(--vm-teal);
+	font-size: 0.92rem;
+	font-weight: 600;
+	line-height: 1;
+	padding: 0.52rem 0.82rem;
+	border-radius: var(--vm-radius-full);
+	border: 1px solid var(--vm-teal-light);
+	background: var(--vm-teal-light);
+	box-shadow: var(--vm-shadow-sm);
+	transition: transform var(--vm-transition), box-shadow var(--vm-transition), filter var(--vm-transition);
+}
+
+.vm-poll-back-link:hover {
+	color: var(--vm-teal);
+	transform: translateY(-1px);
+	box-shadow: var(--vm-shadow);
+	filter: brightness(1.02);
+}
+
+.vm-poll-back-link:focus-visible {
+	outline: 2px solid var(--vm-teal);
+	outline-offset: 2px;
+}
