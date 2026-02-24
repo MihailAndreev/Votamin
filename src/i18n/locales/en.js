@@ -269,6 +269,8 @@ export default {
   },
   createPoll: {
     wizard: {
+      title: 'Create New Poll',
+      subtitle: 'Follow the steps to create your poll',
       steps: {
         create: 'Create',
         preview: 'Preview',

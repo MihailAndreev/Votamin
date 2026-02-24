@@ -16,7 +16,14 @@ import { getLoaderMarkup } from '@components/loader.js';
 import { validatePoll, validateForPublish, sanitizePollData } from '../../../utils/pollValidation.js';
 import { supabaseClient as supabase } from '../../../utils/supabase.js';
 
+let removeLanguageChangedListener = null;
+
 export default function render(container) {
+  if (removeLanguageChangedListener) {
+    removeLanguageChangedListener();
+    removeLanguageChangedListener = null;
+  }
+
   const user = getCurrentUser();
   if (!user) {
     navigateTo('/login');
@@ -53,10 +60,43 @@ export default function render(container) {
   initWizard();
 
   function initWizard() {
+    updateHeaderTexts();
     renderStepper();
     renderStepContent();
     updateNavigation();
     updateBackLink();
+
+    const handleLanguageChanged = () => {
+      if (!document.body.contains(container)) {
+        window.removeEventListener('votamin:language-changed', handleLanguageChanged);
+        removeLanguageChangedListener = null;
+        return;
+      }
+
+      updateHeaderTexts();
+      renderStepper();
+      renderStepContent();
+      updateNavigation();
+      updateBackLink();
+    };
+
+    window.addEventListener('votamin:language-changed', handleLanguageChanged);
+    removeLanguageChangedListener = () => {
+      window.removeEventListener('votamin:language-changed', handleLanguageChanged);
+    };
+  }
+
+  function updateHeaderTexts() {
+    const titleEl = container.querySelector('#wizard-main-title');
+    const subtitleEl = container.querySelector('#wizard-subtitle');
+
+    if (titleEl) {
+      titleEl.textContent = i18n.t('createPoll.wizard.title');
+    }
+
+    if (subtitleEl) {
+      subtitleEl.textContent = i18n.t('createPoll.wizard.subtitle');
+    }
   }
 
   function renderStepper() {

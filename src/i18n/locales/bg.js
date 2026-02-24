@@ -269,6 +269,8 @@ export default {
   },
   createPoll: {
     wizard: {
+      title: 'Създай нова анкета',
+      subtitle: 'Следвай стъпките, за да създадеш анкетата си',
       steps: {
         create: 'Създаване',
         preview: 'Преглед',
