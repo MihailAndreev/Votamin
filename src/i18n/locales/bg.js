@@ -44,7 +44,9 @@ export default {
     registerAutoLoginFailed: 'Регистрацията е успешна, но автоматичният вход не беше възможен.',
     fullNameRequired: 'Моля, въведи име.',
     avatarInvalidType: 'Моля, избери изображение.',
-    avatarFileTooLarge: 'Снимката трябва да е до 2MB.'
+    avatarFileTooLarge: 'Снимката трябва да е до 2MB.',
+    avatarStorageNotConfigured: 'Качването на снимка не е конфигурирано (липсва bucket avatars).',
+    avatarUploadForbidden: 'Нямаш права за качване на снимка в аватара.'
   },
   auth: {
     fields: {
@@ -163,6 +165,9 @@ export default {
       emailLabel: 'Имейл',
       photoLabel: 'Снимка',
       uploadPhoto: 'Качи снимка',
+      cropTitle: 'Позиционирай снимката',
+      cropSubtitle: 'Премести снимката и избери подходящ кадър за аватар.',
+      cropZoom: 'Мащаб',
       fullNameLabel: 'Име',
       fullNamePlaceholder: 'Въведи име и фамилия',
       saveName: 'Запази име',

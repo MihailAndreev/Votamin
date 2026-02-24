@@ -44,7 +44,9 @@ export default {
     registerAutoLoginFailed: 'Registration succeeded, but automatic login was not possible.',
     fullNameRequired: 'Please enter your name.',
     avatarInvalidType: 'Please choose an image file.',
-    avatarFileTooLarge: 'Image must be up to 2MB.'
+    avatarFileTooLarge: 'Image must be up to 2MB.',
+    avatarStorageNotConfigured: 'Avatar upload is not configured (avatars bucket is missing).',
+    avatarUploadForbidden: 'You are not allowed to upload avatar images.'
   },
   auth: {
     fields: {
@@ -163,6 +165,9 @@ export default {
       emailLabel: 'Email',
       photoLabel: 'Photo',
       uploadPhoto: 'Upload photo',
+      cropTitle: 'Position your photo',
+      cropSubtitle: 'Drag and zoom to choose the best avatar frame.',
+      cropZoom: 'Zoom',
       fullNameLabel: 'Full name',
       fullNamePlaceholder: 'Enter your full name',
       saveName: 'Save name',

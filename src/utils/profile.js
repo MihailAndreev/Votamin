@@ -51,7 +51,8 @@ export async function uploadAvatar(userId, file) {
     throw new Error('file_too_large');
   }
 
-  const extension = file.name.includes('.') ? file.name.split('.').pop()?.toLowerCase() : 'jpg';
+  const originalName = file?.name || 'avatar.jpg';
+  const extension = originalName.includes('.') ? originalName.split('.').pop()?.toLowerCase() : 'jpg';
   const safeExtension = extension && extension.length <= 5 ? extension : 'jpg';
   const filePath = `${userId}/${Date.now()}-${Math.random().toString(36).slice(2)}.${safeExtension}`;
 
@@ -60,6 +61,13 @@ export async function uploadAvatar(userId, file) {
     .upload(filePath, file, { upsert: false, cacheControl: '3600' });
 
   if (uploadError) {
+    const msg = String(uploadError?.message || '').toLowerCase();
+    if (msg.includes('bucket') && msg.includes('not')) {
+      throw new Error('avatar_bucket_not_configured');
+    }
+    if (msg.includes('row-level security') || msg.includes('policy')) {
+      throw new Error('avatar_upload_forbidden');
+    }
     throw uploadError;
   }
 

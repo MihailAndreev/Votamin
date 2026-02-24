@@ -7,6 +7,7 @@ import { i18n } from '../../i18n/index.js';
 import { showToast } from '@utils/toast.js';
 import { navigateTo } from '../../router.js';
 import { emitProfileUpdated, fetchProfile, getAvatarInitials, resolveDisplayName, updateProfile, uploadAvatar } from '@utils/profile.js';
+import { showAvatarCropModal } from '@components/avatarCropModal.js';
 
 export default async function render(container) {
   const user = getCurrentUser();
@@ -146,7 +147,11 @@ export default async function render(container) {
       if (!file || !userId) return;
 
       try {
-        const avatarUrl = await uploadAvatar(userId, file);
+        const croppedBlob = await showAvatarCropModal(file);
+        if (!croppedBlob) return;
+
+        const croppedFile = new File([croppedBlob], 'avatar.jpg', { type: 'image/jpeg' });
+        const avatarUrl = await uploadAvatar(userId, croppedFile);
         const { data, error } = await updateProfile(userId, { avatar_url: avatarUrl });
         if (error) {
           showToast(i18n.t('dashboard.account.avatarUpdateError'), 'error');
@@ -164,6 +169,10 @@ export default async function render(container) {
           showToast(i18n.t('notifications.avatarInvalidType'), 'error');
         } else if (message === 'file_too_large') {
           showToast(i18n.t('notifications.avatarFileTooLarge'), 'error');
+        } else if (message === 'avatar_bucket_not_configured') {
+          showToast(i18n.t('notifications.avatarStorageNotConfigured'), 'error');
+        } else if (message === 'avatar_upload_forbidden') {
+          showToast(i18n.t('notifications.avatarUploadForbidden'), 'error');
         } else {
           showToast(i18n.t('dashboard.account.avatarUpdateError'), 'error');
         }
