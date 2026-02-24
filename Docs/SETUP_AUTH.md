@@ -48,7 +48,7 @@ https://your-domain.com/auth/callback
 
 **Трябва да го добавиш в Supabase:**
 - Authentication → URL Configuration → Redirect URLs
-- Add: `http://localhost:5173/auth/callback` (development)
+- Add: `http://localhost:3000/auth/callback` (development)
 - Add: `https://your-domain.com/auth/callback` (production)
 
 ## 🔄 User Flow

@@ -42,35 +42,40 @@ setNotFound(() => import('@pages/home/home.js'));
 
 const app = document.getElementById('app');
 
-// Initialize auth before starting router
-await initAuth();
+async function bootstrapApp() {
+  await initAuth();
 
-startRouter(async (pageModule, params, route) => {
-  const activeAuthModal = document.getElementById('vm-auth-modal-root-global');
-  if (activeAuthModal) {
-    activeAuthModal.remove();
-  }
-  document.body.classList.remove('vm-auth-modal-open');
+  startRouter(async (pageModule, params, route) => {
+    const activeAuthModal = document.getElementById('vm-auth-modal-root-global');
+    if (activeAuthModal) {
+      activeAuthModal.remove();
+    }
+    document.body.classList.remove('vm-auth-modal-open');
 
-  // Route guard: redirect to login if auth required but not logged in
-  if (route.auth && !isLoggedIn()) {
-    navigateTo('/login');
-    return;
-  }
+    // Route guard: redirect to login if auth required but not logged in
+    if (route.auth && !isLoggedIn()) {
+      navigateTo('/login');
+      return;
+    }
 
-  const layoutName = route.layout || 'main';
+    const layoutName = route.layout || 'main';
 
-  /* Pick the right layout shell */
-  let contentContainer;
-  if (layoutName === 'blank') {
-    app.innerHTML = '<div id="page-content" class="vm-page-enter"></div>';
-    contentContainer = app.querySelector('#page-content');
-  } else {
-    contentContainer = renderMainLayout(app);
-  }
+    /* Pick the right layout shell */
+    let contentContainer;
+    if (layoutName === 'blank') {
+      app.innerHTML = '<div id="page-content" class="vm-page-enter"></div>';
+      contentContainer = app.querySelector('#page-content');
+    } else {
+      contentContainer = renderMainLayout(app);
+    }
 
-  /* Render the page into the content container */
-  if (pageModule.default) {
-    await pageModule.default(contentContainer, params, route);
-  }
+    /* Render the page into the content container */
+    if (pageModule.default) {
+      await pageModule.default(contentContainer, params, route);
+    }
+  });
+}
+
+bootstrapApp().catch((error) => {
+  console.error('Failed to start app:', error);
 });
