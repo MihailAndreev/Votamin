@@ -9,6 +9,8 @@ import { deletePollById, getOrCreatePollShareCode } from '@utils/pollsData.js';
 import { showConfirmModal } from '@components/confirmModal.js';
 import { showShareModal } from '@components/shareModal.js';
 
+const POLLS_PER_PAGE = 10;
+
 function statusBadge(status) {
   const label = i18n.t(`dashboard.status.${status}`) || status;
   return `<span class="vm-status-badge vm-status-badge--${status}">${label}</span>`;
@@ -100,10 +102,65 @@ function renderEmpty() {
     </div>`;
 }
 
+function getTotalPages(totalItems) {
+  return Math.max(1, Math.ceil(totalItems / POLLS_PER_PAGE));
+}
+
+function getVisiblePageNumbers(currentPage, totalPages) {
+  if (totalPages <= 5) {
+    return Array.from({ length: totalPages }, (_, index) => index + 1);
+  }
+
+  let start = Math.max(1, currentPage - 2);
+  const end = Math.min(totalPages, start + 4);
+  start = Math.max(1, end - 4);
+
+  const pages = [];
+  for (let page = start; page <= end; page += 1) {
+    pages.push(page);
+  }
+  return pages;
+}
+
+function renderPagination(totalItems, currentPage) {
+  const totalPages = getTotalPages(totalItems);
+  if (totalPages <= 1) return '';
+
+  const safePage = Math.min(Math.max(1, currentPage), totalPages);
+  const from = (safePage - 1) * POLLS_PER_PAGE + 1;
+  const to = Math.min(totalItems, safePage * POLLS_PER_PAGE);
+  const pages = getVisiblePageNumbers(safePage, totalPages);
+
+  const labels = {
+    prev: i18n.t('dashboard.pagination.prev') || 'Previous',
+    next: i18n.t('dashboard.pagination.next') || 'Next',
+    page: i18n.t('dashboard.pagination.page') || 'Page',
+    of: i18n.t('dashboard.pagination.of') || 'of',
+    showing: i18n.t('dashboard.pagination.showing') || 'Showing'
+  };
+
+  return `
+    <div class="vm-dash-pagination">
+      <div class="vm-dash-pagination-info">${labels.showing} ${from}-${to} / ${totalItems}</div>
+      <div class="vm-dash-pagination-controls">
+        <button class="vm-page-btn" data-page="${safePage - 1}" ${safePage === 1 ? 'disabled' : ''}>${labels.prev}</button>
+        ${pages.map(page => `
+          <button class="vm-page-btn ${page === safePage ? 'active' : ''}" data-page="${page}">${page}</button>
+        `).join('')}
+        <button class="vm-page-btn" data-page="${safePage + 1}" ${safePage === totalPages ? 'disabled' : ''}>${labels.next}</button>
+        <span class="vm-dash-pagination-info">${labels.page} ${safePage} ${labels.of} ${totalPages}</span>
+      </div>
+    </div>`;
+}
+
 export default async function render(container) {
   let activeStatus = 'all';
+  let activePolls = [];
+  let currentPage = 1;
+
   function renderHeader() {
     return `
+    <div class="vm-my-polls-page">
     <div class="vm-dash-header">
       <h3>${i18n.t('dashboard.sidebar.myPolls')}</h3>
       <a href="/polls/new" class="btn btn-votamin btn-sm">${i18n.t('dashboard.actions.createPoll')}</a>
@@ -114,41 +171,81 @@ export default async function render(container) {
       <button class="vm-filter-btn" data-status="open">${i18n.t('dashboard.filters.open')}</button>
       <button class="vm-filter-btn" data-status="closed">${i18n.t('dashboard.filters.closed')}</button>
     </div>
-    <div id="my-polls-content">
+    <div id="my-polls-content" class="vm-my-polls-content">
       <div class="vm-loader-wrapper"><div class="vm-loader"></div></div>
+    </div>
+    <div id="my-polls-pagination" class="vm-my-polls-pagination"></div>
     </div>`;
   }
 
   container.innerHTML = renderHeader();
 
+  function renderPollsPage() {
+    const contentEl = container.querySelector('#my-polls-content');
+    const paginationEl = container.querySelector('#my-polls-pagination');
+    if (!contentEl) return;
+
+    if (!activePolls.length) {
+      contentEl.innerHTML = renderEmpty();
+      if (paginationEl) paginationEl.innerHTML = '';
+      return;
+    }
+
+    const totalPages = getTotalPages(activePolls.length);
+    currentPage = Math.min(Math.max(1, currentPage), totalPages);
+
+    const startIndex = (currentPage - 1) * POLLS_PER_PAGE;
+    const visiblePolls = activePolls.slice(startIndex, startIndex + POLLS_PER_PAGE);
+
+    contentEl.innerHTML = renderTable(visiblePolls) + renderCards(visiblePolls);
+    if (paginationEl) {
+      paginationEl.innerHTML = renderPagination(activePolls.length, currentPage);
+    }
+  }
+
+  function bindFilterEvents() {
+    container.querySelector('#my-polls-filters')?.addEventListener('click', (e) => {
+      const btn = e.target.closest('[data-status]');
+      if (!btn) return;
+      activeStatus = btn.dataset.status;
+      currentPage = 1;
+      container.querySelectorAll('.vm-filter-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      loadPolls(activeStatus);
+    });
+  }
+
+  bindFilterEvents();
+
   async function loadPolls(status) {
     const contentEl = container.querySelector('#my-polls-content');
+    const paginationEl = container.querySelector('#my-polls-pagination');
     contentEl.innerHTML = '<div class="vm-loader-wrapper"><div class="vm-loader"></div></div>';
+    if (paginationEl) paginationEl.innerHTML = '';
     try {
       const polls = await fetchDashboardMyPolls({ status });
-      if (!polls || polls.length === 0) {
-        contentEl.innerHTML = renderEmpty();
-      } else {
-        contentEl.innerHTML = renderTable(polls) + renderCards(polls);
-      }
+      activePolls = Array.isArray(polls) ? polls : [];
+      currentPage = 1;
+      renderPollsPage();
     } catch (err) {
       console.error('Failed to load My Polls:', err);
       contentEl.innerHTML = `<div class="vm-empty-state"><div class="vm-empty-title text-danger">${i18n.t('dashboard.error') || 'Error loading polls'}</div></div>`;
     }
   }
 
-  /* Filter buttons */
-  container.querySelector('#my-polls-filters')?.addEventListener('click', (e) => {
-    const btn = e.target.closest('[data-status]');
-    if (!btn) return;
-    activeStatus = btn.dataset.status;
-    container.querySelectorAll('.vm-filter-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    loadPolls(activeStatus);
-  });
-
   /* Delete handler */
   container.addEventListener('click', async (e) => {
+    const pageBtn = e.target.closest('[data-page]');
+    if (pageBtn) {
+      e.preventDefault();
+      const selectedPage = Number(pageBtn.dataset.page);
+      if (!Number.isNaN(selectedPage) && selectedPage !== currentPage) {
+        currentPage = selectedPage;
+        renderPollsPage();
+      }
+      return;
+    }
+
     const shareBtn = e.target.closest('[data-action="share"]');
     if (shareBtn) {
       e.preventDefault();
@@ -190,14 +287,16 @@ export default async function render(container) {
   /* Listen for language changes */
   window.addEventListener('votamin:language-changed', () => {
     container.innerHTML = renderHeader();
-    container.querySelector('#my-polls-filters')?.addEventListener('click', (e) => {
-      const btn = e.target.closest('[data-status]');
-      if (!btn) return;
-      activeStatus = btn.dataset.status;
-      container.querySelectorAll('.vm-filter-btn').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      loadPolls(activeStatus);
-    });
+
+    const activeFilterBtn = container.querySelector(`.vm-filter-btn[data-status="${activeStatus}"]`);
+    container.querySelectorAll('.vm-filter-btn').forEach(b => b.classList.remove('active'));
+    activeFilterBtn?.classList.add('active');
+
+    bindFilterEvents();
+    if (activePolls.length) {
+      renderPollsPage();
+      return;
+    }
     loadPolls(activeStatus);
   });
 

@@ -5,7 +5,7 @@
 /* ── Wrapper ──────────────────────────────────────── */
 .vm-dash-wrapper {
   display: flex;
-  min-height: calc(100vh - 120px);
+  flex: 1;
   position: relative;
 }
 
@@ -133,8 +133,10 @@
 .vm-dash-content {
   flex: 1;
   min-width: 0;
-  padding: 1.5rem 2rem;
-  overflow-x: auto;
+  padding: 1.25rem 1.5rem;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
 }
 
 /* ── Mobile sidebar ───────────────────────────────── */
@@ -208,6 +210,7 @@
   border-collapse: separate;
   border-spacing: 0;
   font-size: 0.9rem;
+  table-layout: fixed;
 }
 
 .vm-dash-table th {
@@ -219,7 +222,7 @@
   letter-spacing: 0.04em;
   padding: 0.65rem 0.75rem;
   border-bottom: 2px solid var(--vm-border);
-  white-space: nowrap;
+  white-space: normal;
 }
 
 .vm-dash-table td {
@@ -230,6 +233,23 @@
 
 .vm-dash-table tbody tr:hover {
   background: var(--vm-gray-50);
+}
+
+.vm-dash-table-wrap {
+  width: 100%;
+  overflow-x: hidden;
+}
+
+.vm-dash-table th:first-child,
+.vm-dash-table td:first-child {
+  width: 34%;
+}
+
+.vm-dash-table td:first-child a {
+  display: inline-block;
+  max-width: 100%;
+  white-space: normal;
+  overflow-wrap: anywhere;
 }
 
 /* ── Status badges (dashboard) ────────────────────── */
@@ -317,6 +337,57 @@
   border-color: var(--vm-green);
 }
 
+/* ── Pagination ───────────────────────────────────── */
+.vm-dash-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-top: 0.85rem;
+  flex-wrap: wrap;
+}
+
+.vm-dash-pagination-info {
+  font-size: 0.82rem;
+  color: var(--vm-gray-500);
+}
+
+.vm-dash-pagination-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  flex-wrap: wrap;
+}
+
+.vm-page-btn {
+  border: 1px solid var(--vm-border);
+  background: var(--vm-surface);
+  color: var(--vm-gray-700);
+  min-width: 2rem;
+  height: 2rem;
+  border-radius: var(--vm-radius-sm);
+  padding: 0 0.55rem;
+  font-size: 0.82rem;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.vm-page-btn:hover:not(:disabled) {
+  border-color: var(--vm-green);
+  color: var(--vm-green);
+}
+
+.vm-page-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.vm-page-btn.active {
+  background: var(--vm-green);
+  border-color: var(--vm-green);
+  color: var(--vm-white);
+}
+
 /* ── Empty state ──────────────────────────────────── */
 .vm-empty-state {
   text-align: center;
@@ -353,6 +424,22 @@
 .vm-dash-header h3 {
   margin: 0;
   font-size: 1.25rem;
+}
+
+.vm-my-polls-page {
+  min-height: 0;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.vm-my-polls-content {
+  flex: 1;
+}
+
+.vm-my-polls-pagination {
+  margin-top: auto;
+  padding-top: 0.5rem;
 }
 
 /* ── Responsive: tables → cards on mobile ─────────── */

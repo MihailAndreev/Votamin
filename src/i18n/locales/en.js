@@ -141,6 +141,13 @@ export default {
       yes: 'Yes',
       no: 'No'
     },
+    pagination: {
+      prev: 'Previous',
+      next: 'Next',
+      page: 'Page',
+      of: 'of',
+      showing: 'Showing'
+    },
     account: {
       title: 'Account',
       emailLabel: 'Email',

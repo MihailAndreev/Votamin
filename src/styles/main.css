@@ -55,6 +55,8 @@ img {
 
 #page-content {
   flex: 1;
+  display: flex;
+  flex-direction: column;
 }
 
 /* ── Navbar ───────────────────────────────────────── */
@@ -143,7 +145,7 @@ img {
 
 /* ── Footer ───────────────────────────────────────── */
 .vm-footer {
-  margin-top: 4rem;
+  margin-top: 2.25rem;
 }
 
 .vm-footer a {

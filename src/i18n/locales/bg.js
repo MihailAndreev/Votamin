@@ -141,6 +141,13 @@ export default {
       yes: 'Да',
       no: 'Не'
     },
+    pagination: {
+      prev: 'Назад',
+      next: 'Напред',
+      page: 'Страница',
+      of: 'от',
+      showing: 'Показани'
+    },
     account: {
       title: 'Акаунт',
       emailLabel: 'Имейл',

@@ -13,12 +13,12 @@ export function renderFooter(container) {
   const brandHref = loggedIn ? '/dashboard' : '/';
 
   container.innerHTML = `
-    <div class="vm-footer py-4 mt-auto border-top" style="background:var(--vm-gray-100);">
+    <div class="vm-footer py-2 mt-auto border-top" style="background:var(--vm-gray-100);">
       <div class="container">
-        <div class="row align-items-center gy-3">
+        <div class="row align-items-center gy-2">
           <div class="col-md-4 text-center text-md-start">
             <a href="${brandHref}" class="d-inline-flex align-items-center justify-content-center justify-content-md-start text-decoration-none">
-              <img src="/src/assets/images/logo/logo.svg" alt="Votamin" height="36" class="vm-brand-logo">
+              <img src="/src/assets/images/logo/logo.svg" alt="Votamin" height="24" class="vm-brand-logo">
             </a>
           </div>
           <div class="col-md-4 text-center">
@@ -32,7 +32,7 @@ export function renderFooter(container) {
             `}
           </div>
           <div class="col-md-4 text-center text-md-end">
-            <small class="text-muted">&copy; ${year} Votamin. <span data-i18n="footer.rights">Всички права запазени.</span></small>
+            <small class="text-muted" style="font-size:0.8rem;">&copy; ${year} Votamin. <span data-i18n="footer.rights">Всички права запазени.</span></small>
           </div>
         </div>
       </div>
