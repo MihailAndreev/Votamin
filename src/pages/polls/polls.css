@@ -1,1 +1,98 @@
 /* Polls list page styles */
+
+.vm-dash-header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	flex-wrap: wrap;
+	gap: 0.75rem;
+	margin-bottom: 1rem;
+}
+
+.vm-dash-header h3 {
+	margin: 0;
+	font-size: 1.25rem;
+}
+
+.vm-dash-filters {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	flex-wrap: wrap;
+}
+
+.vm-filter-btn {
+	border: 1px solid var(--vm-border);
+	background: var(--vm-surface);
+	color: var(--vm-gray-700);
+	padding: 0.3rem 0.85rem;
+	font-size: 0.82rem;
+	font-weight: 500;
+	border-radius: var(--vm-radius-full);
+	cursor: pointer;
+	transition: all 0.15s ease;
+}
+
+.vm-filter-btn:hover {
+	border-color: var(--vm-green);
+	color: var(--vm-green);
+}
+
+.vm-filter-btn.active {
+	background: var(--vm-green);
+	color: var(--vm-white);
+	border-color: var(--vm-green);
+}
+
+.vm-polls-pagination {
+	margin-top: 1rem;
+}
+
+.vm-dash-pagination {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 0.75rem;
+	flex-wrap: wrap;
+}
+
+.vm-dash-pagination-info {
+	font-size: 0.82rem;
+	color: var(--vm-gray-500);
+}
+
+.vm-dash-pagination-controls {
+	display: flex;
+	align-items: center;
+	gap: 0.35rem;
+	flex-wrap: wrap;
+}
+
+.vm-page-btn {
+	border: 1px solid var(--vm-border);
+	background: var(--vm-surface);
+	color: var(--vm-gray-700);
+	min-width: 2rem;
+	height: 2rem;
+	border-radius: var(--vm-radius-sm);
+	padding: 0 0.55rem;
+	font-size: 0.82rem;
+	font-weight: 500;
+	cursor: pointer;
+}
+
+.vm-page-btn:hover:not(:disabled) {
+	border-color: var(--vm-green);
+	color: var(--vm-green);
+}
+
+.vm-page-btn:disabled {
+	opacity: 0.45;
+	cursor: not-allowed;
+}
+
+.vm-page-btn.active {
+	background: var(--vm-green);
+	border-color: var(--vm-green);
+	color: var(--vm-white);
+}

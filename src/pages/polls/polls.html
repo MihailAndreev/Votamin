@@ -1,18 +1,15 @@
 <section class="container vm-section">
-  <div class="d-flex flex-wrap justify-content-between align-items-center mb-4">
-    <div>
-      <h2 class="fw-bold mb-1" data-i18n="pollsList.title">Анкети</h2>
-      <p class="text-muted mb-0" data-i18n="pollsList.subtitle">Всички твои анкети на едно място</p>
-    </div>
-    <a href="/polls/new" class="btn btn-votamin" data-i18n="dashboard.actions.createPoll">+ Нова анкета</a>
+  <div class="vm-dash-header">
+    <h3 data-i18n="pollsList.title">Анкети</h3>
+    <a href="/polls/new" class="btn btn-votamin btn-sm" data-i18n="dashboard.actions.createPoll">+ Нова анкета</a>
   </div>
 
   <!-- Filters -->
-  <div class="d-flex gap-2 mb-4" id="polls-filters">
-    <button class="btn btn-sm btn-votamin" data-status="all" data-i18n="dashboard.filters.all">Всички</button>
-    <button class="btn btn-sm btn-votamin-outline" data-status="open" data-i18n="dashboard.filters.open">Активни</button>
-    <button class="btn btn-sm btn-votamin-outline" data-status="closed" data-i18n="dashboard.filters.closed">Затворени</button>
-    <button class="btn btn-sm btn-votamin-outline" data-status="draft" data-i18n="dashboard.filters.draft">Чернови</button>
+  <div class="vm-dash-filters mb-3" id="polls-filters">
+    <button class="vm-filter-btn active" data-status="all" data-i18n="dashboard.filters.all">Всички</button>
+    <button class="vm-filter-btn" data-status="open" data-i18n="dashboard.filters.open">Активни</button>
+    <button class="vm-filter-btn" data-status="closed" data-i18n="dashboard.filters.closed">Затворени</button>
+    <button class="vm-filter-btn" data-status="draft" data-i18n="dashboard.filters.draft">Чернови</button>
   </div>
 
   <!-- Polls grid -->
@@ -21,4 +18,6 @@
       <div class="vm-card p-4 text-muted" data-i18n="pollsList.loading">Зареждане на анкети...</div>
     </div>
   </div>
+
+  <div id="polls-pagination" class="vm-polls-pagination"></div>
 </section>
