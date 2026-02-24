@@ -11,7 +11,7 @@ import { showShareModal } from '@components/shareModal.js';
 
 const POLLS_PER_PAGE = 10;
 const STATUS_FILTER_VALUES = ['draft', 'open', 'closed'];
-const KIND_FILTER_VALUES = ['single_choice', 'multiple_choice', 'rating', 'image', 'slider', 'numeric'];
+const KIND_FILTER_VALUES = ['single_choice', 'multiple_choice', 'rating', 'numeric'];
 const RESPONSE_FILTER_VALUES = ['yes', 'no'];
 
 function escapeHtmlAttr(value) {
