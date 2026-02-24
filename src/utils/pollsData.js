@@ -179,54 +179,18 @@ export async function fetchPollById(pollId) {
 export async function fetchPollVoters(pollId) {
   if (!pollId) return [];
 
-  const { data: votes, error: votesError } = await supabaseClient
-    .from('votes')
-    .select('id, voter_user_id, created_at')
-    .eq('poll_id', pollId)
-    .order('created_at', { ascending: false });
+  requireCurrentUser();
 
-  if (votesError) throw votesError;
-  if (!votes || votes.length === 0) return [];
-
-  const voteIds = votes.map((v) => v.id);
-  const voterIds = [...new Set(votes.map((v) => v.voter_user_id))];
-
-  // Fetch selected options per vote
-  const { data: selections, error: selError } = await supabaseClient
-    .from('vote_options')
-    .select('vote_id, option_id')
-    .in('vote_id', voteIds);
-
-  if (selError) throw selError;
-
-  // Fetch option texts
-  const { data: options } = await supabaseClient
-    .from('poll_options')
-    .select('id, text')
-    .eq('poll_id', pollId);
-
-  const optionTextMap = new Map((options || []).map((o) => [o.id, o.text]));
-
-  // Fetch voter profiles
-  const { data: profiles } = await supabaseClient
-    .from('profiles')
-    .select('user_id, full_name')
-    .in('user_id', voterIds);
-
-  const profileMap = new Map((profiles || []).map((p) => [p.user_id, p.full_name || 'Анонимен']));
-
-  // Build selections per vote
-  const selectionsByVote = new Map();
-  (selections || []).forEach((s) => {
-    const arr = selectionsByVote.get(s.vote_id) || [];
-    arr.push(optionTextMap.get(s.option_id) || '—');
-    selectionsByVote.set(s.vote_id, arr);
+  const { data, error } = await supabaseClient.rpc('get_poll_voters_for_owner', {
+    p_poll_id: pollId,
   });
 
-  return votes.map((v) => ({
-    voter_name: profileMap.get(v.voter_user_id) || 'Анонимен',
-    selections: selectionsByVote.get(v.id) || [],
-    voted_at: v.created_at,
+  if (error) throw error;
+
+  return (data || []).map((row) => ({
+    voter_name: row.display_name || 'Анонимен',
+    selections: Array.isArray(row.selections) ? row.selections : [],
+    voted_at: row.voted_at,
   }));
 }
 
