@@ -28,3 +28,6 @@ npm-debug.log*
 # Cache
 .cache/
 .vite/
+
+# Local Netlify folder
+.netlify

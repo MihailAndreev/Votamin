@@ -117,6 +117,24 @@ create policy "Users can view their own profile"
 2. Добави production domain към Supabase Redirect URLs
 3. Тестирай регистрация и login на staging
 
+### ✅ Pre-deploy Checklist
+
+- [ ] Hosting env vars са зададени:
+  - `VITE_SUPABASE_URL=https://<project-ref>.supabase.co`
+  - `VITE_SUPABASE_ANON_KEY=<publishable-or-anon-key>`
+- [ ] В Supabase → Authentication → URL Configuration:
+  - [ ] `Site URL` е production домейнът (например `https://votamin.app`)
+  - [ ] Redirect URL е добавен: `https://<your-domain>/auth/callback`
+- [ ] Email provider е активен (и SMTP е конфигуриран за production, ако ползвате custom SMTP)
+- [ ] RLS policies са приложени и миграциите са up-to-date
+- [ ] Няма seed/test скриптове в production pipeline
+- [ ] Локално минава: `npm run build`
+- [ ] Staging smoke test:
+  - [ ] Register → email confirm → login
+  - [ ] Logout/login цикъл
+  - [ ] Отваряне на protected route без login пренасочва към `/login`
+  - [ ] Public poll (`/p/:code`) се отваря коректно
+
 ## ❓ Troubleshooting
 
 **"Missing Supabase credentials"**
