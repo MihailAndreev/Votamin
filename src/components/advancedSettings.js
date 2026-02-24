@@ -300,7 +300,7 @@ export function renderAdvancedSettings(settings = {}, onChange) {
         <!-- End Date -->
         <div class="setting-field">
           <label class="setting-label">${i18n.t('createPoll.fields.endDate')}</label>
-          <p class="setting-description">Poll will automatically close at this date and time</p>
+          <p class="setting-description">${i18n.t('createPoll.advancedSettings.endDateHint')}</p>
           <input 
             type="datetime-local" 
             class="date-input" 

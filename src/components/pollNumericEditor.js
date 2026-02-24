@@ -165,7 +165,7 @@ export function renderPollNumericEditor(minValue = '', maxValue = '', onChange) 
             value="${minValue}"
           />
         </div>
-        <span class="numeric-hint">Optional: Leave empty for no minimum</span>
+        <span class="numeric-hint">${i18n.t('createPoll.numericEditor.optionalMinHint')}</span>
       </div>
 
       <div class="numeric-field">
@@ -180,21 +180,21 @@ export function renderPollNumericEditor(minValue = '', maxValue = '', onChange) 
             value="${maxValue}"
           />
         </div>
-        <span class="numeric-hint">Optional: Leave empty for no maximum</span>
+        <span class="numeric-hint">${i18n.t('createPoll.numericEditor.optionalMaxHint')}</span>
       </div>
     </div>
 
     <div class="numeric-preview">
-      <span>Range:</span>
+      <span>${i18n.t('createPoll.numericEditor.rangeLabel')}</span>
       <span class="numeric-preview-value" id="range-display">
-        ${minValue || '—'} to ${maxValue || '—'}
+        ${minValue || '—'} ${i18n.t('createPoll.numericEditor.to')} ${maxValue || '—'}
       </span>
       <div class="numeric-range-bar"></div>
     </div>
 
     <p class="numeric-info">
-      Participants will enter a numeric value.<br/>
-      Set optional min/max constraints for validation.
+      ${i18n.t('createPoll.numericEditor.info')}<br/>
+      ${i18n.t('createPoll.numericEditor.constraintsInfo')}
     </p>
 
     <div class="error-message" id="validation-error" style="display: none;">
@@ -216,7 +216,7 @@ export function renderPollNumericEditor(minValue = '', maxValue = '', onChange) 
     const max = maxInput.value ? parseFloat(maxInput.value) : null;
 
     // Update display
-    rangeDisplay.textContent = `${min !== null ? min : '—'} to ${max !== null ? max : '—'}`;
+    rangeDisplay.textContent = `${min !== null ? min : '—'} ${i18n.t('createPoll.numericEditor.to')} ${max !== null ? max : '—'}`;
 
     // Validation
     if (min !== null && max !== null && min >= max) {

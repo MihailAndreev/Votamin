@@ -226,7 +226,7 @@ export default function render(container) {
         <p style="color: var(--text-secondary); margin-bottom: 2rem;">${i18n.t('createPoll.preview.subtitle')}</p>
 
         <div class="preview-card" data-theme="${theme}">
-          <h3 class="preview-question">${question || 'Your question will appear here'}</h3>
+          <h3 class="preview-question">${question || i18n.t('createPoll.preview.questionFallback')}</h3>
           ${description ? `<p class="preview-description">${description}</p>` : ''}
 
           <div class="preview-meta">
@@ -263,7 +263,7 @@ export default function render(container) {
             ${options.map((opt, i) => `
               <div style="padding: 1rem; border: 2px solid var(--border-color); border-radius: 8px; display: flex; align-items: center; gap: 0.75rem;">
                 <div style="width: 20px; height: 20px; border: 2px solid var(--primary-color); border-radius: ${kind === 'single_choice' ? '50%' : '4px'};"></div>
-                <span>${opt || `Option ${i + 1}`}</span>
+                <span>${opt || i18n.t('createPoll.placeholders.option').replace('{number}', i + 1)}</span>
               </div>
             `).join('')}
           </div>
@@ -288,7 +288,9 @@ export default function render(container) {
               disabled
             />
             <p style="margin-top: 0.5rem; font-size: 0.875rem; color: var(--text-secondary);">
-              ${minValue !== null || maxValue !== null ? `Range: ${minValue ?? '—'} to ${maxValue ?? '—'}` : 'No range limits'}
+              ${minValue !== null || maxValue !== null
+                ? `${i18n.t('createPoll.preview.rangeLabel')} ${minValue ?? '—'} ${i18n.t('createPoll.preview.to')} ${maxValue ?? '—'}`
+                : i18n.t('createPoll.preview.noRangeLimits')}
             </p>
           </div>
         `;
@@ -302,24 +304,24 @@ export default function render(container) {
 
     stepDiv.innerHTML = `
       <div style="max-width: 600px; margin: 0 auto; text-align: center;">
-        <h2 class="step-section-title">Ready to Publish?</h2>
+        <h2 class="step-section-title">${i18n.t('createPoll.publish.readyTitle')}</h2>
         <p style="color: var(--text-secondary); margin-bottom: 2rem;">
-          Your poll is ready. You can save it as a draft or publish it now.
+          ${i18n.t('createPoll.publish.readySubtitle')}
         </p>
 
         <div style="display: flex; flex-direction: column; gap: 1rem; align-items: center;">
           <div style="width: 100%; max-width: 400px; padding: 1.5rem; background: white; border: 2px solid var(--border-color); border-radius: 12px; text-align: left;">
-            <h3 style="margin: 0 0 1rem 0; font-size: 1.125rem;">Poll Summary</h3>
+            <h3 style="margin: 0 0 1rem 0; font-size: 1.125rem;">${i18n.t('createPoll.publish.summaryTitle')}</h3>
             <div style="display: flex; flex-direction: column; gap: 0.75rem; font-size: 0.875rem;">
-              <div><strong>Question:</strong> ${wizardState.pollData.question}</div>
-              <div><strong>Type:</strong> ${i18n.t(`dashboard.kind.${wizardState.pollData.kind}`)}</div>
-              <div><strong>Visibility:</strong> ${i18n.t(`createPoll.visibility.${wizardState.pollData.visibility}`)}</div>
-              <div><strong>Results:</strong> ${i18n.t(`createPoll.resultsVisibility.${wizardState.pollData.resultsVisibility}`)}</div>
+              <div><strong>${i18n.t('createPoll.publish.summaryQuestion')}:</strong> ${wizardState.pollData.question}</div>
+              <div><strong>${i18n.t('createPoll.publish.summaryType')}:</strong> ${i18n.t(`dashboard.kind.${wizardState.pollData.kind}`)}</div>
+              <div><strong>${i18n.t('createPoll.publish.summaryVisibility')}:</strong> ${i18n.t(`createPoll.visibility.${wizardState.pollData.visibility}`)}</div>
+              <div><strong>${i18n.t('createPoll.publish.summaryResults')}:</strong> ${i18n.t(`createPoll.resultsVisibility.${wizardState.pollData.resultsVisibility}`)}</div>
             </div>
           </div>
 
           <p style="font-size: 0.875rem; color: var(--text-secondary); margin-top: 1rem;">
-            Use the buttons below to save as draft or publish your poll.
+            ${i18n.t('createPoll.publish.summaryHint')}
           </p>
         </div>
       </div>

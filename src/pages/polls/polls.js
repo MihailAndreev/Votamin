@@ -8,19 +8,20 @@ import { navigateTo } from '../../router.js';
 import { deletePollById, fetchMyPollsList } from '@utils/pollsData.js';
 import { showToast } from '@utils/toast.js';
 import { getLoaderMarkup } from '@components/loader.js';
+import { i18n } from '../../i18n/index.js';
 
 function statusBadge(status) {
-  if (status === 'open') return '<span class="vm-badge ms-2">Активна</span>';
-  if (status === 'closed') return '<span class="vm-badge vm-badge--orange ms-2">Затворена</span>';
-  return '<span class="vm-badge vm-badge--orange ms-2">Чернова</span>';
+  if (status === 'open') return `<span class="vm-badge ms-2">${i18n.t('pollsList.status.open')}</span>`;
+  if (status === 'closed') return `<span class="vm-badge vm-badge--orange ms-2">${i18n.t('pollsList.status.closed')}</span>`;
+  return `<span class="vm-badge vm-badge--orange ms-2">${i18n.t('pollsList.status.draft')}</span>`;
 }
 
 function renderEmptyState() {
   return `
     <div class="col-12">
       <div class="vm-card p-4 text-center">
-        <p class="text-muted mb-3">Нямаш анкети за този филтър.</p>
-        <a href="/polls/new" class="btn btn-votamin">+ Нова анкета</a>
+        <p class="text-muted mb-3">${i18n.t('pollsList.empty.noPollsForFilter')}</p>
+        <a href="/polls/new" class="btn btn-votamin">${i18n.t('dashboard.actions.createPoll')}</a>
       </div>
     </div>
   `;
@@ -34,15 +35,15 @@ function renderCards(polls) {
           <h6 class="fw-bold mb-0">${poll.title}</h6>
           ${statusBadge(poll.status)}
         </div>
-        <p class="text-muted small mb-3">${poll.response_count} гласа · ${poll.options_count} опции</p>
+        <p class="text-muted small mb-3">${poll.response_count} ${i18n.t('pollsList.stats.votes')} · ${poll.options_count} ${i18n.t('pollsList.stats.options')}</p>
         <div class="d-flex justify-content-between align-items-center gap-2 flex-wrap">
-          <small class="text-muted">Код: <strong>${poll.share_code || '—'}</strong></small>
+          <small class="text-muted">${i18n.t('pollsList.code')} <strong>${poll.share_code || '—'}</strong></small>
           <div class="d-flex align-items-center gap-2">
-            <a href="/polls/${poll.id}" class="small fw-semibold">Виж</a>
+            <a href="/polls/${poll.id}" class="small fw-semibold">${i18n.t('pollsList.actions.view')}</a>
             <span class="text-muted">·</span>
-            <a href="/polls/${poll.id}?edit=1" class="small fw-semibold">Редакция</a>
+            <a href="/polls/${poll.id}?edit=1" class="small fw-semibold">${i18n.t('pollsList.actions.edit')}</a>
             <span class="text-muted">·</span>
-            <a href="#" class="small fw-semibold text-danger" data-action="delete" data-poll-id="${poll.id}">Изтрий</a>
+            <a href="#" class="small fw-semibold text-danger" data-action="delete" data-poll-id="${poll.id}">${i18n.t('pollsList.actions.delete')}</a>
           </div>
         </div>
       </div>
@@ -57,6 +58,7 @@ export default function render(container) {
   }
 
   container.innerHTML = htmlContent;
+  i18n.loadTranslations();
 
   let activeStatus = 'all';
   const filtersEl = container.querySelector('#polls-filters');
@@ -77,7 +79,7 @@ export default function render(container) {
       gridEl.innerHTML = polls.length ? renderCards(polls) : renderEmptyState();
     } catch (error) {
       console.error('Failed to load polls list:', error);
-      gridEl.innerHTML = '<div class="col-12"><div class="vm-card p-4 text-danger">Грешка при зареждане на анкетите.</div></div>';
+      gridEl.innerHTML = `<div class="col-12"><div class="vm-card p-4 text-danger">${i18n.t('pollsList.errors.loadFailed')}</div></div>`;
     }
   };
 
@@ -96,18 +98,31 @@ export default function render(container) {
 
     const pollId = deleteTrigger.dataset.pollId;
     if (!pollId) return;
-    if (!confirm('Сигурен ли си, че искаш да изтриеш тази анкета?')) return;
+    if (!confirm(i18n.t('pollsList.errors.deleteConfirm'))) return;
 
     deletePollById(pollId)
       .then(() => {
-        showToast('Анкетата е изтрита.', 'info');
+        showToast(i18n.t('notifications.pollDeleted'), 'info');
         loadPolls();
       })
       .catch((error) => {
         console.error('Failed to delete poll from list page:', error);
-        showToast('Грешка при изтриване на анкетата.', 'error');
+        showToast(i18n.t('pollsList.errors.deleteFailed'), 'error');
       });
   });
+
+  const handleLanguageChanged = () => {
+    if (!document.body.contains(container)) {
+      window.removeEventListener('votamin:language-changed', handleLanguageChanged);
+      return;
+    }
+
+    i18n.loadTranslations();
+    setFilterButtonState(activeStatus);
+    loadPolls();
+  };
+
+  window.addEventListener('votamin:language-changed', handleLanguageChanged);
 
   setFilterButtonState(activeStatus);
   loadPolls();

@@ -1,24 +1,24 @@
 <section class="container vm-section">
   <div class="d-flex flex-wrap justify-content-between align-items-center mb-4">
     <div>
-      <h2 class="fw-bold mb-1">Анкети 🗳️</h2>
-      <p class="text-muted mb-0">Всички твои анкети на едно място</p>
+      <h2 class="fw-bold mb-1" data-i18n="pollsList.title">Анкети 🗳️</h2>
+      <p class="text-muted mb-0" data-i18n="pollsList.subtitle">Всички твои анкети на едно място</p>
     </div>
-    <a href="/polls/new" class="btn btn-votamin">+ Нова анкета</a>
+    <a href="/polls/new" class="btn btn-votamin" data-i18n="dashboard.actions.createPoll">+ Нова анкета</a>
   </div>
 
   <!-- Filters -->
   <div class="d-flex gap-2 mb-4" id="polls-filters">
-    <button class="btn btn-sm btn-votamin" data-status="all">Всички</button>
-    <button class="btn btn-sm btn-votamin-outline" data-status="open">Активни</button>
-    <button class="btn btn-sm btn-votamin-outline" data-status="closed">Затворени</button>
-    <button class="btn btn-sm btn-votamin-outline" data-status="draft">Чернови</button>
+    <button class="btn btn-sm btn-votamin" data-status="all" data-i18n="dashboard.filters.all">Всички</button>
+    <button class="btn btn-sm btn-votamin-outline" data-status="open" data-i18n="dashboard.filters.open">Активни</button>
+    <button class="btn btn-sm btn-votamin-outline" data-status="closed" data-i18n="dashboard.filters.closed">Затворени</button>
+    <button class="btn btn-sm btn-votamin-outline" data-status="draft" data-i18n="dashboard.filters.draft">Чернови</button>
   </div>
 
   <!-- Polls grid -->
   <div class="row g-4" id="polls-grid">
     <div class="col-12">
-      <div class="vm-card p-4 text-muted">Зареждане на анкети...</div>
+      <div class="vm-card p-4 text-muted" data-i18n="pollsList.loading">Зареждане на анкети...</div>
     </div>
   </div>
 </section>

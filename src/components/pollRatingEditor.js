@@ -152,8 +152,8 @@ export function renderPollRatingEditor() {
     </div>
 
     <p class="rating-info">
-      Participants will rate from 1 to 5 stars.<br/>
-      5 options will be automatically created.
+      ${i18n.t('createPoll.ratingEditor.info')}<br/>
+      ${i18n.t('createPoll.ratingEditor.autoOptions')}
     </p>
   `;
 

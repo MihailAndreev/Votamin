@@ -9,6 +9,8 @@ import { navigateTo } from '../../../router.js';
 import { closePollById, deletePollById, fetchPollById, updatePollById } from '@utils/pollsData.js';
 import { getLoaderMarkup } from '@components/loader.js';
 
+let removeLanguageChangedListener = null;
+
 function escapeHtml(value) {
   if (value === null || value === undefined) return '';
   return String(value)
@@ -20,31 +22,26 @@ function escapeHtml(value) {
 }
 
 function statusLabel(status) {
-  const labels = {
-    open: 'Активна',
-    draft: 'Чернова',
-    closed: 'Затворена',
-  };
-  return labels[status] || status;
+  return i18n.t(`pollDetail.status.${status}`) || status;
 }
 
 function renderResultsSection(poll) {
   if (poll.kind === 'numeric') {
     if (!poll.numeric_summary) {
-      return '<p class="text-muted mb-0">Все още няма подадени отговори.</p>';
+      return `<p class="text-muted mb-0">${i18n.t('pollDetail.noAnswersYet')}</p>`;
     }
 
     return `
       <div class="d-flex flex-column gap-2">
-        <div><strong>Средно:</strong> ${poll.numeric_summary.avg}</div>
-        <div><strong>Минимум:</strong> ${poll.numeric_summary.min}</div>
-        <div><strong>Максимум:</strong> ${poll.numeric_summary.max}</div>
+        <div><strong>${i18n.t('pollDetail.avg')}:</strong> ${poll.numeric_summary.avg}</div>
+        <div><strong>${i18n.t('pollDetail.min')}:</strong> ${poll.numeric_summary.min}</div>
+        <div><strong>${i18n.t('pollDetail.max')}:</strong> ${poll.numeric_summary.max}</div>
       </div>
     `;
   }
 
   if (!poll.options.length) {
-    return '<p class="text-muted mb-0">Няма налични опции за тази анкета.</p>';
+    return `<p class="text-muted mb-0">${i18n.t('pollDetail.noOptions')}</p>`;
   }
 
   return poll.options.map((option) => `
@@ -63,65 +60,70 @@ function renderResultsSection(poll) {
 function renderPollDetailMarkup(poll, { isEditMode }) {
   const shareCode = poll.share_code || '—';
   const copyLinkHtml = poll.share_code
-    ? '· <a href="#" id="copy-link" class="fw-semibold">Копирай линк</a>'
+    ? `· <a href="#" id="copy-link" class="fw-semibold">${i18n.t('pollDetail.copyLink')}</a>`
     : '';
-  const editButtonText = isEditMode ? 'Откажи' : 'Редактирай';
+  const editButtonText = isEditMode ? i18n.t('pollDetail.editCancel') : i18n.t('pollDetail.editAction');
 
   return `
   <section class="container vm-section" style="max-width:780px;">
-    <a href="/dashboard/polls" class="text-muted small mb-3 d-inline-block">← Обратно към моите анкети</a>
+    <a href="/dashboard/polls" class="text-muted small mb-3 d-inline-block">${i18n.t('pollDetail.backToMyPolls')}</a>
 
     <div class="vm-card p-4 mb-4">
       <div class="d-flex justify-content-between align-items-start mb-2">
         <h3 class="fw-bold mb-0" id="poll-title">${escapeHtml(poll.title)}</h3>
         <span class="vm-badge ms-3">${statusLabel(poll.status)}</span>
       </div>
-      <p class="text-muted" id="poll-desc">${escapeHtml(poll.description || 'Без описание')}</p>
-      <small class="text-muted">Код за споделяне: <strong id="poll-code">${escapeHtml(shareCode)}</strong>
+      <p class="text-muted" id="poll-desc">${escapeHtml(poll.description || i18n.t('pollDetail.noDescription'))}</p>
+      <small class="text-muted">${i18n.t('pollDetail.shareCode')} <strong id="poll-code">${escapeHtml(shareCode)}</strong>
         ${copyLinkHtml}
       </small>
     </div>
 
     <div class="vm-card p-4 mb-4 ${poll.is_owner ? '' : 'd-none'}" id="poll-edit-card">
-      <h5 class="fw-bold mb-3">Редакция</h5>
+      <h5 class="fw-bold mb-3">${i18n.t('pollDetail.editTitle')}</h5>
       <div id="poll-edit-view" class="${isEditMode ? '' : 'd-none'}">
         <div class="mb-3">
-          <label class="form-label">Заглавие</label>
+          <label class="form-label">${i18n.t('pollDetail.titleLabel')}</label>
           <input class="form-control" id="edit-title" type="text" maxlength="200" value="${escapeHtml(poll.title)}" />
         </div>
         <div class="mb-3">
-          <label class="form-label">Описание</label>
+          <label class="form-label">${i18n.t('pollDetail.descriptionLabel')}</label>
           <textarea class="form-control" id="edit-description" rows="3">${escapeHtml(poll.description || '')}</textarea>
         </div>
         <div class="mb-3">
-          <label class="form-label">Статус</label>
+          <label class="form-label">${i18n.t('pollDetail.statusLabel')}</label>
           <select class="form-select" id="edit-status">
-            <option value="draft" ${poll.status === 'draft' ? 'selected' : ''}>Чернова</option>
-            <option value="open" ${poll.status === 'open' ? 'selected' : ''}>Активна</option>
-            <option value="closed" ${poll.status === 'closed' ? 'selected' : ''}>Затворена</option>
+            <option value="draft" ${poll.status === 'draft' ? 'selected' : ''}>${i18n.t('pollDetail.status.draft')}</option>
+            <option value="open" ${poll.status === 'open' ? 'selected' : ''}>${i18n.t('pollDetail.status.open')}</option>
+            <option value="closed" ${poll.status === 'closed' ? 'selected' : ''}>${i18n.t('pollDetail.status.closed')}</option>
           </select>
         </div>
-        <button class="btn btn-votamin" id="btn-save-edit">Запази промените</button>
+        <button class="btn btn-votamin" id="btn-save-edit">${i18n.t('pollDetail.saveChanges')}</button>
       </div>
       <div id="poll-edit-hint" class="${isEditMode ? 'd-none' : ''}">
-        <p class="text-muted mb-0">Използвай "Редактирай", за да промениш заглавие, описание и статус.</p>
+        <p class="text-muted mb-0">${i18n.t('pollDetail.editHint')}</p>
       </div>
     </div>
 
     <div class="vm-card p-4 mb-4">
-      <h5 class="fw-bold mb-4">Резултати <span class="text-muted fw-normal small">(${poll.total_votes} гласа)</span></h5>
+      <h5 class="fw-bold mb-4">${i18n.t('pollDetail.resultsTitle')} <span class="text-muted fw-normal small">(${poll.total_votes} ${i18n.t('pollDetail.votesSuffix')})</span></h5>
       ${renderResultsSection(poll)}
     </div>
 
     <div class="d-flex gap-3 ${poll.is_owner ? '' : 'd-none'}" id="owner-actions">
       <button class="btn btn-votamin-secondary" id="btn-toggle-edit">${editButtonText}</button>
-      <button class="btn btn-votamin-outline" id="btn-close-poll" ${poll.status === 'closed' ? 'disabled' : ''}>Затвори анкетата</button>
-      <button class="btn btn-votamin-outline" id="btn-delete-poll">Изтрий</button>
+      <button class="btn btn-votamin-outline" id="btn-close-poll" ${poll.status === 'closed' ? 'disabled' : ''}>${i18n.t('pollDetail.closePoll')}</button>
+      <button class="btn btn-votamin-outline" id="btn-delete-poll">${i18n.t('pollDetail.deletePoll')}</button>
     </div>
   </section>`;
 }
 
 export default async function render(container, params) {
+  if (removeLanguageChangedListener) {
+    removeLanguageChangedListener();
+    removeLanguageChangedListener = null;
+  }
+
   if (!getCurrentUser()) {
     navigateTo('/login');
     return;
@@ -135,7 +137,7 @@ export default async function render(container, params) {
 
   const pollId = params?.id;
   if (!pollId) {
-    showToast('Липсва ID на анкета.', 'error');
+    showToast(i18n.t('pollDetail.missingPollId'), 'error');
     navigateTo('/dashboard/polls');
     return;
   }
@@ -145,7 +147,7 @@ export default async function render(container, params) {
     poll = await fetchPollById(pollId);
   } catch (error) {
     console.error('Failed to load poll detail:', error);
-    container.innerHTML = '<section class="container vm-section"><div class="vm-card p-4 text-danger">Неуспешно зареждане на анкетата.</div></section>';
+    container.innerHTML = `<section class="container vm-section"><div class="vm-card p-4 text-danger">${i18n.t('pollDetail.loadFailed')}</div></section>`;
     return;
   }
 
@@ -163,10 +165,10 @@ export default async function render(container, params) {
 
       const url = `${location.origin}/p/${code}`;
       navigator.clipboard.writeText(url).then(() => {
-        copyLink.textContent = 'Копирано ✓';
+        copyLink.textContent = i18n.t('pollDetail.copied');
         showToast(i18n.t('notifications.linkCopied'), 'info');
         setTimeout(() => {
-          copyLink.textContent = 'Копирай линк';
+          copyLink.textContent = i18n.t('pollDetail.copyLink');
         }, 2000);
       }).catch(() => {
         showToast(i18n.t('notifications.linkCopyFailed'), 'error');
@@ -184,7 +186,7 @@ export default async function render(container, params) {
       const status = container.querySelector('#edit-status')?.value;
 
       if (!title) {
-        showToast('Заглавието е задължително.', 'error');
+        showToast(i18n.t('pollDetail.titleRequired'), 'error');
         return;
       }
 
@@ -200,10 +202,10 @@ export default async function render(container, params) {
         poll = await fetchPollById(pollId);
         isEditMode = false;
         renderView();
-        showToast('Анкетата е обновена.', 'success');
+        showToast(i18n.t('pollDetail.updated'), 'success');
       } catch (error) {
         console.error('Failed to update poll:', error);
-        showToast('Неуспешно обновяване на анкетата.', 'error');
+        showToast(i18n.t('pollDetail.updateFailed'), 'error');
       }
     });
 
@@ -215,12 +217,12 @@ export default async function render(container, params) {
         showToast(i18n.t('notifications.pollClosed'), 'info');
       } catch (error) {
         console.error('Failed to close poll:', error);
-        showToast('Неуспешно затваряне на анкетата.', 'error');
+        showToast(i18n.t('pollDetail.closeFailed'), 'error');
       }
     });
 
     container.querySelector('#btn-delete-poll')?.addEventListener('click', async () => {
-      if (!confirm('Сигурен ли си, че искаш да изтриеш тази анкета?')) {
+      if (!confirm(i18n.t('pollDetail.deleteConfirm'))) {
         return;
       }
 
@@ -230,10 +232,25 @@ export default async function render(container, params) {
         navigateTo('/dashboard/polls');
       } catch (error) {
         console.error('Failed to delete poll:', error);
-        showToast('Неуспешно изтриване на анкетата.', 'error');
+        showToast(i18n.t('pollDetail.deleteFailed'), 'error');
       }
     });
   };
 
   renderView();
+
+  const handleLanguageChanged = () => {
+    if (!document.body.contains(container)) {
+      window.removeEventListener('votamin:language-changed', handleLanguageChanged);
+      removeLanguageChangedListener = null;
+      return;
+    }
+
+    renderView();
+  };
+
+  window.addEventListener('votamin:language-changed', handleLanguageChanged);
+  removeLanguageChangedListener = () => {
+    window.removeEventListener('votamin:language-changed', handleLanguageChanged);
+  };
 }

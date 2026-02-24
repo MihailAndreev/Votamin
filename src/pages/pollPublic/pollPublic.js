@@ -9,6 +9,8 @@ import { getLoaderMarkup } from '@components/loader.js';
 import { getCurrentUser } from '@utils/auth.js';
 import { navigateTo } from '../../router.js';
 
+let removeLanguageChangedListener = null;
+
 function buildLoginPathWithNext() {
   const next = `${window.location.pathname}${window.location.search}`;
   return `/login?next=${encodeURIComponent(next)}`;
@@ -29,13 +31,17 @@ function stripHtml(html) {
   return html.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
 }
 
+function t(key) {
+  return i18n.t(`publicPoll.${key}`);
+}
+
 function renderErrorState(message) {
   return `
     <div class="min-vh-100 d-flex align-items-center justify-content-center"
          style="background: linear-gradient(135deg, var(--vm-green-light) 0%, var(--vm-white) 50%, var(--vm-orange-light) 100%);">
       <div style="width:100%; max-width:520px; padding:1rem;">
         <div class="vm-card p-4 p-md-5 text-center">
-          <h4 class="fw-bold mb-2">Анкетата не е достъпна</h4>
+          <h4 class="fw-bold mb-2">${escapeHtml(t('notAccessibleTitle'))}</h4>
           <p class="text-muted mb-0">${escapeHtml(message)}</p>
         </div>
       </div>
@@ -47,12 +53,12 @@ function renderOptions(poll) {
   if (poll.kind === 'numeric') {
     return `
       <div class="mb-4">
-        <label class="form-label fw-semibold" for="public-numeric-value">Въведи стойност</label>
+        <label class="form-label fw-semibold" for="public-numeric-value">${escapeHtml(t('numericLabel'))}</label>
         <input
           type="number"
           class="form-control"
           id="public-numeric-value"
-          placeholder="Например: 10"
+          placeholder="${escapeHtml(t('numericPlaceholder'))}"
         />
       </div>
     `;
@@ -74,7 +80,7 @@ function renderOptions(poll) {
 
 function renderPublicPollMarkup(poll) {
   const isClosed = poll.status === 'closed';
-  const description = poll.description || 'Избери своя отговор.';
+  const description = poll.description || t('fallbackDescription');
   const poweredByHref = getCurrentUser() ? '/dashboard' : '/';
 
   return `
@@ -88,21 +94,21 @@ function renderPublicPollMarkup(poll) {
             <p class="text-muted small" id="public-poll-desc">${escapeHtml(description)}</p>
           </div>
 
-          ${isClosed ? '<div class="alert alert-secondary">Тази анкета е затворена.</div>' : ''}
+          ${isClosed ? `<div class="alert alert-secondary">${escapeHtml(t('closedAlert'))}</div>` : ''}
 
           <form id="public-vote-form">
             ${renderOptions(poll)}
-            <button type="submit" class="btn btn-votamin w-100 btn-lg" ${isClosed ? 'disabled' : ''}>Гласувай 🗳️</button>
+            <button type="submit" class="btn btn-votamin w-100 btn-lg" ${isClosed ? 'disabled' : ''}>${escapeHtml(t('voteButton'))}</button>
           </form>
 
           <div id="public-thanks" class="text-center d-none py-4">
             <div class="fs-1 mb-2">🎉</div>
-            <h4 class="fw-bold">Благодарим ти!</h4>
-            <p class="text-muted">Гласът ти е получен.</p>
+            <h4 class="fw-bold">${escapeHtml(t('thanksTitle'))}</h4>
+            <p class="text-muted">${escapeHtml(t('thanksText'))}</p>
           </div>
         </div>
         <p class="text-center mt-3 small text-muted">
-          Задвижвано от
+          ${escapeHtml(t('poweredBy'))}
           <a href="${poweredByHref}" class="fw-semibold d-inline-flex align-items-center vm-powered-by-link" aria-label="Votamin">
             <img src="/src/assets/images/logo/logo.svg" alt="Votamin" class="vm-powered-by-logo" />
           </a>
@@ -152,25 +158,25 @@ async function fetchPublicPollByCode(code) {
 }
 
 function mapVoteErrorToMessage(error) {
-  if (!error) return 'Неуспешно гласуване. Моля, опитай отново.';
+  if (!error) return t('errors.voteFailed');
 
   if (error.code === '23505') {
-    return 'Вече си гласувал в тази анкета.';
+    return t('errors.alreadyVoted');
   }
 
   if (error.code === '42501') {
-    return 'Нямаш права да гласуваш. Влез в профила си и опитай пак.';
+    return t('errors.noPermission');
   }
 
   if (typeof error.message === 'string' && error.message.includes('poll_is_open_for_voting')) {
-    return 'Анкетата вече не приема гласове.';
+    return t('errors.pollNotOpen');
   }
 
   if (typeof error.message === 'string' && error.message.includes('max')) {
-    return 'Избран е невалиден брой опции за тази анкета.';
+    return t('errors.invalidOptionCount');
   }
 
-  return 'Неуспешно гласуване. Моля, опитай отново.';
+  return t('errors.voteFailed');
 }
 
 async function submitPublicVote(poll, { selectedOptionIds, numericValue }) {
@@ -210,6 +216,11 @@ async function submitPublicVote(poll, { selectedOptionIds, numericValue }) {
 }
 
 export default async function render(container, params) {
+  if (removeLanguageChangedListener) {
+    removeLanguageChangedListener();
+    removeLanguageChangedListener = null;
+  }
+
   container.innerHTML = `
     <div class="min-vh-100 d-flex align-items-center justify-content-center"
          style="background: linear-gradient(135deg, var(--vm-green-light) 0%, var(--vm-white) 50%, var(--vm-orange-light) 100%);">
@@ -219,7 +230,7 @@ export default async function render(container, params) {
 
   const code = params?.code;
   if (!code) {
-    container.innerHTML = renderErrorState('Липсва код за споделяне.');
+    container.innerHTML = renderErrorState(t('errors.missingCode'));
     return;
   }
 
@@ -229,83 +240,109 @@ export default async function render(container, params) {
   } catch (error) {
     console.error('Failed to load public poll:', error);
     if (error.message === 'invalid_share_code') {
-      container.innerHTML = renderErrorState('Невалиден линк за анкета.');
+      container.innerHTML = renderErrorState(t('errors.invalidLink'));
       return;
     }
     if (error.message === 'expired_share_code') {
-      container.innerHTML = renderErrorState('Този линк за анкета е изтекъл.');
+      container.innerHTML = renderErrorState(t('errors.expiredLink'));
       return;
     }
-    container.innerHTML = renderErrorState('Възникна грешка при зареждане.');
+    container.innerHTML = renderErrorState(t('errors.loadFailed'));
     return;
   }
 
-  container.innerHTML = renderPublicPollMarkup(poll);
+  let hasVoted = false;
 
-  const form = container.querySelector('#public-vote-form');
-  const thanks = container.querySelector('#public-thanks');
-  const submitBtn = form?.querySelector('button[type="submit"]');
+  const renderPollView = () => {
+    container.innerHTML = renderPublicPollMarkup(poll);
 
-  form?.addEventListener('submit', async (e) => {
-    e.preventDefault();
+    const form = container.querySelector('#public-vote-form');
+    const thanks = container.querySelector('#public-thanks');
+    const submitBtn = form?.querySelector('button[type="submit"]');
 
-    if (!getCurrentUser()) {
-      showToast('Моля, влез в профила си, за да гласуваш.', 'info');
-      navigateTo(buildLoginPathWithNext());
-      return;
-    }
-
-    if (poll.status !== 'open') {
-      showToast('Анкетата е затворена и не приема гласове.', 'error');
-      return;
-    }
-
-    let selectedOptionIds = [];
-    let numericValue = null;
-
-    if (poll.kind === 'numeric') {
-      const numericInput = form.querySelector('#public-numeric-value');
-      if (!numericInput?.value?.trim()) {
-        showToast(i18n.t('notifications.selectOption'), 'error');
-        return;
-      }
-      numericValue = Number(numericInput.value);
-      if (!Number.isFinite(numericValue)) {
-        showToast('Въведи валидна числова стойност.', 'error');
-        return;
-      }
-    } else {
-      const selected = form.querySelectorAll('input[name="vote"]:checked');
-      if (!selected.length) {
-        showToast(i18n.t('notifications.selectOption'), 'error');
-        return;
-      }
-      selectedOptionIds = Array.from(selected).map((input) => input.value);
-    }
-
-    if (submitBtn) {
-      submitBtn.disabled = true;
-      submitBtn.textContent = 'Изпращане...';
-    }
-
-    try {
-      await submitPublicVote(poll, { selectedOptionIds, numericValue });
-      form.classList.add('d-none');
+    if (hasVoted) {
+      form?.classList.add('d-none');
       thanks?.classList.remove('d-none');
-      showToast('Гласът ти е записан успешно.', 'success');
-    } catch (error) {
-      console.error('Failed to submit public vote:', error);
-      if (error.message === 'auth_required') {
-        showToast('Моля, влез в профила си, за да гласуваш.', 'info');
-        navigateTo(buildLoginPathWithNext());
-      } else {
-        showToast(mapVoteErrorToMessage(error), 'error');
-      }
-    } finally {
-      if (submitBtn) {
-        submitBtn.disabled = false;
-        submitBtn.textContent = 'Гласувай 🗳️';
-      }
     }
-  });
+
+    form?.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      if (!getCurrentUser()) {
+        showToast(t('info.loginToVote'), 'info');
+        navigateTo(buildLoginPathWithNext());
+        return;
+      }
+
+      if (poll.status !== 'open') {
+        showToast(t('errors.pollNotOpen'), 'error');
+        return;
+      }
+
+      let selectedOptionIds = [];
+      let numericValue = null;
+
+      if (poll.kind === 'numeric') {
+        const numericInput = form.querySelector('#public-numeric-value');
+        if (!numericInput?.value?.trim()) {
+          showToast(i18n.t('notifications.selectOption'), 'error');
+          return;
+        }
+        numericValue = Number(numericInput.value);
+        if (!Number.isFinite(numericValue)) {
+          showToast(t('errors.invalidNumeric'), 'error');
+          return;
+        }
+      } else {
+        const selected = form.querySelectorAll('input[name="vote"]:checked');
+        if (!selected.length) {
+          showToast(i18n.t('notifications.selectOption'), 'error');
+          return;
+        }
+        selectedOptionIds = Array.from(selected).map((input) => input.value);
+      }
+
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.textContent = t('submitting');
+      }
+
+      try {
+        await submitPublicVote(poll, { selectedOptionIds, numericValue });
+        hasVoted = true;
+        renderPollView();
+        showToast(t('success.voteSaved'), 'success');
+      } catch (error) {
+        console.error('Failed to submit public vote:', error);
+        if (error.message === 'auth_required') {
+          showToast(t('info.loginToVote'), 'info');
+          navigateTo(buildLoginPathWithNext());
+        } else {
+          showToast(mapVoteErrorToMessage(error), 'error');
+        }
+      } finally {
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.textContent = t('voteButton');
+        }
+      }
+    });
+  };
+
+  renderPollView();
+
+  const handleLanguageChanged = () => {
+    if (!document.body.contains(container)) {
+      window.removeEventListener('votamin:language-changed', handleLanguageChanged);
+      removeLanguageChangedListener = null;
+      return;
+    }
+
+    renderPollView();
+  };
+
+  window.addEventListener('votamin:language-changed', handleLanguageChanged);
+  removeLanguageChangedListener = () => {
+    window.removeEventListener('votamin:language-changed', handleLanguageChanged);
+  };
 }

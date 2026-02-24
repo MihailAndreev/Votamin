@@ -217,6 +217,36 @@ export default {
       notice: 'Free registration • No credit card • Cancel anytime'
     }
   },
+  publicPoll: {
+    fallbackDescription: 'Choose your answer.',
+    notAccessibleTitle: 'This poll is not available',
+    numericLabel: 'Enter a value',
+    numericPlaceholder: 'For example: 10',
+    closedAlert: 'This poll is closed.',
+    voteButton: 'Vote 🗳️',
+    submitting: 'Submitting...',
+    thanksTitle: 'Thank you!',
+    thanksText: 'Your vote has been received.',
+    poweredBy: 'Powered by',
+    errors: {
+      missingCode: 'Missing share code.',
+      invalidLink: 'Invalid poll link.',
+      expiredLink: 'This poll link has expired.',
+      loadFailed: 'An error occurred while loading.',
+      voteFailed: 'Vote failed. Please try again.',
+      alreadyVoted: 'You have already voted in this poll.',
+      noPermission: 'You do not have permission to vote. Please sign in and try again.',
+      pollNotOpen: 'This poll is no longer accepting votes.',
+      invalidOptionCount: 'An invalid number of options was selected for this poll.',
+      invalidNumeric: 'Enter a valid numeric value.'
+    },
+    info: {
+      loginToVote: 'Please sign in to vote.'
+    },
+    success: {
+      voteSaved: 'Your vote was recorded successfully.'
+    }
+  },
   createPoll: {
     wizard: {
       steps: {
@@ -313,12 +343,39 @@ export default {
       title: 'Preview Your Poll',
       subtitle: 'This is how participants will see your poll',
       closesOn: 'Closes on {date}',
-      noEndDate: 'No end date'
+      noEndDate: 'No end date',
+      questionFallback: 'Your question will appear here',
+      rangeLabel: 'Range:',
+      noRangeLimits: 'No range limits',
+      to: 'to'
     },
     publish: {
       draftSaved: 'Poll saved as draft',
       published: 'Poll published successfully!',
-      error: 'Failed to save poll'
+      error: 'Failed to save poll',
+      readyTitle: 'Ready to Publish?',
+      readySubtitle: 'Your poll is ready. You can save it as a draft or publish it now.',
+      summaryTitle: 'Poll Summary',
+      summaryQuestion: 'Question',
+      summaryType: 'Type',
+      summaryVisibility: 'Visibility',
+      summaryResults: 'Results',
+      summaryHint: 'Use the buttons below to save as draft or publish your poll.'
+    },
+    ratingEditor: {
+      info: 'Participants will rate from 1 to 5 stars.',
+      autoOptions: '5 options will be automatically created.'
+    },
+    numericEditor: {
+      optionalMinHint: 'Optional: Leave empty for no minimum',
+      optionalMaxHint: 'Optional: Leave empty for no maximum',
+      rangeLabel: 'Range:',
+      info: 'Participants will enter a numeric value.',
+      constraintsInfo: 'Set optional min/max constraints for validation.',
+      to: 'to'
+    },
+    advancedSettings: {
+      endDateHint: 'Poll will automatically close at this date and time'
     },
     share: {
       title: 'Share Your Poll',
@@ -326,6 +383,71 @@ export default {
       linkLabel: 'Poll Link',
       copySuccess: 'Link copied to clipboard!',
       copyError: 'Failed to copy link'
+    }
+  },
+  pollDetail: {
+    status: {
+      open: 'Open',
+      draft: 'Draft',
+      closed: 'Closed'
+    },
+    noAnswersYet: 'No responses yet.',
+    avg: 'Average',
+    min: 'Minimum',
+    max: 'Maximum',
+    noOptions: 'No options available for this poll.',
+    copyLink: 'Copy link',
+    copied: 'Copied ✓',
+    editCancel: 'Cancel',
+    editAction: 'Edit',
+    backToMyPolls: '← Back to my polls',
+    noDescription: 'No description',
+    shareCode: 'Share code:',
+    editTitle: 'Edit',
+    titleLabel: 'Title',
+    descriptionLabel: 'Description',
+    statusLabel: 'Status',
+    saveChanges: 'Save changes',
+    editHint: 'Use "Edit" to change title, description, and status.',
+    resultsTitle: 'Results',
+    votesSuffix: 'votes',
+    closePoll: 'Close poll',
+    deletePoll: 'Delete',
+    missingPollId: 'Missing poll ID.',
+    loadFailed: 'Failed to load poll.',
+    titleRequired: 'Title is required.',
+    updated: 'Poll updated.',
+    updateFailed: 'Failed to update poll.',
+    closeFailed: 'Failed to close poll.',
+    deleteConfirm: 'Are you sure you want to delete this poll?',
+    deleteFailed: 'Failed to delete poll.'
+  },
+  pollsList: {
+    title: 'Polls 🗳️',
+    subtitle: 'All your polls in one place',
+    loading: 'Loading polls...',
+    status: {
+      open: 'Open',
+      closed: 'Closed',
+      draft: 'Draft'
+    },
+    empty: {
+      noPollsForFilter: 'You have no polls for this filter.'
+    },
+    stats: {
+      votes: 'votes',
+      options: 'options'
+    },
+    code: 'Code:',
+    actions: {
+      view: 'View',
+      edit: 'Edit',
+      delete: 'Delete'
+    },
+    errors: {
+      loadFailed: 'Error loading polls.',
+      deleteFailed: 'Error deleting poll.',
+      deleteConfirm: 'Are you sure you want to delete this poll?'
     }
   }
 };
