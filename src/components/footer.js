@@ -18,7 +18,7 @@ export function renderFooter(container) {
         <div class="row align-items-center gy-2">
           <div class="col-md-4 text-center text-md-start">
             <a href="${brandHref}" class="d-inline-flex align-items-center justify-content-center justify-content-md-start text-decoration-none">
-              <img src="/src/assets/images/logo/logo.svg" alt="Votamin" height="24" class="vm-brand-logo">
+              <img src="/images/logo/logo.svg" alt="Votamin" height="24" class="vm-brand-logo">
             </a>
           </div>
           <div class="col-md-4 text-center">

@@ -89,7 +89,7 @@ function renderPublicPollMarkup(poll) {
       <div style="width:100%; max-width:520px; padding:1rem;">
         <div class="vm-card p-4 p-md-5">
           <div class="text-center mb-4">
-            <img src="/src/assets/images/logo/logo.svg" alt="Votamin" class="vm-public-brand-logo" />
+            <img src="/images/logo/logo.svg" alt="Votamin" class="vm-public-brand-logo" />
             <h4 class="vm-public-poll-title fw-bold" id="public-poll-title">${escapeHtml(poll.title)}</h4>
             ${description ? `<p class="text-muted small" id="public-poll-desc">${escapeHtml(description)}</p>` : ''}
           </div>
@@ -110,7 +110,7 @@ function renderPublicPollMarkup(poll) {
         <p class="text-center mt-3 small text-muted">
           ${escapeHtml(t('poweredBy'))}
           <a href="${poweredByHref}" class="fw-semibold d-inline-flex align-items-center vm-powered-by-link" aria-label="Votamin">
-            <img src="/src/assets/images/logo/logo.svg" alt="Votamin" class="vm-powered-by-logo" />
+            <img src="/images/logo/logo.svg" alt="Votamin" class="vm-powered-by-logo" />
           </a>
         </p>
       </div>

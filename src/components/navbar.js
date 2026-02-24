@@ -12,8 +12,8 @@ let activeProfileUpdatedHandler = null;
 function getCurrentLanguageFlag() {
   const currentLang = i18n.getCurrentLang();
   const flagSrc = currentLang === 'bg' 
-    ? '/src/assets/images/flags/bg.svg' 
-    : '/src/assets/images/flags/gb.svg';
+    ? '/images/flags/bg.svg' 
+    : '/images/flags/gb.svg';
   return `<img src="${flagSrc}" alt="${currentLang}" width="20" height="15" style="border-radius: 2px;">`;
 }
 
@@ -44,7 +44,7 @@ export function renderNavbar(container) {
         <!-- Brand -->
         <div class="d-flex align-items-center gap-3">
           <a class="navbar-brand d-flex align-items-center" href="${brandHref}">
-            <img src="/src/assets/images/logo/logo.svg" alt="Votamin" height="36" class="vm-brand-logo">
+            <img src="/images/logo/logo.svg" alt="Votamin" height="36" class="vm-brand-logo">
           </a>
           ${loggedIn ? `
             <span class="vm-navbar-user-name d-none d-md-inline" id="navbar-user-name">${displayName}</span>
@@ -94,13 +94,13 @@ export function renderNavbar(container) {
               <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="langDropdown">
                 <li>
                   <a class="dropdown-item d-flex align-items-center gap-2" href="#" data-lang="en">
-                    <img src="/src/assets/images/flags/gb.svg" alt="English" width="20" height="15" style="border-radius: 2px;">
+                    <img src="/images/flags/gb.svg" alt="English" width="20" height="15" style="border-radius: 2px;">
                     <span>English</span>
                   </a>
                 </li>
                 <li>
                   <a class="dropdown-item d-flex align-items-center gap-2" href="#" data-lang="bg">
-                    <img src="/src/assets/images/flags/bg.svg" alt="Български" width="20" height="15" style="border-radius: 2px;">
+                    <img src="/images/flags/bg.svg" alt="Български" width="20" height="15" style="border-radius: 2px;">
                     <span>Български</span>
                   </a>
                 </li>
@@ -200,8 +200,8 @@ export function renderNavbar(container) {
       const flagSpan = container.querySelector('#currentLangFlag');
       if (flagSpan) {
         const flagSrc = lang === 'bg' 
-          ? '/src/assets/images/flags/bg.svg' 
-          : '/src/assets/images/flags/gb.svg';
+          ? '/images/flags/bg.svg' 
+          : '/images/flags/gb.svg';
         flagSpan.innerHTML = `<img src="${flagSrc}" alt="${lang}" width="20" height="15" style="border-radius: 2px;">`;
       }
     });
