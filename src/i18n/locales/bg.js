@@ -84,8 +84,8 @@ export default {
       columns: {
         title: 'Заглавие',
         type: 'Тип',
-        responses: 'Отговори',
-        deadline: 'Краен срок',
+        responses: 'Участници',
+        deadline: 'Модификация',
         status: 'Статус',
         myResponse: 'Мой отговор',
         actions: 'Действия',
@@ -165,7 +165,8 @@ export default {
     confirmDelete: 'Сигурен ли си, че искаш да изтриеш тази анкета?',
     shareError: 'Неуспешно генериране на линк за споделяне.',
     error: 'Грешка при зареждане на анкетите',
-    noDeadline: '—'
+    noDeadline: '—',
+    noModifiedDate: '—'
   },
   home: {
     hero: {

@@ -84,8 +84,8 @@ export default {
       columns: {
         title: 'Title',
         type: 'Type',
-        responses: 'Responses',
-        deadline: 'Deadline',
+        responses: 'Participants',
+        deadline: 'Modified Date',
         status: 'Status',
         myResponse: 'My Response',
         actions: 'Actions',
@@ -165,7 +165,8 @@ export default {
     confirmDelete: 'Are you sure you want to delete this poll?',
     shareError: 'Failed to generate share link.',
     error: 'Error loading polls',
-    noDeadline: '—'
+    noDeadline: '—',
+    noModifiedDate: '—'
   },
   home: {
     hero: {

@@ -10,9 +10,9 @@ function statusBadge(status) {
   return `<span class="vm-status-badge vm-status-badge--${status}">${label}</span>`;
 }
 
-function deadlineText(endsAt) {
-  if (!endsAt) return i18n.t('dashboard.noDeadline');
-  return formatDate(endsAt);
+function modifiedText(updatedAt) {
+  if (!updatedAt) return i18n.t('dashboard.noModifiedDate');
+  return formatDate(updatedAt);
 }
 
 function renderTable(polls) {
@@ -34,7 +34,7 @@ function renderTable(polls) {
           <tr>
             <td><a href="/polls/${p.id}" class="fw-semibold">${p.title}</a></td>
             <td>${p.owner_name}</td>
-            <td>${deadlineText(p.ends_at)}</td>
+            <td>${modifiedText(p.updated_at)}</td>
             <td>${statusBadge(p.status)}</td>
             <td>
               <a href="/polls/${p.id}" class="btn btn-sm btn-votamin-outline">${i18n.t('dashboard.actions.view')}</a>
@@ -54,7 +54,7 @@ function renderCards(polls) {
         <div class="vm-dash-card-meta">
           <span>${i18n.t('dashboard.table.columns.owner')}: ${p.owner_name}</span>
           ${statusBadge(p.status)}
-          ${p.ends_at ? `<span>${deadlineText(p.ends_at)}</span>` : ''}
+          <span>${modifiedText(p.updated_at)}</span>
         </div>
         <div class="vm-dash-card-actions">
           <a href="/polls/${p.id}" class="btn btn-sm btn-votamin-outline">${i18n.t('dashboard.actions.view')}</a>

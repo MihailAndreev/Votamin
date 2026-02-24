@@ -28,9 +28,9 @@ function kindBadge(kind) {
   return `<span class="vm-kind-badge">${label}</span>`;
 }
 
-function deadlineText(endsAt) {
-  if (!endsAt) return i18n.t('dashboard.noDeadline');
-  return formatDate(endsAt);
+function modifiedText(updatedAt) {
+  if (!updatedAt) return i18n.t('dashboard.noModifiedDate');
+  return formatDate(updatedAt);
 }
 
 function renderTable(polls) {
@@ -55,7 +55,7 @@ function renderTable(polls) {
             <td><a href="/polls/${p.id}" class="fw-semibold">${p.title}</a></td>
             <td>${kindBadge(p.kind)}</td>
             <td>${p.response_count}</td>
-            <td>${deadlineText(p.ends_at)}</td>
+            <td>${modifiedText(p.updated_at)}</td>
             <td>${statusBadge(p.status)}</td>
             <td>${p.my_response
               ? `<span class="text-success fw-semibold">${i18n.t('dashboard.myResponse.yes')}</span>`
@@ -89,7 +89,7 @@ function renderCards(polls) {
           ${kindBadge(p.kind)}
           ${statusBadge(p.status)}
           <span>${p.response_count} ${i18n.t('dashboard.table.columns.responses').toLowerCase()}</span>
-          ${p.ends_at ? `<span>${deadlineText(p.ends_at)}</span>` : ''}
+          <span>${modifiedText(p.updated_at)}</span>
         </div>
         <div class="vm-dash-card-actions">
           <a href="/polls/${p.id}" class="btn btn-sm btn-votamin-outline">${i18n.t('dashboard.actions.view')}</a>
