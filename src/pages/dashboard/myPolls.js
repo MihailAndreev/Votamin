@@ -6,6 +6,7 @@ import { i18n } from '../../i18n/index.js';
 import { showToast } from '@utils/toast.js';
 import { formatDate } from '@utils/helpers.js';
 import { deletePollById } from '@utils/pollsData.js';
+import { showConfirmModal } from '@components/confirmModal.js';
 
 function statusBadge(status) {
   const label = i18n.t(`dashboard.status.${status}`) || status;
@@ -146,12 +147,13 @@ export default async function render(container) {
   });
 
   /* Delete handler */
-  container.addEventListener('click', (e) => {
+  container.addEventListener('click', async (e) => {
     const deleteBtn = e.target.closest('[data-action="delete"]');
     if (!deleteBtn) return;
     e.preventDefault();
     const pollId = deleteBtn.dataset.pollId;
-    if (!confirm(i18n.t('dashboard.confirmDelete') || 'Are you sure you want to delete this poll?')) return;
+    const confirmed = await showConfirmModal(i18n.t('dashboard.confirmDelete') || 'Are you sure you want to delete this poll?');
+    if (!confirmed) return;
 
     deletePollById(pollId)
       .then(() => {

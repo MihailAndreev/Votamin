@@ -3,7 +3,10 @@ export default {
     appName: 'Votamin',
     login: 'Вход',
     register: 'Регистрация',
-    logout: 'Изход'
+    logout: 'Изход',
+    confirm: 'Потвърди',
+    cancel: 'Отказ',
+    confirmAction: 'Потвърждение'
   },
   navbar: {
     home: 'Начало',

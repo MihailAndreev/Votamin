@@ -8,6 +8,7 @@ import { i18n } from '../../../i18n/index.js';
 import { navigateTo } from '../../../router.js';
 import { closePollById, deletePollById, fetchPollById, updatePollById } from '@utils/pollsData.js';
 import { getLoaderMarkup } from '@components/loader.js';
+import { showConfirmModal } from '@components/confirmModal.js';
 
 let removeLanguageChangedListener = null;
 
@@ -222,7 +223,8 @@ export default async function render(container, params) {
     });
 
     container.querySelector('#btn-delete-poll')?.addEventListener('click', async () => {
-      if (!confirm(i18n.t('pollDetail.deleteConfirm'))) {
+      const confirmed = await showConfirmModal(i18n.t('pollDetail.deleteConfirm'));
+      if (!confirmed) {
         return;
       }
 

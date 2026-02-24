@@ -9,6 +9,7 @@ import { deletePollById, fetchMyPollsList } from '@utils/pollsData.js';
 import { showToast } from '@utils/toast.js';
 import { getLoaderMarkup } from '@components/loader.js';
 import { i18n } from '../../i18n/index.js';
+import { showConfirmModal } from '@components/confirmModal.js';
 
 function statusBadge(status) {
   if (status === 'open') return `<span class="vm-badge ms-2">${i18n.t('pollsList.status.open')}</span>`;
@@ -91,14 +92,15 @@ export default function render(container) {
     loadPolls();
   });
 
-  gridEl?.addEventListener('click', (event) => {
+  gridEl?.addEventListener('click', async (event) => {
     const deleteTrigger = event.target.closest('[data-action="delete"]');
     if (!deleteTrigger) return;
     event.preventDefault();
 
     const pollId = deleteTrigger.dataset.pollId;
     if (!pollId) return;
-    if (!confirm(i18n.t('pollsList.errors.deleteConfirm'))) return;
+    const confirmed = await showConfirmModal(i18n.t('pollsList.errors.deleteConfirm'));
+    if (!confirmed) return;
 
     deletePollById(pollId)
       .then(() => {
