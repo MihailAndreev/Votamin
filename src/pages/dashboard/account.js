@@ -6,7 +6,7 @@ import { supabaseClient } from '@utils/supabase.js';
 import { i18n } from '../../i18n/index.js';
 import { showToast } from '@utils/toast.js';
 import { navigateTo } from '../../router.js';
-import { emitProfileUpdated, fetchProfile, getAvatarInitials, resolveDisplayName, updateProfile, uploadAvatar } from '@utils/profile.js';
+import { emitProfileUpdated, fetchProfile, getAvatarInitials, removeAvatar, resolveDisplayName, resolveEditableFullName, updateProfile, uploadAvatar } from '@utils/profile.js';
 import { showAvatarCropModal } from '@components/avatarCropModal.js';
 
 export default async function render(container) {
@@ -19,7 +19,7 @@ export default async function render(container) {
     : { data: { full_name: '', avatar_url: null } };
 
   const profileState = {
-    fullName: profileData?.full_name || '',
+    fullName: resolveEditableFullName(profileData?.full_name, email),
     avatarUrl: profileData?.avatar_url || null
   };
 
@@ -42,8 +42,9 @@ export default async function render(container) {
         <label>${i18n.t('dashboard.account.photoLabel')}</label>
         <div class="vm-account-avatar-row">
           <div id="account-avatar-preview" class="vm-account-avatar-preview">${renderAvatar()}</div>
-          <div>
+          <div class="vm-account-avatar-actions">
             <button type="button" class="btn btn-votamin-outline btn-sm" id="account-upload-avatar-btn">${i18n.t('dashboard.account.uploadPhoto')}</button>
+            <button type="button" class="btn btn-votamin-outline btn-sm${profileState.avatarUrl ? '' : ' d-none'}" id="account-remove-avatar-btn">${i18n.t('dashboard.account.removePhoto')}</button>
             <input id="account-avatar-input" type="file" accept="image/*" class="d-none" />
           </div>
         </div>
@@ -103,9 +104,13 @@ export default async function render(container) {
 
   function refreshAvatarPreview() {
     const avatarPreview = container.querySelector('#account-avatar-preview');
+    const removeAvatarBtn = container.querySelector('#account-remove-avatar-btn');
     if (avatarPreview) {
       avatarPreview.innerHTML = renderAvatar();
       avatarPreview.title = getDisplayName();
+    }
+    if (removeAvatarBtn) {
+      removeAvatarBtn.classList.toggle('d-none', !profileState.avatarUrl);
     }
   }
 
@@ -128,7 +133,7 @@ export default async function render(container) {
         return;
       }
 
-      profileState.fullName = data?.full_name || nextName;
+      profileState.fullName = resolveEditableFullName(data?.full_name || nextName, email);
       profileState.avatarUrl = data?.avatar_url || null;
       syncFullNameInputValue();
       refreshAvatarPreview();
@@ -159,6 +164,7 @@ export default async function render(container) {
         }
 
         profileState.fullName = data?.full_name || profileState.fullName;
+        profileState.fullName = resolveEditableFullName(profileState.fullName, email);
         profileState.avatarUrl = data?.avatar_url || avatarUrl;
         refreshAvatarPreview();
         emitProfileUpdated({ full_name: profileState.fullName, avatar_url: profileState.avatarUrl });
@@ -178,6 +184,30 @@ export default async function render(container) {
         }
       } finally {
         avatarInput.value = '';
+      }
+    });
+
+    container.querySelector('#account-remove-avatar-btn')?.addEventListener('click', async () => {
+      if (!userId || !profileState.avatarUrl) return;
+
+      try {
+        const { data, error } = await removeAvatar(userId, profileState.avatarUrl);
+        if (error) {
+          showToast(i18n.t('dashboard.account.avatarRemoveError'), 'error');
+          return;
+        }
+
+        profileState.fullName = resolveEditableFullName(data?.full_name || profileState.fullName, email);
+        profileState.avatarUrl = null;
+        refreshAvatarPreview();
+        emitProfileUpdated({ full_name: profileState.fullName, avatar_url: null });
+        showToast(i18n.t('dashboard.account.avatarRemoved'), 'success');
+      } catch (error) {
+        if (error?.message === 'avatar_delete_forbidden') {
+          showToast(i18n.t('notifications.avatarDeleteForbidden'), 'error');
+        } else {
+          showToast(i18n.t('dashboard.account.avatarRemoveError'), 'error');
+        }
       }
     });
 

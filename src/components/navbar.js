@@ -5,8 +5,7 @@ import { getCurrentUser, isAdmin, isLoggedIn, logout } from '@utils/auth.js';
 import { showToast } from '@utils/toast.js';
 import { navigateTo } from '../router.js';
 import { i18n } from '../i18n/index.js';
-import { emitProfileUpdated, fetchProfile, getAvatarInitials, resolveDisplayName, updateProfile, uploadAvatar } from '@utils/profile.js';
-import { showAvatarCropModal } from './avatarCropModal.js';
+import { fetchProfile, getAvatarInitials, resolveDisplayName } from '@utils/profile.js';
 
 let activeProfileUpdatedHandler = null;
 
@@ -122,14 +121,7 @@ export function renderNavbar(container) {
                   <li>
                     <a class="dropdown-item" href="/dashboard/account" data-i18n="navbar.account">${i18n.t('navbar.account')}</a>
                   </li>
-                  <li>
-                    <button type="button" class="dropdown-item" id="navbar-edit-name-action" data-i18n="navbar.editFullName">${i18n.t('navbar.editFullName')}</button>
-                  </li>
-                  <li>
-                    <button type="button" class="dropdown-item" id="navbar-upload-avatar-action" data-i18n="navbar.uploadAvatar">${i18n.t('navbar.uploadAvatar')}</button>
-                  </li>
                 </ul>
-                <input id="navbar-avatar-file-input" type="file" accept="image/*" class="d-none" />
               </li>
             ` : ''}
           </ul>
@@ -154,20 +146,10 @@ export function renderNavbar(container) {
   if (loggedIn) {
     const userNameEl = container.querySelector('#navbar-user-name');
     const avatarBtnEl = container.querySelector('#navbar-avatar-btn');
-    const editNameBtn = container.querySelector('#navbar-edit-name-action');
-    const uploadAvatarBtn = container.querySelector('#navbar-upload-avatar-action');
-    const avatarFileInput = container.querySelector('#navbar-avatar-file-input');
-
-    const profileState = {
-      fullName: displayName,
-      avatarUrl: null
-    };
 
     const applyIdentity = (name, avatarUrl = null) => {
       const resolvedName = resolveDisplayName(name, currentUser?.email || '');
       const resolvedAvatar = avatarUrl || null;
-      profileState.fullName = resolvedName;
-      profileState.avatarUrl = resolvedAvatar;
 
       if (userNameEl) {
         userNameEl.textContent = resolvedName;
@@ -187,73 +169,6 @@ export function renderNavbar(container) {
             applyIdentity(data?.full_name, data?.avatar_url);
           }
         });
-    }
-
-    if (currentUser?.id && editNameBtn) {
-      editNameBtn.addEventListener('click', async () => {
-        const nextName = window.prompt(i18n.t('dashboard.account.fullNamePrompt'), profileState.fullName || '');
-        if (nextName === null) return;
-
-        const trimmedName = nextName.trim();
-        if (!trimmedName) {
-          showToast(i18n.t('notifications.fullNameRequired'), 'error');
-          return;
-        }
-
-        const { data, error } = await updateProfile(currentUser.id, { full_name: trimmedName });
-        if (error) {
-          showToast(i18n.t('dashboard.account.nameUpdateError'), 'error');
-          return;
-        }
-
-        applyIdentity(data?.full_name, data?.avatar_url);
-        emitProfileUpdated({ full_name: data?.full_name, avatar_url: data?.avatar_url });
-        showToast(i18n.t('dashboard.account.nameUpdated'), 'success');
-      });
-    }
-
-    uploadAvatarBtn?.addEventListener('click', () => {
-      avatarFileInput?.click();
-    });
-
-    if (currentUser?.id && avatarFileInput) {
-      avatarFileInput.addEventListener('change', async (event) => {
-        const selectedFile = event.target.files?.[0];
-        if (!selectedFile) return;
-
-        try {
-          const croppedBlob = await showAvatarCropModal(selectedFile);
-          if (!croppedBlob) return;
-
-          const croppedFile = new File([croppedBlob], 'avatar.jpg', { type: 'image/jpeg' });
-          const avatarUrl = await uploadAvatar(currentUser.id, croppedFile);
-          const { data, error } = await updateProfile(currentUser.id, { avatar_url: avatarUrl });
-
-          if (error) {
-            showToast(i18n.t('dashboard.account.avatarUpdateError'), 'error');
-            return;
-          }
-
-          applyIdentity(data?.full_name, data?.avatar_url);
-          emitProfileUpdated({ full_name: data?.full_name, avatar_url: data?.avatar_url });
-          showToast(i18n.t('dashboard.account.avatarUpdated'), 'success');
-        } catch (error) {
-          const message = error?.message;
-          if (message === 'invalid_file_type') {
-            showToast(i18n.t('notifications.avatarInvalidType'), 'error');
-          } else if (message === 'file_too_large') {
-            showToast(i18n.t('notifications.avatarFileTooLarge'), 'error');
-          } else if (message === 'avatar_bucket_not_configured') {
-            showToast(i18n.t('notifications.avatarStorageNotConfigured'), 'error');
-          } else if (message === 'avatar_upload_forbidden') {
-            showToast(i18n.t('notifications.avatarUploadForbidden'), 'error');
-          } else {
-            showToast(i18n.t('dashboard.account.avatarUpdateError'), 'error');
-          }
-        } finally {
-          avatarFileInput.value = '';
-        }
-      });
     }
 
     if (activeProfileUpdatedHandler) {

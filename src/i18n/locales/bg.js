@@ -17,9 +17,7 @@ export default {
     register: 'Регистрация',
     logout: 'Изход',
     account: 'Акаунт',
-    accountMenu: 'Акаунт меню',
-    editFullName: 'Редакция на име',
-    uploadAvatar: 'Качи снимка'
+    accountMenu: 'Акаунт меню'
   },
   footer: {
     home: 'Начало',
@@ -46,7 +44,8 @@ export default {
     avatarInvalidType: 'Моля, избери изображение.',
     avatarFileTooLarge: 'Снимката трябва да е до 2MB.',
     avatarStorageNotConfigured: 'Качването на снимка не е конфигурирано (липсва bucket avatars).',
-    avatarUploadForbidden: 'Нямаш права за качване на снимка в аватара.'
+    avatarUploadForbidden: 'Нямаш права за качване на снимка в аватара.',
+    avatarDeleteForbidden: 'Нямаш права за изтриване на снимката.'
   },
   auth: {
     fields: {
@@ -165,6 +164,7 @@ export default {
       emailLabel: 'Имейл',
       photoLabel: 'Снимка',
       uploadPhoto: 'Качи снимка',
+      removePhoto: 'Премахни снимка',
       cropTitle: 'Позиционирай снимката',
       cropSubtitle: 'Премести снимката и избери подходящ кадър за аватар.',
       cropZoom: 'Мащаб',
@@ -176,6 +176,8 @@ export default {
       nameUpdateError: 'Неуспешно обновяване на името.',
       avatarUpdated: 'Снимката е обновена успешно.',
       avatarUpdateError: 'Неуспешно качване на снимка.',
+      avatarRemoved: 'Снимката е премахната успешно.',
+      avatarRemoveError: 'Неуспешно премахване на снимката.',
       changePassword: 'Смяна на парола',
       currentPassword: 'Текуща парола',
       newPassword: 'Нова парола',

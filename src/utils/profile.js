@@ -25,6 +25,14 @@ export function resolveDisplayName(fullName, fallbackEmail = '') {
   return trimmed || fallbackEmail || '';
 }
 
+export function resolveEditableFullName(fullName, fallbackEmail = '') {
+  const trimmed = fullName?.trim() || '';
+  const email = fallbackEmail?.trim() || '';
+  if (!trimmed) return '';
+  if (email && trimmed.toLowerCase() === email.toLowerCase()) return '';
+  return trimmed;
+}
+
 export async function fetchProfile(userId) {
   return supabaseClient
     .from('profiles')
@@ -76,6 +84,48 @@ export async function uploadAvatar(userId, file) {
     .getPublicUrl(filePath);
 
   return publicData?.publicUrl || null;
+}
+
+function extractAvatarPathFromUrl(avatarUrl) {
+  if (!avatarUrl) return null;
+  const marker = `/storage/v1/object/public/${AVATAR_BUCKET}/`;
+  const markerIndex = avatarUrl.indexOf(marker);
+  if (markerIndex === -1) return null;
+
+  const rawPath = avatarUrl
+    .slice(markerIndex + marker.length)
+    .split('?')[0]
+    .split('#')[0];
+
+  if (!rawPath) return null;
+  try {
+    return decodeURIComponent(rawPath);
+  } catch {
+    return rawPath;
+  }
+}
+
+export async function removeAvatar(userId, avatarUrl) {
+  const avatarPath = extractAvatarPathFromUrl(avatarUrl);
+
+  if (avatarPath) {
+    const { error: removeError } = await supabaseClient.storage
+      .from(AVATAR_BUCKET)
+      .remove([avatarPath]);
+
+    if (removeError) {
+      const msg = String(removeError?.message || '').toLowerCase();
+      const isNotFound = msg.includes('not found') || msg.includes('no such');
+      if (!isNotFound) {
+        if (msg.includes('row-level security') || msg.includes('policy')) {
+          throw new Error('avatar_delete_forbidden');
+        }
+        throw removeError;
+      }
+    }
+  }
+
+  return updateProfile(userId, { avatar_url: null });
 }
 
 export function emitProfileUpdated(profile) {

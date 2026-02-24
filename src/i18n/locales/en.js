@@ -17,9 +17,7 @@ export default {
     register: 'Sign Up',
     logout: 'Logout',
     account: 'Account',
-    accountMenu: 'Account menu',
-    editFullName: 'Edit name',
-    uploadAvatar: 'Upload photo'
+    accountMenu: 'Account menu'
   },
   footer: {
     home: 'Home',
@@ -46,7 +44,8 @@ export default {
     avatarInvalidType: 'Please choose an image file.',
     avatarFileTooLarge: 'Image must be up to 2MB.',
     avatarStorageNotConfigured: 'Avatar upload is not configured (avatars bucket is missing).',
-    avatarUploadForbidden: 'You are not allowed to upload avatar images.'
+    avatarUploadForbidden: 'You are not allowed to upload avatar images.',
+    avatarDeleteForbidden: 'You are not allowed to delete this avatar image.'
   },
   auth: {
     fields: {
@@ -165,6 +164,7 @@ export default {
       emailLabel: 'Email',
       photoLabel: 'Photo',
       uploadPhoto: 'Upload photo',
+      removePhoto: 'Remove photo',
       cropTitle: 'Position your photo',
       cropSubtitle: 'Drag and zoom to choose the best avatar frame.',
       cropZoom: 'Zoom',
@@ -176,6 +176,8 @@ export default {
       nameUpdateError: 'Failed to update name.',
       avatarUpdated: 'Photo updated successfully.',
       avatarUpdateError: 'Failed to upload photo.',
+      avatarRemoved: 'Photo removed successfully.',
+      avatarRemoveError: 'Failed to remove photo.',
       changePassword: 'Change Password',
       currentPassword: 'Current password',
       newPassword: 'New password',

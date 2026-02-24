@@ -700,6 +700,12 @@
   gap: 0.9rem;
 }
 
+.vm-account-avatar-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
 .vm-account-avatar-preview {
   width: 56px;
   height: 56px;
