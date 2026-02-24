@@ -59,8 +59,17 @@ img {
   flex-direction: column;
 }
 
+#main-header {
+  position: sticky;
+  top: 0;
+  z-index: 1100;
+}
+
 /* ── Navbar ───────────────────────────────────────── */
 .vm-navbar {
+  position: sticky;
+  top: 0;
+  z-index: 1100;
   background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(10px);
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
