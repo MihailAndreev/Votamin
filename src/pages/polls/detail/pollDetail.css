@@ -75,6 +75,68 @@
 	border-bottom: 2px solid var(--vm-teal-light, #ccfbf1);
 }
 
+.vm-sidebar-head {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 0.5rem;
+	margin-bottom: 0.75rem;
+}
+
+.vm-sidebar-head .vm-sidebar-title {
+	margin-bottom: 0;
+	padding-bottom: 0;
+	border-bottom: 0;
+}
+
+.vm-export-menu {
+	position: relative;
+}
+
+.vm-export-trigger {
+	list-style: none;
+	cursor: pointer;
+	font-size: 0.75rem;
+	font-weight: 700;
+	padding: 0.24rem 0.55rem;
+	border-radius: var(--vm-radius-full);
+	color: var(--vm-teal);
+	border: 1px solid var(--vm-teal-light, #ccfbf1);
+	background: var(--vm-teal-light, #f0fdfa);
+}
+
+.vm-export-trigger::-webkit-details-marker {
+	display: none;
+}
+
+.vm-export-list {
+	position: absolute;
+	right: 0;
+	top: calc(100% + 0.35rem);
+	display: flex;
+	flex-direction: column;
+	min-width: 120px;
+	background: #fff;
+	border: 1px solid var(--vm-border, #e5e7eb);
+	border-radius: var(--vm-radius, 0.5rem);
+	box-shadow: var(--vm-shadow, 0 10px 25px rgba(2, 6, 23, 0.12));
+	z-index: 4;
+}
+
+.vm-export-item {
+	text-align: left;
+	border: 0;
+	background: transparent;
+	padding: 0.45rem 0.65rem;
+	font-size: 0.8rem;
+	color: var(--vm-text, #1f2937);
+	cursor: pointer;
+}
+
+.vm-export-item:hover {
+	background: var(--vm-teal-light, #f0fdfa);
+}
+
 /* ── KPI list (left sidebar) ── */
 .vm-sidebar-kpi {
 	list-style: none;

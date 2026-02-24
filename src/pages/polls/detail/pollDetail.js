@@ -11,6 +11,7 @@ import { getLoaderMarkup } from '@components/loader.js';
 import { showConfirmModal } from '@components/confirmModal.js';
 
 let removeLanguageChangedListener = null;
+let removeExportOutsideClickListener = null;
 
 function escapeHtml(value) {
   if (value === null || value === undefined) return '';
@@ -79,6 +80,104 @@ function formatDateTime(dateStr) {
     hour: '2-digit',
     minute: '2-digit',
   });
+}
+
+function slugifyFileName(value) {
+  return String(value || 'poll')
+    .toLowerCase()
+    .replace(/[^a-z0-9а-я]+/gi, '-')
+    .replace(/^-+|-+$/g, '')
+    .slice(0, 60) || 'poll';
+}
+
+function buildExcelSheetName(value) {
+  const raw = String(value || 'voters')
+    .replace(/[\\/*?:\[\]]/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+
+  if (!raw) return 'voters';
+  return raw.slice(0, 31);
+}
+
+function getExportRows(poll) {
+  const voters = Array.isArray(poll?._voters) ? poll._voters : [];
+  return voters.map((voter, index) => ({
+    '#': index + 1,
+    voter: voter.voter_name || 'Анонимен',
+    selections: Array.isArray(voter.selections) ? voter.selections.join(', ') : '',
+    voted_at: formatDateTime(voter.voted_at),
+  }));
+}
+
+function downloadTextFile(fileName, content, mimeType) {
+  const blob = new Blob([content], { type: mimeType });
+  const url = URL.createObjectURL(blob);
+  const anchor = document.createElement('a');
+  anchor.href = url;
+  anchor.download = fileName;
+  document.body.appendChild(anchor);
+  anchor.click();
+  anchor.remove();
+  URL.revokeObjectURL(url);
+}
+
+function toCsv(rows) {
+  if (!rows.length) return '';
+  const headers = Object.keys(rows[0]);
+  const escapeCell = (value) => {
+    const text = String(value ?? '');
+    if (text.includes('"') || text.includes(',') || text.includes('\n')) {
+      return `"${text.replace(/"/g, '""')}"`;
+    }
+    return text;
+  };
+
+  const lines = [
+    headers.join(','),
+    ...rows.map((row) => headers.map((header) => escapeCell(row[header])).join(',')),
+  ];
+
+  return lines.join('\n');
+}
+
+async function exportVotersList(poll, format) {
+  const rows = getExportRows(poll);
+  if (!rows.length) {
+    showToast(i18n.t('pollDetail.voters.exportNoData'), 'info');
+    return;
+  }
+
+  const dateStamp = new Date().toISOString().slice(0, 10);
+  const baseFileName = `voters-${slugifyFileName(poll?.title)}-${dateStamp}`;
+
+  try {
+    if (format === 'csv') {
+      const csv = toCsv(rows);
+      downloadTextFile(`${baseFileName}.csv`, `\uFEFF${csv}`, 'text/csv;charset=utf-8;');
+      showToast(i18n.t('pollDetail.voters.exportSuccess'), 'success');
+      return;
+    }
+
+    if (format === 'json') {
+      const json = JSON.stringify(rows, null, 2);
+      downloadTextFile(`${baseFileName}.json`, json, 'application/json;charset=utf-8;');
+      showToast(i18n.t('pollDetail.voters.exportSuccess'), 'success');
+      return;
+    }
+
+    if (format === 'xlsx') {
+      const XLSX = await import('xlsx/xlsx.mjs');
+      const worksheet = XLSX.utils.json_to_sheet(rows);
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, buildExcelSheetName(baseFileName));
+      XLSX.writeFile(workbook, `${baseFileName}.xlsx`);
+      showToast(i18n.t('pollDetail.voters.exportSuccess'), 'success');
+    }
+  } catch (error) {
+    console.error('Failed to export voters:', error);
+    showToast(i18n.t('pollDetail.voters.exportFailed') || 'Export failed', 'error');
+  }
 }
 
 function renderLeftSidebar(poll) {
@@ -171,7 +270,17 @@ function renderRightSidebar(poll) {
   return `
     <aside class="vm-poll-sidebar vm-poll-sidebar--right">
       <div class="vm-sidebar-section">
-        <h6 class="vm-sidebar-title">${t('title')} (${voters.length})</h6>
+        <div class="vm-sidebar-head">
+          <h6 class="vm-sidebar-title mb-0">${t('title')} (${voters.length})</h6>
+          <details class="vm-export-menu">
+            <summary class="vm-export-trigger">${t('export')}</summary>
+            <div class="vm-export-list">
+              <button type="button" class="vm-export-item" data-export-format="csv">${t('csv')}</button>
+              <button type="button" class="vm-export-item" data-export-format="json">${t('json')}</button>
+              <button type="button" class="vm-export-item" data-export-format="xlsx">${t('excel')}</button>
+            </div>
+          </details>
+        </div>
         <ul class="vm-voters-list">
           ${voterItems}
         </ul>
@@ -262,6 +371,11 @@ export default async function render(container, params) {
     removeLanguageChangedListener = null;
   }
 
+  if (removeExportOutsideClickListener) {
+    removeExportOutsideClickListener();
+    removeExportOutsideClickListener = null;
+  }
+
   if (!getCurrentUser()) {
     navigateTo('/login');
     return;
@@ -304,6 +418,27 @@ export default async function render(container, params) {
 
   const renderView = () => {
     container.innerHTML = renderPollDetailMarkup(poll, { isEditMode });
+
+    if (removeExportOutsideClickListener) {
+      removeExportOutsideClickListener();
+      removeExportOutsideClickListener = null;
+    }
+
+    const handleOutsideExportClick = (event) => {
+      const openMenus = container.querySelectorAll('.vm-export-menu[open]');
+      if (!openMenus.length) return;
+
+      openMenus.forEach((menu) => {
+        if (!menu.contains(event.target)) {
+          menu.removeAttribute('open');
+        }
+      });
+    };
+
+    document.addEventListener('click', handleOutsideExportClick);
+    removeExportOutsideClickListener = () => {
+      document.removeEventListener('click', handleOutsideExportClick);
+    };
 
     const copyLink = container.querySelector('#copy-link');
     copyLink?.addEventListener('click', (e) => {
@@ -398,6 +533,18 @@ export default async function render(container, params) {
       container.querySelectorAll('.vm-voter-hidden').forEach((el) => el.classList.remove('vm-voter-hidden'));
       e.target.remove();
     });
+
+    container.querySelectorAll('[data-export-format]').forEach((button) => {
+      button.addEventListener('click', async (event) => {
+        const format = event.currentTarget.getAttribute('data-export-format');
+        await exportVotersList(poll, format);
+
+        const details = event.currentTarget.closest('.vm-export-menu');
+        if (details?.hasAttribute('open')) {
+          details.removeAttribute('open');
+        }
+      });
+    });
   };
 
   renderView();
@@ -405,6 +552,10 @@ export default async function render(container, params) {
   const handleLanguageChanged = () => {
     if (!document.body.contains(container)) {
       window.removeEventListener('votamin:language-changed', handleLanguageChanged);
+      if (removeExportOutsideClickListener) {
+        removeExportOutsideClickListener();
+        removeExportOutsideClickListener = null;
+      }
       removeLanguageChangedListener = null;
       return;
     }

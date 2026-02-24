@@ -471,7 +471,14 @@ export default {
     voters: {
       title: 'Voters',
       noVoters: 'No voters yet.',
-      showMore: 'Show more'
+      showMore: 'Show more',
+      export: 'Export',
+      csv: 'CSV',
+      json: 'JSON',
+      excel: 'Excel',
+      exportNoData: 'No data to export.',
+      exportSuccess: 'Export is ready.',
+      exportFailed: 'Export failed.'
     }
   },
   pollsList: {

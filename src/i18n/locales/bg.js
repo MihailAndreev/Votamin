@@ -471,7 +471,14 @@ export default {
     voters: {
       title: 'Гласували',
       noVoters: 'Все още няма гласували.',
-      showMore: 'Покажи още'
+      showMore: 'Покажи още',
+      export: 'Експорт',
+      csv: 'CSV',
+      json: 'JSON',
+      excel: 'Excel',
+      exportNoData: 'Няма данни за експорт.',
+      exportSuccess: 'Експортът е готов.',
+      exportFailed: 'Неуспешен експорт.'
     }
   },
   pollsList: {
