@@ -210,7 +210,7 @@ export default {
       users: 'Active users',
       polls: 'Polls created',
       votes: 'Votes cast',
-      uptime: 'Uptime'
+      openPolls: 'Active polls'
     },
     features: {
       title: 'Why',

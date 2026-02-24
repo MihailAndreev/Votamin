@@ -210,7 +210,7 @@ export default {
       users: 'Активни потребители',
       polls: 'Създадени анкети',
       votes: 'Отдадени гласове',
-      uptime: 'Uptime'
+      openPolls: 'Активни анкети'
     },
     features: {
       title: 'Защо',
