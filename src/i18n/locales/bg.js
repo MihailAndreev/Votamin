@@ -216,5 +216,116 @@ export default {
       viewPolls: 'Виж примерни анкети',
       notice: 'Безплатна регистрация • Без кредитна карта • Отмени по всяко време'
     }
+  },
+  createPoll: {
+    wizard: {
+      steps: {
+        create: 'Създаване',
+        preview: 'Преглед',
+        publish: 'Публикуване',
+        share: 'Споделяне'
+      },
+      stepDescription: {
+        create: 'Конфигурирай анкетата',
+        preview: 'Прегледай преди публикуване',
+        publish: 'Запази или публикувай анкетата',
+        share: 'Сподели с участниците'
+      }
+    },
+    fields: {
+      question: 'Въпрос',
+      description: 'Описание (по избор)',
+      pollType: 'Тип анкета',
+      options: 'Опции за отговор',
+      minValue: 'Минимална стойност',
+      maxValue: 'Максимална стойност',
+      visibility: 'Видимост',
+      resultsVisibility: 'Видимост на резултатите',
+      endDate: 'Краен срок (по избор)',
+      theme: 'Тема'
+    },
+    placeholders: {
+      question: 'Какво искаш да попиташ?',
+      description: 'Добави контекст или инструкции за анкетата...',
+      option: 'Опция {number}',
+      minValue: 'напр. 0',
+      maxValue: 'напр. 100'
+    },
+    pollTypes: {
+      single_choice: {
+        title: 'Единичен избор',
+        description: 'Участниците могат да изберат само една опция'
+      },
+      multiple_choice: {
+        title: 'Множествен избор',
+        description: 'Участниците могат да изберат няколко опции'
+      },
+      rating: {
+        title: 'Рейтинг',
+        description: 'Скала с 5 звезди'
+      },
+      numeric: {
+        title: 'Числов вход',
+        description: 'Участниците въвеждат число'
+      }
+    },
+    visibility: {
+      public: 'Публична',
+      private: 'Частна',
+      publicDesc: 'Всеки с линка може да достъпи',
+      privateDesc: 'Само споделени участници могат да достъпят'
+    },
+    resultsVisibility: {
+      after_vote: 'След гласуване',
+      after_close: 'След затваряне',
+      owner_only: 'Само автор',
+      after_voteDesc: 'Гласувалите виждат резултатите веднага',
+      after_closeDesc: 'Резултатите са видими след затваряне',
+      owner_onlyDesc: 'Само ти можеш да видиш резултатите'
+    },
+    themes: {
+      default: 'По подразбиране',
+      blue: 'Синя',
+      green: 'Зелена',
+      purple: 'Лилава',
+      orange: 'Оранжева'
+    },
+    actions: {
+      addOption: '+ Добави опция',
+      removeOption: 'Премахни',
+      next: 'Напред',
+      back: 'Назад',
+      saveAsDraft: 'Запази като чернова',
+      publish: 'Публикувай',
+      copyLink: 'Копирай линк',
+      viewPoll: 'Виж анкета',
+      createAnother: 'Създай друга анкета',
+      advancedSettings: 'Разширени настройки'
+    },
+    validation: {
+      questionRequired: 'Въпросът е задължителен',
+      minTwoOptions: 'Необходими са поне 2 опции',
+      optionEmpty: 'Опцията не може да е празна',
+      minLessThanMax: 'Минималната стойност трябва да е по-малка от максималната',
+      maxRequired: 'Максималната стойност се препоръчва за числови анкети'
+    },
+    preview: {
+      title: 'Преглед на анкетата',
+      subtitle: 'Така ще изглежда анкетата за участниците',
+      closesOn: 'Затваря на {date}',
+      noEndDate: 'Без краен срок'
+    },
+    publish: {
+      draftSaved: 'Анкетата е запазена като чернова',
+      published: 'Анкетата е публикувана успешно!',
+      error: 'Неуспешно запазване на анкета'
+    },
+    share: {
+      title: 'Сподели анкетата',
+      subtitle: 'Копирай линка по-долу и го сподели с участниците',
+      linkLabel: 'Линк към анкета',
+      copySuccess: 'Линкът е копиран!',
+      copyError: 'Неуспешно копиране на линк'
+    }
   }
 };

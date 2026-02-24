@@ -216,5 +216,116 @@ export default {
       viewPolls: 'View sample polls',
       notice: 'Free registration • No credit card • Cancel anytime'
     }
+  },
+  createPoll: {
+    wizard: {
+      steps: {
+        create: 'Create',
+        preview: 'Preview',
+        publish: 'Publish',
+        share: 'Share'
+      },
+      stepDescription: {
+        create: 'Configure your poll',
+        preview: 'Review before publishing',
+        publish: 'Save or publish your poll',
+        share: 'Share with participants'
+      }
+    },
+    fields: {
+      question: 'Question',
+      description: 'Description (optional)',
+      pollType: 'Poll Type',
+      options: 'Answer Options',
+      minValue: 'Minimum Value',
+      maxValue: 'Maximum Value',
+      visibility: 'Visibility',
+      resultsVisibility: 'Results Visibility',
+      endDate: 'End Date (optional)',
+      theme: 'Theme'
+    },
+    placeholders: {
+      question: 'What would you like to ask?',
+      description: 'Add context or instructions for your poll...',
+      option: 'Option {number}',
+      minValue: 'e.g., 0',
+      maxValue: 'e.g., 100'
+    },
+    pollTypes: {
+      single_choice: {
+        title: 'Single Choice',
+        description: 'Participants can select only one option'
+      },
+      multiple_choice: {
+        title: 'Multiple Choice',
+        description: 'Participants can select multiple options'
+      },
+      rating: {
+        title: 'Rating',
+        description: '5-star rating scale'
+      },
+      numeric: {
+        title: 'Numeric Input',
+        description: 'Participants enter a number'
+      }
+    },
+    visibility: {
+      public: 'Public',
+      private: 'Private',
+      publicDesc: 'Anyone with the link can access',
+      privateDesc: 'Only shared participants can access'
+    },
+    resultsVisibility: {
+      after_vote: 'After Vote',
+      after_close: 'After Close',
+      owner_only: 'Owner Only',
+      after_voteDesc: 'Voters see results immediately',
+      after_closeDesc: 'Results visible when poll closes',
+      owner_onlyDesc: 'Only you can see the results'
+    },
+    themes: {
+      default: 'Default',
+      blue: 'Blue',
+      green: 'Green',
+      purple: 'Purple',
+      orange: 'Orange'
+    },
+    actions: {
+      addOption: '+ Add Option',
+      removeOption: 'Remove',
+      next: 'Next',
+      back: 'Back',
+      saveAsDraft: 'Save as Draft',
+      publish: 'Publish',
+      copyLink: 'Copy Link',
+      viewPoll: 'View Poll',
+      createAnother: 'Create Another Poll',
+      advancedSettings: 'Advanced Settings'
+    },
+    validation: {
+      questionRequired: 'Question is required',
+      minTwoOptions: 'At least 2 options are required',
+      optionEmpty: 'Option cannot be empty',
+      minLessThanMax: 'Minimum must be less than maximum',
+      maxRequired: 'Maximum value is recommended for numeric polls'
+    },
+    preview: {
+      title: 'Preview Your Poll',
+      subtitle: 'This is how participants will see your poll',
+      closesOn: 'Closes on {date}',
+      noEndDate: 'No end date'
+    },
+    publish: {
+      draftSaved: 'Poll saved as draft',
+      published: 'Poll published successfully!',
+      error: 'Failed to save poll'
+    },
+    share: {
+      title: 'Share Your Poll',
+      subtitle: 'Copy the link below and share it with participants',
+      linkLabel: 'Poll Link',
+      copySuccess: 'Link copied to clipboard!',
+      copyError: 'Failed to copy link'
+    }
   }
 };

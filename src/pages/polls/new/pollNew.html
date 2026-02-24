@@ -1,38 +1,46 @@
-<section class="container vm-section" style="max-width:720px;">
-  <a href="/polls" class="text-muted small mb-3 d-inline-block">← Обратно към анкети</a>
-  <h2 class="fw-bold mb-1">Нова анкета ✨</h2>
-  <p class="text-muted mb-4">Попълни детайлите и я сподели с публиката</p>
+<section class="poll-wizard-container">
+  <!-- Wizard Header -->
+  <div class="wizard-header">
+    <a href="/dashboard" class="back-link" id="back-to-dashboard">
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+        <path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd"/>
+      </svg>
+      <span id="back-link-text">Back to Dashboard</span>
+    </a>
+    
+    <h1 class="wizard-title" id="wizard-main-title">Create New Poll</h1>
+    <p class="wizard-subtitle" id="wizard-subtitle">Follow the steps to create your poll</p>
+  </div>
 
-  <form id="poll-new-form" novalidate>
-    <div class="vm-card p-4 mb-4">
-      <div class="mb-3">
-        <label for="poll-title" class="form-label fw-semibold">Заглавие</label>
-        <input type="text" class="vm-input" id="poll-title" placeholder="Напр. Коя технология предпочитате?" required />
-      </div>
-      <div class="mb-3">
-        <label for="poll-desc" class="form-label fw-semibold">Описание <span class="text-muted">(по избор)</span></label>
-        <textarea class="vm-input" id="poll-desc" rows="2" placeholder="Кратко описание..."></textarea>
-      </div>
-    </div>
+  <!-- Progress Stepper -->
+  <div class="wizard-stepper" id="wizard-stepper">
+    <!-- Dynamically rendered by JS -->
+  </div>
 
-    <div class="vm-card p-4 mb-4">
-      <label class="form-label fw-semibold mb-3">Опции за отговор</label>
-      <div id="poll-options">
-        <div class="input-group mb-2">
-          <span class="input-group-text bg-white border-end-0" style="border-color:var(--vm-border);">1.</span>
-          <input type="text" class="vm-input border-start-0" placeholder="Опция 1" required />
-        </div>
-        <div class="input-group mb-2">
-          <span class="input-group-text bg-white border-end-0" style="border-color:var(--vm-border);">2.</span>
-          <input type="text" class="vm-input border-start-0" placeholder="Опция 2" required />
-        </div>
-      </div>
-      <button type="button" class="btn btn-sm btn-votamin-outline mt-2" id="btn-add-option">+ Добави опция</button>
-    </div>
+  <!-- Wizard Content -->
+  <div class="wizard-content" id="wizard-content">
+    <!-- Step content will be rendered here by JS -->
+  </div>
 
-    <div class="d-flex gap-3">
-      <button type="submit" class="btn btn-votamin btn-lg">Публикувай</button>
-      <a href="/polls" class="btn btn-votamin-outline btn-lg">Отказ</a>
+  <!-- Navigation Buttons -->
+  <div class="wizard-navigation" id="wizard-navigation">
+    <button type="button" class="wizard-btn wizard-btn-secondary" id="btn-back" style="display: none;">
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+        <path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd"/>
+      </svg>
+      <span id="btn-back-text">Back</span>
+    </button>
+
+    <div class="wizard-btn-group">
+      <button type="button" class="wizard-btn wizard-btn-outline" id="btn-save-draft" style="display: none;">
+        <span id="btn-save-draft-text">Save as Draft</span>
+      </button>
+      <button type="button" class="wizard-btn wizard-btn-primary" id="btn-next">
+        <span id="btn-next-text">Next</span>
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+          <path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd"/>
+        </svg>
+      </button>
     </div>
-  </form>
+  </div>
 </section>
