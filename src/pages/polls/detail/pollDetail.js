@@ -307,7 +307,7 @@ function renderPollDetailMarkup(poll, { isEditMode }) {
         <div class="vm-card p-4 mb-4">
           <div class="d-flex justify-content-between align-items-start mb-2">
             <h3 class="fw-bold mb-0" id="poll-title">${escapeHtml(poll.title)}</h3>
-            <span class="vm-badge ms-3">${statusLabel(poll.status)}</span>
+            <span class="vm-badge ms-3 ${poll.status === 'draft' ? 'vm-poll-status-badge--draft' : ''}">${statusLabel(poll.status)}</span>
           </div>
           <p class="text-muted" id="poll-desc">${escapeHtml(poll.description || i18n.t('pollDetail.noDescription'))}</p>
           <small class="text-muted">${i18n.t('pollDetail.shareCode')} <strong id="poll-code">${escapeHtml(shareCode)}</strong>
@@ -353,10 +353,13 @@ function renderPollDetailMarkup(poll, { isEditMode }) {
           ${renderResultsSection(poll)}
         </div>
 
-        <div class="d-flex gap-3 ${poll.is_owner ? '' : 'd-none'}" id="owner-actions">
+        <div class="d-flex gap-3 vm-owner-actions ${poll.is_owner ? '' : 'd-none'}" id="owner-actions">
           <button class="btn btn-votamin-secondary" id="btn-toggle-edit">${editButtonText}</button>
           <button class="btn btn-votamin-outline" id="btn-close-poll" ${poll.status === 'closed' ? 'disabled' : ''}>${i18n.t('pollDetail.closePoll')}</button>
           <button class="btn btn-votamin-outline" id="btn-delete-poll">${i18n.t('pollDetail.deletePoll')}</button>
+          ${isEditMode && poll.status === 'draft'
+            ? `<button class="btn btn-votamin vm-owner-actions__publish" id="btn-publish-poll">${i18n.t('createPoll.actions.publish')}</button>`
+            : ''}
         </div>
       </main>
 
@@ -525,6 +528,22 @@ export default async function render(container, params) {
       } catch (error) {
         console.error('Failed to delete poll:', error);
         showToast(i18n.t('pollDetail.deleteFailed'), 'error');
+      }
+    });
+
+    container.querySelector('#btn-publish-poll')?.addEventListener('click', async () => {
+      try {
+        await updatePollById(pollId, { status: 'open' });
+        poll = await fetchPollById(pollId);
+        if (poll.is_owner) {
+          poll._voters = await fetchPollVoters(pollId);
+        }
+        isEditMode = false;
+        renderView();
+        showToast(i18n.t('createPoll.publish.published'), 'success');
+      } catch (error) {
+        console.error('Failed to publish poll:', error);
+        showToast(i18n.t('createPoll.publish.error'), 'error');
       }
     });
 
