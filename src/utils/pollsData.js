@@ -45,6 +45,19 @@ export async function fetchMyPollsList({ status = 'all' } = {}) {
   const pollIds = (polls || []).map((poll) => poll.id);
   if (pollIds.length === 0) return [];
 
+  const { data: voteRows, error: voteRowsError } = await supabaseClient
+    .from('votes')
+    .select('poll_id')
+    .in('poll_id', pollIds);
+
+  if (voteRowsError) throw voteRowsError;
+
+  const responseCountByPoll = new Map();
+  (voteRows || []).forEach((row) => {
+    const currentCount = responseCountByPoll.get(row.poll_id) || 0;
+    responseCountByPoll.set(row.poll_id, currentCount + 1);
+  });
+
   const { data: optionRows, error: optionsError } = await supabaseClient
     .from('poll_options')
     .select('poll_id')
@@ -73,6 +86,7 @@ export async function fetchMyPollsList({ status = 'all' } = {}) {
 
   return polls.map((poll) => ({
     ...poll,
+    response_count: responseCountByPoll.get(poll.id) || 0,
     options_count: optionsCountByPoll.get(poll.id) || 0,
     share_code: shareCodeByPoll.get(poll.id) || null,
   }));
