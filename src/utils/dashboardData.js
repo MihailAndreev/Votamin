@@ -34,6 +34,27 @@ function mapOwnerRows(ownerRows) {
   );
 }
 
+async function getLiveResponseCountByPollId(pollIds) {
+  if (!Array.isArray(pollIds) || pollIds.length === 0) {
+    return new Map();
+  }
+
+  const { data: voteRows, error: votesError } = await supabaseClient
+    .from('votes')
+    .select('poll_id')
+    .in('poll_id', pollIds);
+
+  if (votesError) throw votesError;
+
+  const responseCountByPollId = new Map();
+  (voteRows || []).forEach((vote) => {
+    const currentCount = responseCountByPollId.get(vote.poll_id) || 0;
+    responseCountByPollId.set(vote.poll_id, currentCount + 1);
+  });
+
+  return responseCountByPollId;
+}
+
 export async function fetchDashboardMyPolls({ status = 'all' } = {}) {
   const user = requireCurrentUser();
 
@@ -51,6 +72,8 @@ export async function fetchDashboardMyPolls({ status = 'all' } = {}) {
   const pollIds = (polls || []).map((poll) => poll.id);
   if (pollIds.length === 0) return [];
 
+  const responseCountByPollId = await getLiveResponseCountByPollId(pollIds);
+
   const { data: myVotes, error: votesError } = await supabaseClient
     .from('votes')
     .select('poll_id')
@@ -63,6 +86,7 @@ export async function fetchDashboardMyPolls({ status = 'all' } = {}) {
 
   return polls.map((poll) => ({
     ...poll,
+    response_count: responseCountByPollId.get(poll.id) || 0,
     my_response: votedPollIds.has(poll.id),
   }));
 }
@@ -93,6 +117,9 @@ export async function fetchDashboardSharedPolls({ status = 'all' } = {}) {
   const { data: sharedPolls, error: sharedPollsError } = await sharedPollsQuery;
   if (sharedPollsError) throw sharedPollsError;
 
+  const sharedPollIds = (sharedPolls || []).map((poll) => poll.id);
+  const responseCountByPollId = await getLiveResponseCountByPollId(sharedPollIds);
+
   let ownersById = new Map();
   const { data: ownerRows, error: ownersError } = await supabaseClient.rpc('get_shared_poll_owners');
   if (!ownersError) {
@@ -103,6 +130,7 @@ export async function fetchDashboardSharedPolls({ status = 'all' } = {}) {
     const owner = ownersById.get(poll.owner_id);
     return {
       ...poll,
+      response_count: responseCountByPollId.get(poll.id) || 0,
       owner_name: owner?.full_name ?? UNKNOWN_OWNER_NAME,
       owner_avatar_url: owner?.avatar_url ?? null,
     };
