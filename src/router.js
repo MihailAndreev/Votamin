@@ -24,7 +24,8 @@ export function setNotFound(loader) {
 }
 
 export function navigateTo(path) {
-  if (window.location.pathname !== path) {
+  const currentUrl = `${window.location.pathname}${window.location.search}${window.location.hash}`;
+  if (currentUrl !== path) {
     window.history.pushState({}, '', path);
   }
   window.dispatchEvent(new PopStateEvent('popstate'));

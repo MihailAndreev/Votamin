@@ -5,6 +5,7 @@ import { fetchDashboardMyPolls } from '@utils/dashboardData.js';
 import { i18n } from '../../i18n/index.js';
 import { showToast } from '@utils/toast.js';
 import { formatDate } from '@utils/helpers.js';
+import { deletePollById } from '@utils/pollsData.js';
 
 function statusBadge(status) {
   const label = i18n.t(`dashboard.status.${status}`) || status;
@@ -54,7 +55,7 @@ function renderTable(polls) {
                 <button class="vm-actions-btn" data-bs-toggle="dropdown" aria-expanded="false">⋮</button>
                 <ul class="dropdown-menu dropdown-menu-end">
                   <li><a class="dropdown-item" href="/polls/${p.id}">${i18n.t('dashboard.actions.view')}</a></li>
-                  <li><a class="dropdown-item" href="/polls/${p.id}/edit">${i18n.t('dashboard.actions.edit')}</a></li>
+                  <li><a class="dropdown-item" href="/polls/${p.id}?edit=1">${i18n.t('dashboard.actions.edit')}</a></li>
                   <li><a class="dropdown-item" href="#" data-action="share" data-poll-id="${p.id}">${i18n.t('dashboard.actions.share')}</a></li>
                   <li><hr class="dropdown-divider"></li>
                   <li><a class="dropdown-item text-danger" href="#" data-action="delete" data-poll-id="${p.id}">${i18n.t('dashboard.actions.delete')}</a></li>
@@ -81,7 +82,7 @@ function renderCards(polls) {
         </div>
         <div class="vm-dash-card-actions">
           <a href="/polls/${p.id}" class="btn btn-sm btn-votamin-outline">${i18n.t('dashboard.actions.view')}</a>
-          <a href="/polls/${p.id}/edit" class="btn btn-sm btn-votamin-outline">${i18n.t('dashboard.actions.edit')}</a>
+          <a href="/polls/${p.id}?edit=1" class="btn btn-sm btn-votamin-outline">${i18n.t('dashboard.actions.edit')}</a>
           <button class="btn btn-sm btn-outline-danger" data-action="delete" data-poll-id="${p.id}">${i18n.t('dashboard.actions.delete')}</button>
         </div>
       </div>`).join('')}
@@ -99,8 +100,6 @@ function renderEmpty() {
 
 export default async function render(container) {
   let activeStatus = 'all';
-  const contentEl = container.querySelector('#my-polls-content') || document.createElement('div');
-
   function renderHeader() {
     return `
     <div class="vm-dash-header">
@@ -152,10 +151,17 @@ export default async function render(container) {
     if (!deleteBtn) return;
     e.preventDefault();
     const pollId = deleteBtn.dataset.pollId;
-    if (confirm(i18n.t('dashboard.confirmDelete') || 'Are you sure you want to delete this poll?')) {
-      // TODO: implement actual delete via supabase
-      showToast(i18n.t('notifications.pollDeleted'), 'info');
-    }
+    if (!confirm(i18n.t('dashboard.confirmDelete') || 'Are you sure you want to delete this poll?')) return;
+
+    deletePollById(pollId)
+      .then(() => {
+        showToast(i18n.t('notifications.pollDeleted'), 'info');
+        loadPolls(activeStatus);
+      })
+      .catch((error) => {
+        console.error('Failed to delete poll:', error);
+        showToast(i18n.t('createPoll.publish.error') || 'Error deleting poll', 'error');
+      });
   });
 
   /* Listen for language changes */

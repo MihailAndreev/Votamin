@@ -12,6 +12,7 @@ import { renderPollOptionsEditor } from '../../../components/pollOptionsEditor.j
 import { renderPollRatingEditor } from '../../../components/pollRatingEditor.js';
 import { renderPollNumericEditor } from '../../../components/pollNumericEditor.js';
 import { renderAdvancedSettings } from '../../../components/advancedSettings.js';
+import { getLoaderMarkup } from '@components/loader.js';
 import { validatePoll, validateForPublish, sanitizePollData } from '../../../utils/pollValidation.js';
 import { supabaseClient as supabase } from '../../../utils/supabase.js';
 
@@ -371,7 +372,7 @@ export default function render(container) {
               ${i18n.t('createPoll.actions.createAnother')}
             </button>
           </div>
-        ` : '<p>Loading share link...</p>'}
+        ` : getLoaderMarkup()}
       </div>
     `;
 

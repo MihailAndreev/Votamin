@@ -8,9 +8,27 @@ import { showToast } from '@utils/toast.js';
 import { i18n } from '../../i18n/index.js';
 import { navigateTo } from '../../router.js';
 
+function getPostAuthRedirect() {
+  const next = new URLSearchParams(window.location.search).get('next');
+  if (!next || !next.startsWith('/')) return '/dashboard';
+  if (next.startsWith('/login') || next.startsWith('/register')) return '/dashboard';
+  return next;
+}
+
+function preserveNextQueryOnAuthLinks(container) {
+  const next = new URLSearchParams(window.location.search).get('next');
+  if (!next) return;
+
+  const loginLink = container.querySelector('a[href="/login"]');
+  if (loginLink) {
+    loginLink.setAttribute('href', `/login?next=${encodeURIComponent(next)}`);
+  }
+}
+
 export default function render(container) {
   container.innerHTML = htmlContent;
   i18n.loadTranslations();
+  preserveNextQueryOnAuthLinks(container);
 
   const form = container.querySelector('#register-form');
   const errorDiv = container.querySelector('#register-error');
@@ -55,7 +73,7 @@ export default function render(container) {
 
     if (data?.session) {
       showToast(i18n.t('notifications.userCreated'), 'info');
-      navigateTo('/dashboard');
+      navigateTo(getPostAuthRedirect());
       return;
     }
 
@@ -69,7 +87,7 @@ export default function render(container) {
       }
 
       showToast(i18n.t('notifications.userCreated'), 'info');
-      navigateTo('/dashboard');
+      navigateTo(getPostAuthRedirect());
     }
   });
 }

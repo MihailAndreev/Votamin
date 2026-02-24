@@ -8,61 +8,17 @@
   </div>
 
   <!-- Filters -->
-  <div class="d-flex gap-2 mb-4">
-    <button class="btn btn-sm btn-votamin">Всички</button>
-    <button class="btn btn-sm btn-votamin-outline">Активни</button>
-    <button class="btn btn-sm btn-votamin-outline">Затворени</button>
+  <div class="d-flex gap-2 mb-4" id="polls-filters">
+    <button class="btn btn-sm btn-votamin" data-status="all">Всички</button>
+    <button class="btn btn-sm btn-votamin-outline" data-status="open">Активни</button>
+    <button class="btn btn-sm btn-votamin-outline" data-status="closed">Затворени</button>
+    <button class="btn btn-sm btn-votamin-outline" data-status="draft">Чернови</button>
   </div>
 
   <!-- Polls grid -->
   <div class="row g-4" id="polls-grid">
-    <div class="col-md-6 col-lg-4">
-      <div class="vm-card p-4 h-100">
-        <div class="d-flex justify-content-between align-items-start mb-2">
-          <h6 class="fw-bold mb-0">Коя е любимата ви програмна технология?</h6>
-          <span class="vm-badge ms-2">Активна</span>
-        </div>
-        <p class="text-muted small">42 гласа · 4 опции</p>
-        <div class="progress mb-3" style="height:6px;">
-          <div class="progress-bar" role="progressbar" style="width:65%; background:var(--vm-green);" aria-valuenow="65" aria-valuemin="0" aria-valuemax="100"></div>
-        </div>
-        <div class="d-flex justify-content-between">
-          <small class="text-muted">Код: <strong>AX3K9P</strong></small>
-          <a href="/polls/1" class="small fw-semibold">Виж →</a>
-        </div>
-      </div>
-    </div>
-    <div class="col-md-6 col-lg-4">
-      <div class="vm-card p-4 h-100">
-        <div class="d-flex justify-content-between align-items-start mb-2">
-          <h6 class="fw-bold mb-0">Предпочитан формат за срещи?</h6>
-          <span class="vm-badge vm-badge--orange ms-2">Затворена</span>
-        </div>
-        <p class="text-muted small">108 гласа · 3 опции</p>
-        <div class="progress mb-3" style="height:6px;">
-          <div class="progress-bar" role="progressbar" style="width:100%; background:var(--vm-orange);" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
-        </div>
-        <div class="d-flex justify-content-between">
-          <small class="text-muted">Код: <strong>M7TQ2B</strong></small>
-          <a href="/polls/2" class="small fw-semibold">Виж →</a>
-        </div>
-      </div>
-    </div>
-    <div class="col-md-6 col-lg-4">
-      <div class="vm-card p-4 h-100">
-        <div class="d-flex justify-content-between align-items-start mb-2">
-          <h6 class="fw-bold mb-0">Следващ team building — идеи?</h6>
-          <span class="vm-badge vm-badge--orange ms-2">Затворена</span>
-        </div>
-        <p class="text-muted small">98 гласа · 5 опции</p>
-        <div class="progress mb-3" style="height:6px;">
-          <div class="progress-bar" role="progressbar" style="width:100%; background:var(--vm-orange);" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
-        </div>
-        <div class="d-flex justify-content-between">
-          <small class="text-muted">Код: <strong>ZN8R5W</strong></small>
-          <a href="/polls/3" class="small fw-semibold">Виж →</a>
-        </div>
-      </div>
+    <div class="col-12">
+      <div class="vm-card p-4 text-muted">Зареждане на анкети...</div>
     </div>
   </div>
 </section>
