@@ -66,7 +66,12 @@ function renderCards(polls) {
 function renderEmpty() {
   return `
     <div class="vm-empty-state">
-      <div class="vm-empty-icon">🤝</div>
+      <div class="vm-empty-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" focusable="false">
+          <path d="M7 12 5 10a2 2 0 0 1 0-2.8l1.6-1.6a2 2 0 0 1 2.8 0l2.1 2.1M17 12l2-2a2 2 0 0 0 0-2.8l-1.6-1.6a2 2 0 0 0-2.8 0l-2.1 2.1" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          <path d="m9.3 12.7 2.1 2.1a2 2 0 0 0 2.8 0l2.5-2.5a2 2 0 0 0 0-2.8M14.7 12.7l-2.1 2.1a2 2 0 0 1-2.8 0l-2.5-2.5a2 2 0 0 1 0-2.8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      </div>
       <div class="vm-empty-title">${i18n.t('dashboard.empty.shared.title')}</div>
       <div class="vm-empty-subtitle">${i18n.t('dashboard.empty.shared.subtitle')}</div>
     </div>`;

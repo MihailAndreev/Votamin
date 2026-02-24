@@ -96,7 +96,12 @@ function renderCards(polls) {
 function renderEmpty() {
   return `
     <div class="vm-empty-state">
-      <div class="vm-empty-icon">📋</div>
+      <div class="vm-empty-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" focusable="false">
+          <rect x="5" y="4" width="14" height="16" rx="2" fill="none" stroke="currentColor" stroke-width="2"/>
+          <path d="M9 9h6M9 13h6M9 17h4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      </div>
       <div class="vm-empty-title">${i18n.t('dashboard.empty.myPolls.title')}</div>
       <a href="/polls/new" class="btn btn-votamin mt-3">${i18n.t('dashboard.empty.myPolls.cta')}</a>
     </div>`;

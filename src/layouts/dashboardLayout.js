@@ -8,6 +8,53 @@ import { showToast } from '@utils/toast.js';
 
 const SIDEBAR_COLLAPSED_KEY = 'votamin_sidebar_collapsed';
 
+const ICONS = {
+  menu: `
+    <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+      <path d="M4 7h16M4 12h16M4 17h16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+    </svg>
+  `,
+  myPolls: `
+    <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+      <rect x="4" y="3.5" width="16" height="17" rx="2.5" fill="none" stroke="currentColor" stroke-width="2"/>
+      <path d="M8 8h8M8 12h8M8 16h5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+    </svg>
+  `,
+  shared: `
+    <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+      <path d="M15 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM6 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Zm9 7a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" fill="currentColor"/>
+      <path d="M8.7 9.6 12.3 7.5M8.7 13.4l3.6 2.1" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+    </svg>
+  `,
+  account: `
+    <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+      <circle cx="12" cy="8" r="4" fill="none" stroke="currentColor" stroke-width="2"/>
+      <path d="M4 20c1.7-3.3 4.4-5 8-5s6.3 1.7 8 5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+    </svg>
+  `,
+  adminUsers: `
+    <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+      <circle cx="9" cy="9" r="3" fill="none" stroke="currentColor" stroke-width="2"/>
+      <circle cx="17" cy="9" r="2.25" fill="none" stroke="currentColor" stroke-width="2"/>
+      <path d="M3.5 20c1.2-2.6 3.1-4 5.5-4s4.3 1.4 5.5 4M14.5 20c.7-1.6 1.9-2.5 3.5-2.5 1.2 0 2.3.5 3 1.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+    </svg>
+  `,
+  adminPolls: `
+    <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+      <path d="M4 20h16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      <rect x="5" y="11" width="3" height="7" rx="1" fill="currentColor"/>
+      <rect x="10.5" y="7" width="3" height="11" rx="1" fill="currentColor"/>
+      <rect x="16" y="4" width="3" height="14" rx="1" fill="currentColor"/>
+    </svg>
+  `,
+  logout: `
+    <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+      <path d="M10 4H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      <path d="M14 16l4-4-4-4M18 12H9" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  `
+};
+
 function isCollapsed() {
   return localStorage.getItem(SIDEBAR_COLLAPSED_KEY) === '1';
 }
@@ -35,7 +82,7 @@ export function renderDashboardLayout(contentContainer) {
       <!-- Mobile toggle -->
       <button class="vm-sidebar-mobile-toggle d-lg-none btn btn-sm btn-votamin-outline"
               id="sidebar-mobile-toggle" aria-label="Toggle menu">
-        <span class="vm-sidebar-icon">☰</span>
+        <span class="vm-sidebar-icon">${ICONS.menu}</span>
       </button>
 
       <!-- Backdrop -->
@@ -45,13 +92,13 @@ export function renderDashboardLayout(contentContainer) {
       <aside class="vm-sidebar" id="dashboard-sidebar">
         <nav class="vm-sidebar-nav">
           <div class="vm-sidebar-top">
-            ${sidebarItem('/dashboard/polls',   '📋', 'dashboard.sidebar.myPolls',      'My Polls')}
-            ${sidebarItem('/dashboard/shared',  '🤝', 'dashboard.sidebar.sharedWithMe', 'Shared With Me')}
-            ${sidebarItem('/dashboard/account', '👤', 'dashboard.sidebar.account',      'Account')}
+            ${sidebarItem('/dashboard/polls',   ICONS.myPolls, 'dashboard.sidebar.myPolls',      'My Polls')}
+            ${sidebarItem('/dashboard/shared',  ICONS.shared, 'dashboard.sidebar.sharedWithMe', 'Shared With Me')}
+            ${sidebarItem('/dashboard/account', ICONS.account, 'dashboard.sidebar.account',      'Account')}
             <div class="vm-sidebar-admin-links d-none" id="sidebar-admin-links">
               <hr class="my-2 opacity-25">
-              ${sidebarItem('/admin',       '🛡️', 'dashboard.sidebar.adminUsers', 'Admin — Users')}
-              ${sidebarItem('/admin/polls', '📊', 'dashboard.sidebar.adminPolls', 'Admin — Polls')}
+              ${sidebarItem('/admin',       ICONS.adminUsers, 'dashboard.sidebar.adminUsers', 'Admin — Users')}
+              ${sidebarItem('/admin/polls', ICONS.adminPolls, 'dashboard.sidebar.adminPolls', 'Admin — Polls')}
             </div>
           </div>
           <div class="vm-sidebar-bottom">
@@ -63,7 +110,7 @@ export function renderDashboardLayout(contentContainer) {
               <span class="vm-sidebar-label" data-i18n="dashboard.sidebar.collapse">Collapse</span>
             </button>
             <button class="vm-sidebar-link vm-sidebar-logout-btn" id="sidebar-logout-btn">
-              <span class="vm-sidebar-icon">🚪</span>
+              <span class="vm-sidebar-icon">${ICONS.logout}</span>
               <span class="vm-sidebar-label" data-i18n="dashboard.sidebar.logout">Logout</span>
             </button>
           </div>

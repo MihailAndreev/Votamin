@@ -445,7 +445,7 @@ export default {
     deleteFailed: 'Failed to delete poll.'
   },
   pollsList: {
-    title: 'Polls 🗳️',
+    title: 'Polls',
     subtitle: 'All your polls in one place',
     loading: 'Loading polls...',
     status: {

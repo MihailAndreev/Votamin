@@ -8,25 +8,43 @@ export function renderPollTypeSelector(selectedType, onSelectType) {
   const pollTypes = [
     {
       id: 'single_choice',
-      icon: '◉',
+      icon: `
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+          <circle cx="12" cy="12" r="8" fill="none" stroke="currentColor" stroke-width="2"/>
+          <circle cx="12" cy="12" r="3.5" fill="currentColor"/>
+        </svg>
+      `,
       title: i18n.t('createPoll.pollTypes.single_choice.title'),
       description: i18n.t('createPoll.pollTypes.single_choice.description')
     },
     {
       id: 'multiple_choice',
-      icon: '☑',
+      icon: `
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+          <rect x="4" y="4" width="16" height="16" rx="3" fill="none" stroke="currentColor" stroke-width="2"/>
+          <path d="M8 12l2.8 2.8L16 9.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      `,
       title: i18n.t('createPoll.pollTypes.multiple_choice.title'),
       description: i18n.t('createPoll.pollTypes.multiple_choice.description')
     },
     {
       id: 'rating',
-      icon: '★',
+      icon: `
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+          <path d="M12 3.7 14.5 9l5.8.8-4.2 4.1 1 5.8L12 17l-5.1 2.7 1-5.8-4.2-4.1 5.8-.8L12 3.7Z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+        </svg>
+      `,
       title: i18n.t('createPoll.pollTypes.rating.title'),
       description: i18n.t('createPoll.pollTypes.rating.description')
     },
     {
       id: 'numeric',
-      icon: '#',
+      icon: `
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+          <path d="M8 4 6 20M18 4l-2 16M4 9h17M3 15h17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      `,
       title: i18n.t('createPoll.pollTypes.numeric.title'),
       description: i18n.t('createPoll.pollTypes.numeric.description')
     }
@@ -67,7 +85,6 @@ export function renderPollTypeSelector(selectedType, onSelectType) {
       }
 
       .poll-type-trigger-icon {
-        font-size: 1.25rem;
         width: 28px;
         height: 28px;
         display: flex;
@@ -77,6 +94,13 @@ export function renderPollTypeSelector(selectedType, onSelectType) {
         border-radius: 6px;
         color: var(--primary-color, #6366f1);
         flex-shrink: 0;
+      }
+
+      .poll-type-trigger-icon svg,
+      .poll-type-option-icon svg {
+        width: 18px;
+        height: 18px;
+        display: block;
       }
 
       .poll-type-trigger-text {
@@ -143,7 +167,6 @@ export function renderPollTypeSelector(selectedType, onSelectType) {
       }
 
       .poll-type-option-icon {
-        font-size: 1.125rem;
         width: 28px;
         height: 28px;
         display: flex;
@@ -235,7 +258,7 @@ export function renderPollTypeSelector(selectedType, onSelectType) {
       const typeData = pollTypes.find(t => t.id === type);
 
       // Update trigger display
-      container.querySelector('.poll-type-trigger-icon').textContent = typeData.icon;
+      container.querySelector('.poll-type-trigger-icon').innerHTML = typeData.icon;
       container.querySelector('.poll-type-trigger-title').textContent = typeData.title;
       container.querySelector('.poll-type-trigger-desc').textContent = typeData.description;
 

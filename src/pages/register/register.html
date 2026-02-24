@@ -16,14 +16,24 @@
       <label for="reg-password" class="form-label fw-semibold small" data-i18n="auth.fields.password">Парола</label>
       <div class="vm-password-field">
         <input type="password" class="vm-input" id="reg-password" placeholder="Минимум 6 символа" required data-i18n-placeholder="auth.placeholders.passwordMin" />
-        <button type="button" class="vm-password-toggle" data-toggle-password="reg-password" data-i18n-aria-label="auth.actions.showPassword" aria-label="Покажи парола">👁</button>
+        <button type="button" class="vm-password-toggle" data-toggle-password="reg-password" data-i18n-aria-label="auth.actions.showPassword" aria-label="Покажи парола">
+          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M2 12s3.6-6 10-6 10 6 10 6-3.6 6-10 6-10-6-10-6Z" fill="none" stroke="currentColor" stroke-width="2"/>
+            <circle cx="12" cy="12" r="3" fill="none" stroke="currentColor" stroke-width="2"/>
+          </svg>
+        </button>
       </div>
     </div>
     <div class="mb-4">
       <label for="reg-password2" class="form-label fw-semibold small" data-i18n="auth.fields.confirmPassword">Потвърди парола</label>
       <div class="vm-password-field">
         <input type="password" class="vm-input" id="reg-password2" placeholder="••••••••" required data-i18n-placeholder="auth.placeholders.password" />
-        <button type="button" class="vm-password-toggle" data-toggle-password="reg-password2" data-i18n-aria-label="auth.actions.showPassword" aria-label="Покажи парола">👁</button>
+        <button type="button" class="vm-password-toggle" data-toggle-password="reg-password2" data-i18n-aria-label="auth.actions.showPassword" aria-label="Покажи парола">
+          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M2 12s3.6-6 10-6 10 6 10 6-3.6 6-10 6-10-6-10-6Z" fill="none" stroke="currentColor" stroke-width="2"/>
+            <circle cx="12" cy="12" r="3" fill="none" stroke="currentColor" stroke-width="2"/>
+          </svg>
+        </button>
       </div>
     </div>
     <button type="submit" class="btn btn-votamin w-100 mb-3" id="register-btn" data-i18n="auth.actions.register">Регистрация</button>
