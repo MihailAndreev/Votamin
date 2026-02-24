@@ -47,10 +47,11 @@ export function renderNavbar(container) {
   const avatarInitials = getAvatarInitials(displayName);
   const homeHref = loggedIn ? '/dashboard' : '/';
   const brandHref = loggedIn ? '/dashboard' : '/';
+  const navContainerClass = loggedIn ? 'container-fluid px-3 px-lg-4' : 'container';
 
   container.innerHTML = `
     <nav class="navbar navbar-expand-lg vm-navbar sticky-top">
-      <div class="container">
+      <div class="${navContainerClass}">
         <!-- Brand -->
         <div class="d-flex align-items-center gap-3">
           <a class="navbar-brand d-flex align-items-center" href="${brandHref}">
