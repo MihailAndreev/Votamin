@@ -1,1 +1,115 @@
-/* Admin page styles */
+/* ============================================================
+   Admin Panel Styles
+   ============================================================ */
+
+/* ── Admin Tabs ─────────────────────────────────── */
+.vm-admin-tabs {
+  gap: 0.25rem;
+}
+
+.vm-admin-tabs .nav-link {
+  font-weight: 600;
+  font-size: 0.92rem;
+  padding: 0.5rem 1.25rem;
+  border-radius: var(--vm-radius-md, 10px);
+  color: var(--vm-gray-600);
+  transition: all 0.2s ease;
+  text-decoration: none;
+}
+
+.vm-admin-tabs .nav-link:hover {
+  color: var(--vm-primary);
+  background: var(--vm-gray-100);
+}
+
+.vm-admin-tabs .nav-link.active {
+  background: linear-gradient(135deg, var(--vm-primary), var(--vm-primary-dark, #e05a00));
+  color: var(--vm-white);
+  box-shadow: 0 2px 8px rgba(255, 107, 0, 0.25);
+}
+
+/* ── Stats Cards ────────────────────────────────── */
+.vm-admin-panel .vm-card {
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.vm-admin-panel .row .vm-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--vm-shadow-md, 0 4px 6px -1px rgba(0,0,0,.1));
+}
+
+/* ── Table ──────────────────────────────────────── */
+.vm-admin-table th {
+  font-weight: 600;
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+  border-bottom: 2px solid var(--vm-gray-200);
+}
+
+.vm-admin-table td {
+  vertical-align: middle;
+  padding: 0.65rem 0.5rem;
+}
+
+.vm-admin-table tbody tr:hover {
+  background: var(--vm-gray-50, #f8fafc);
+}
+
+th.vm-sortable {
+  cursor: pointer;
+  user-select: none;
+}
+
+th.vm-sortable:hover {
+  color: var(--vm-primary);
+}
+
+/* ── Filters ────────────────────────────────────── */
+.vm-admin-filters .form-control,
+.vm-admin-filters .form-select {
+  font-size: 0.85rem;
+  border-radius: var(--vm-radius-md, 10px);
+}
+
+/* ── Pagination ─────────────────────────────────── */
+.vm-admin-pagination .btn {
+  min-width: 80px;
+}
+
+/* ── Role badges in table ───────────────────────── */
+.vm-admin-table .badge {
+  font-size: 0.72rem;
+  padding: 0.3em 0.65em;
+  font-weight: 600;
+}
+
+/* ── Responsive: card view on mobile ────────────── */
+@media (max-width: 768px) {
+  .vm-admin-table {
+    font-size: 0.82rem;
+  }
+
+  .vm-admin-table th,
+  .vm-admin-table td {
+    padding: 0.4rem 0.35rem;
+  }
+
+  .vm-admin-tabs .nav-link {
+    padding: 0.4rem 0.9rem;
+    font-size: 0.85rem;
+  }
+}
+
+/* ── Voters modal ───────────────────────────────── */
+#admin-voters-modal .vm-confirm-modal {
+  max-width: 700px;
+}
+
+#admin-voters-modal .table th {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+

@@ -35,6 +35,7 @@ addRoute('/polls/new',    () => import('@pages/polls/new/pollNew.js'),    { layo
 addRoute('/polls/:id',    () => import('@pages/polls/detail/pollDetail.js'), { layout: 'main', auth: true });
 addRoute('/p/:code',      () => import('@pages/pollPublic/pollPublic.js'),   { layout: 'blank' });
 addRoute('/admin',        () => import('@pages/admin/admin.js'),          { layout: 'main', auth: true });
+addRoute('/admin/polls',  () => import('@pages/admin/admin.js'),          { layout: 'main', auth: true });
 
 setNotFound(() => import('@pages/home/home.js'));
 
