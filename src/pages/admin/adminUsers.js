@@ -30,6 +30,8 @@ let state = {
   loading: false
 };
 
+const actionDelegationBound = new WeakSet();
+
 function getOffset() {
   return (state.page - 1) * PAGE_SIZE;
 }
@@ -299,65 +301,9 @@ async function loadData(container) {
 // ── Event Bindings ─────────────────────────────────
 let searchTimeout = null;
 
-function bindEvents(container) {
-  // Search
-  const searchInput = container.querySelector('#admin-user-search');
-  searchInput?.addEventListener('input', (e) => {
-    clearTimeout(searchTimeout);
-    searchTimeout = setTimeout(() => {
-      state.search = e.target.value.trim();
-      state.page = 1;
-      loadData(container);
-    }, 350);
-  });
+function bindActionDelegation(container) {
+  if (actionDelegationBound.has(container)) return;
 
-  // Role filter
-  container.querySelector('#admin-user-role-filter')?.addEventListener('change', (e) => {
-    state.roleFilter = e.target.value;
-    state.page = 1;
-    loadData(container);
-  });
-
-  // Status filter
-  container.querySelector('#admin-user-status-filter')?.addEventListener('change', (e) => {
-    state.statusFilter = e.target.value;
-    state.page = 1;
-    loadData(container);
-  });
-
-  // Reset filters
-  container.querySelector('#admin-user-reset-filters')?.addEventListener('click', () => {
-    state.search = '';
-    state.roleFilter = '';
-    state.statusFilter = '';
-    state.page = 1;
-    loadData(container);
-  });
-
-  // Sorting
-  container.querySelectorAll('.vm-sortable').forEach(th => {
-    th.addEventListener('click', () => {
-      const col = th.dataset.sort;
-      if (state.sortBy === col) {
-        state.sortDir = state.sortDir === 'asc' ? 'desc' : 'asc';
-      } else {
-        state.sortBy = col;
-        state.sortDir = 'desc';
-      }
-      state.page = 1;
-      loadData(container);
-    });
-  });
-
-  // Pagination
-  container.querySelector('#admin-user-prev')?.addEventListener('click', () => {
-    if (state.page > 1) { state.page--; loadData(container); }
-  });
-  container.querySelector('#admin-user-next')?.addEventListener('click', () => {
-    if (state.page < totalPages()) { state.page++; loadData(container); }
-  });
-
-  // Actions (delegation)
   container.addEventListener('click', async (e) => {
     const btn = e.target.closest('[data-action]');
     if (!btn) return;
@@ -447,6 +393,69 @@ function bindEvents(container) {
       }
     }
   });
+
+  actionDelegationBound.add(container);
+}
+
+function bindEvents(container) {
+  // Search
+  const searchInput = container.querySelector('#admin-user-search');
+  searchInput?.addEventListener('input', (e) => {
+    clearTimeout(searchTimeout);
+    searchTimeout = setTimeout(() => {
+      state.search = e.target.value.trim();
+      state.page = 1;
+      loadData(container);
+    }, 350);
+  });
+
+  // Role filter
+  container.querySelector('#admin-user-role-filter')?.addEventListener('change', (e) => {
+    state.roleFilter = e.target.value;
+    state.page = 1;
+    loadData(container);
+  });
+
+  // Status filter
+  container.querySelector('#admin-user-status-filter')?.addEventListener('change', (e) => {
+    state.statusFilter = e.target.value;
+    state.page = 1;
+    loadData(container);
+  });
+
+  // Reset filters
+  container.querySelector('#admin-user-reset-filters')?.addEventListener('click', () => {
+    state.search = '';
+    state.roleFilter = '';
+    state.statusFilter = '';
+    state.page = 1;
+    loadData(container);
+  });
+
+  // Sorting
+  container.querySelectorAll('.vm-sortable').forEach(th => {
+    th.addEventListener('click', () => {
+      const col = th.dataset.sort;
+      if (state.sortBy === col) {
+        state.sortDir = state.sortDir === 'asc' ? 'desc' : 'asc';
+      } else {
+        state.sortBy = col;
+        state.sortDir = 'desc';
+      }
+      state.page = 1;
+      loadData(container);
+    });
+  });
+
+  // Pagination
+  container.querySelector('#admin-user-prev')?.addEventListener('click', () => {
+    if (state.page > 1) { state.page--; loadData(container); }
+  });
+  container.querySelector('#admin-user-next')?.addEventListener('click', () => {
+    if (state.page < totalPages()) { state.page++; loadData(container); }
+  });
+
+  bindActionDelegation(container);
 }
 
 // ── Export ──────────────────────────────────────────

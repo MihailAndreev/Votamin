@@ -33,6 +33,8 @@ let state = {
   loading: false
 };
 
+const actionDelegationBound = new WeakSet();
+
 function getOffset() {
   return (state.page - 1) * PAGE_SIZE;
 }
@@ -393,58 +395,9 @@ async function loadData(container) {
 // ── Event Bindings ─────────────────────────────────
 let searchTimeout = null;
 
-function bindEvents(container) {
-  // Search
-  const searchInput = container.querySelector('#admin-poll-search');
-  searchInput?.addEventListener('input', (e) => {
-    clearTimeout(searchTimeout);
-    searchTimeout = setTimeout(() => {
-      state.search = e.target.value.trim();
-      state.page = 1;
-      loadData(container);
-    }, 350);
-  });
+function bindActionDelegation(container) {
+  if (actionDelegationBound.has(container)) return;
 
-  // Status filter
-  container.querySelector('#admin-poll-status-filter')?.addEventListener('change', (e) => {
-    state.statusFilter = e.target.value;
-    state.page = 1;
-    loadData(container);
-  });
-
-  // Visibility filter
-  container.querySelector('#admin-poll-vis-filter')?.addEventListener('change', (e) => {
-    state.visibilityFilter = e.target.value;
-    state.page = 1;
-    loadData(container);
-  });
-
-  // Sort
-  container.querySelector('#admin-poll-sort')?.addEventListener('change', (e) => {
-    state.sortBy = e.target.value;
-    state.page = 1;
-    loadData(container);
-  });
-
-  // Reset filters
-  container.querySelector('#admin-poll-reset-filters')?.addEventListener('click', () => {
-    state.search = '';
-    state.statusFilter = '';
-    state.visibilityFilter = '';
-    state.sortBy = 'created_at';
-    state.page = 1;
-    loadData(container);
-  });
-
-  // Pagination
-  container.querySelector('#admin-poll-prev')?.addEventListener('click', () => {
-    if (state.page > 1) { state.page--; loadData(container); }
-  });
-  container.querySelector('#admin-poll-next')?.addEventListener('click', () => {
-    if (state.page < totalPages()) { state.page++; loadData(container); }
-  });
-
-  // Actions (delegation)
   container.addEventListener('click', async (e) => {
     const btn = e.target.closest('[data-action]');
     if (!btn) return;
@@ -549,6 +502,62 @@ function bindEvents(container) {
       }
     }
   });
+
+  actionDelegationBound.add(container);
+}
+
+function bindEvents(container) {
+  // Search
+  const searchInput = container.querySelector('#admin-poll-search');
+  searchInput?.addEventListener('input', (e) => {
+    clearTimeout(searchTimeout);
+    searchTimeout = setTimeout(() => {
+      state.search = e.target.value.trim();
+      state.page = 1;
+      loadData(container);
+    }, 350);
+  });
+
+  // Status filter
+  container.querySelector('#admin-poll-status-filter')?.addEventListener('change', (e) => {
+    state.statusFilter = e.target.value;
+    state.page = 1;
+    loadData(container);
+  });
+
+  // Visibility filter
+  container.querySelector('#admin-poll-vis-filter')?.addEventListener('change', (e) => {
+    state.visibilityFilter = e.target.value;
+    state.page = 1;
+    loadData(container);
+  });
+
+  // Sort
+  container.querySelector('#admin-poll-sort')?.addEventListener('change', (e) => {
+    state.sortBy = e.target.value;
+    state.page = 1;
+    loadData(container);
+  });
+
+  // Reset filters
+  container.querySelector('#admin-poll-reset-filters')?.addEventListener('click', () => {
+    state.search = '';
+    state.statusFilter = '';
+    state.visibilityFilter = '';
+    state.sortBy = 'created_at';
+    state.page = 1;
+    loadData(container);
+  });
+
+  // Pagination
+  container.querySelector('#admin-poll-prev')?.addEventListener('click', () => {
+    if (state.page > 1) { state.page--; loadData(container); }
+  });
+  container.querySelector('#admin-poll-next')?.addEventListener('click', () => {
+    if (state.page < totalPages()) { state.page++; loadData(container); }
+  });
+
+  bindActionDelegation(container);
 }
 
 // ── Export ──────────────────────────────────────────
