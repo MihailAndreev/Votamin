@@ -54,16 +54,6 @@ export const i18n = {
       
       // Preserve HTML structure if present
       if (el.children.length === 0) {
-
-    document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
-      const key = el.getAttribute('data-i18n-placeholder');
-      el.setAttribute('placeholder', this.t(key));
-    });
-
-    document.querySelectorAll('[data-i18n-aria-label]').forEach(el => {
-      const key = el.getAttribute('data-i18n-aria-label');
-      el.setAttribute('aria-label', this.t(key));
-    });
         el.textContent = translation;
       } else {
         // For elements with children, only replace text nodes
@@ -73,6 +63,16 @@ export const i18n = {
           }
         });
       }
+    });
+
+    document.querySelectorAll('[data-i18n-placeholder]').forEach((el) => {
+      const key = el.getAttribute('data-i18n-placeholder');
+      el.setAttribute('placeholder', this.t(key));
+    });
+
+    document.querySelectorAll('[data-i18n-aria-label]').forEach((el) => {
+      const key = el.getAttribute('data-i18n-aria-label');
+      el.setAttribute('aria-label', this.t(key));
     });
   },
 

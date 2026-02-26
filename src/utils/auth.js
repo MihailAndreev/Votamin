@@ -70,6 +70,42 @@ export async function login(email, password) {
 }
 
 /**
+ * Изпраща имейл за възстановяване на парола
+ * @param {string} email
+ * @param {string} [redirectTo]
+ * @returns {Promise<{data, error}>}
+ */
+export async function forgotPassword(email, redirectTo = `${window.location.origin}/reset-password`) {
+  return supabaseClient.auth.resetPasswordForEmail(email, { redirectTo });
+}
+
+/**
+ * Проверява дали имейлът съществува в auth.users чрез RPC
+ * @param {string} email
+ * @returns {Promise<boolean>}
+ */
+export async function checkEmailExists(email) {
+  const { data, error } = await supabaseClient.rpc('auth_email_exists', {
+    check_email: email
+  });
+
+  if (error) {
+    throw error;
+  }
+
+  return Boolean(data);
+}
+
+/**
+ * Задава нова парола за текущата recovery сесия
+ * @param {string} newPassword
+ * @returns {Promise<{data, error}>}
+ */
+export async function resetPassword(newPassword) {
+  return supabaseClient.auth.updateUser({ password: newPassword });
+}
+
+/**
  * Изход
  */
 export async function logout() {

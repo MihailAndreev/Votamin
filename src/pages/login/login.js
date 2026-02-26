@@ -25,6 +25,13 @@ function preserveNextQueryOnAuthLinks(container) {
   }
 }
 
+function getSafeNextQuerySuffix() {
+  const next = new URLSearchParams(window.location.search).get('next');
+  if (!next || !next.startsWith('/')) return '';
+  if (next.startsWith('/login') || next.startsWith('/register')) return '';
+  return `?next=${encodeURIComponent(next)}`;
+}
+
 export default function render(container) {
   container.innerHTML = htmlContent;
   i18n.loadTranslations();
@@ -38,7 +45,7 @@ export default function render(container) {
   setupPasswordToggles(container);
 
   forgotBtn?.addEventListener('click', () => {
-    // TODO: add forgot-password flow
+    navigateTo(`/forgot-password${getSafeNextQuerySuffix()}`);
   });
 
   form.addEventListener('submit', async (e) => {

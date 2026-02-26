@@ -24,6 +24,8 @@ import { renderMainLayout }  from '@layouts/mainLayout.js';
 addRoute('/',             () => import('@pages/home/home.js'),            { layout: 'main' });
 addRoute('/login',        () => import('@pages/home/home.js'),            { layout: 'main', authModal: 'login' });
 addRoute('/register',     () => import('@pages/home/home.js'),            { layout: 'main', authModal: 'register' });
+addRoute('/forgot-password', () => import('@pages/forgotPassword/forgotPassword.js'), { layout: 'main' });
+addRoute('/reset-password',  () => import('@pages/resetPassword/resetPassword.js'),   { layout: 'main' });
 addRoute('/dashboard',         () => import('@pages/dashboard/dashboard.js'),  { layout: 'main', auth: true });
 addRoute('/dashboard/polls',   () => import('@pages/dashboard/dashboard.js'),  { layout: 'main', auth: true, _dashSubPage: () => import('@pages/dashboard/myPolls.js') });
 addRoute('/dashboard/shared',  () => import('@pages/dashboard/dashboard.js'),  { layout: 'main', auth: true, _dashSubPage: () => import('@pages/dashboard/sharedPolls.js') });

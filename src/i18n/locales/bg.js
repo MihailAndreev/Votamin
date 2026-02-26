@@ -45,7 +45,11 @@ export default {
     avatarFileTooLarge: 'Снимката трябва да е до 2MB.',
     avatarStorageNotConfigured: 'Качването на снимка не е конфигурирано (липсва bucket avatars).',
     avatarUploadForbidden: 'Нямаш права за качване на снимка в аватара.',
-    avatarDeleteForbidden: 'Нямаш права за изтриване на снимката.'
+    avatarDeleteForbidden: 'Нямаш права за изтриване на снимката.',
+    resetPasswordEmailSent: 'Линк за смяна на паролата е изпратен успешно.',
+    passwordResetSuccess: 'Паролата е обновена успешно. Можеш да влезеш с новата парола.',
+    resetPasswordInvalidLink: 'Невалиден или изтекъл линк за смяна на парола. Заяви нов линк.',
+    emailNotFound: 'Несъществуващ имейл.'
   },
   auth: {
     fields: {
@@ -63,6 +67,10 @@ export default {
       register: 'Регистрация',
       loginLoading: 'Вход...',
       registerLoading: 'Регистрация...',
+      sendResetLink: 'Изпрати линк за смяна',
+      sendingResetLink: 'Изпращане...',
+      saveNewPassword: 'Запази новата парола',
+      savingNewPassword: 'Запазване...',
       showPassword: 'Покажи парола',
       hidePassword: 'Скрий парола'
     },
@@ -76,6 +84,17 @@ export default {
       title: 'Създай акаунт',
       subtitle: 'Безплатно и бързо — започни за секунди',
       haveAccount: 'Вече имаш акаунт?'
+    },
+    forgotPassword: {
+      title: 'Забравена парола',
+      subtitle: 'Въведи имейл и ще изпратим линк за смяна на паролата.',
+      backToLogin: 'Обратно към вход'
+    },
+    resetPassword: {
+      title: 'Нова парола',
+      subtitle: 'Избери нова парола за своя акаунт.',
+      newPassword: 'Нова парола',
+      confirmPassword: 'Потвърди новата парола'
     }
   },
   dashboard: {

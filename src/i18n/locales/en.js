@@ -45,7 +45,11 @@ export default {
     avatarFileTooLarge: 'Image must be up to 2MB.',
     avatarStorageNotConfigured: 'Avatar upload is not configured (avatars bucket is missing).',
     avatarUploadForbidden: 'You are not allowed to upload avatar images.',
-    avatarDeleteForbidden: 'You are not allowed to delete this avatar image.'
+    avatarDeleteForbidden: 'You are not allowed to delete this avatar image.',
+    resetPasswordEmailSent: 'A password reset link has been sent successfully.',
+    passwordResetSuccess: 'Password updated successfully. You can now log in with your new password.',
+    resetPasswordInvalidLink: 'Invalid or expired reset link. Please request a new one.',
+    emailNotFound: 'Email does not exist.'
   },
   auth: {
     fields: {
@@ -63,6 +67,10 @@ export default {
       register: 'Sign Up',
       loginLoading: 'Logging in...',
       registerLoading: 'Signing up...',
+      sendResetLink: 'Send reset link',
+      sendingResetLink: 'Sending...',
+      saveNewPassword: 'Save new password',
+      savingNewPassword: 'Saving...',
       showPassword: 'Show password',
       hidePassword: 'Hide password'
     },
@@ -76,6 +84,17 @@ export default {
       title: 'Create account',
       subtitle: 'Free and fast — get started in seconds',
       haveAccount: 'Already have an account?'
+    },
+    forgotPassword: {
+      title: 'Forgot password',
+      subtitle: 'Enter your email and we will send you a reset link.',
+      backToLogin: 'Back to login'
+    },
+    resetPassword: {
+      title: 'Set new password',
+      subtitle: 'Choose a new password for your account.',
+      newPassword: 'New password',
+      confirmPassword: 'Confirm new password'
     }
   },
   dashboard: {
