@@ -184,6 +184,7 @@ function renderPollsTable() {
   }
 
   const rows = state.polls.map(p => {
+    const pollId = p.poll_id || p.id;
     const featuredBadge = p.featured ? ' <span class="badge bg-warning text-dark ms-1" title="Featured">⭐</span>' : '';
     return `
       <tr>
@@ -204,35 +205,28 @@ function renderPollsTable() {
               <span data-i18n="admin.actions">${i18n.t('admin.actions')}</span>
             </button>
             <ul class="dropdown-menu dropdown-menu-end">
-              <li><button class="dropdown-item" data-action="view-poll" data-pid="${p.poll_id}">
+              <li><button class="dropdown-item" data-action="view-poll" data-pid="${pollId}">
                 📊 ${i18n.t('admin.polls.viewDetails')}
               </button></li>
-              <li><button class="dropdown-item" data-action="view-voters" data-pid="${p.poll_id}" data-title="${p.title}">
+              <li><button class="dropdown-item" data-action="view-voters" data-pid="${pollId}" data-title="${p.title}">
                 👥 ${i18n.t('admin.polls.viewVoters')}
               </button></li>
               <li><hr class="dropdown-divider"></li>
-              <li><button class="dropdown-item" data-action="toggle-featured" data-pid="${p.poll_id}">
-                ${p.featured ? '⭐ ' + i18n.t('admin.polls.removeFeatured') : '☆ ' + i18n.t('admin.polls.makeFeatured')}
-              </button></li>
-              <li><button class="dropdown-item" data-action="duplicate-poll" data-pid="${p.poll_id}" data-title="${p.title}">
-                📋 ${i18n.t('admin.polls.duplicatePoll')}
-              </button></li>
-              <li><hr class="dropdown-divider"></li>
               ${p.status === 'open' ? `
-                <li><button class="dropdown-item" data-action="close-poll" data-pid="${p.poll_id}">
+                <li><button class="dropdown-item" data-action="close-poll" data-pid="${pollId}">
                   🔒 ${i18n.t('admin.polls.closePoll')}
                 </button></li>
               ` : ''}
               ${p.status === 'closed' ? `
-                <li><button class="dropdown-item" data-action="reopen-poll" data-pid="${p.poll_id}">
+                <li><button class="dropdown-item" data-action="reopen-poll" data-pid="${pollId}">
                   🔓 ${i18n.t('admin.polls.reopenPoll')}
                 </button></li>
               ` : ''}
-              <li><button class="dropdown-item text-warning" data-action="reset-votes" data-pid="${p.poll_id}" data-title="${p.title}">
+              <li><button class="dropdown-item text-warning" data-action="reset-votes" data-pid="${pollId}" data-title="${p.title}">
                 🗑 ${i18n.t('admin.polls.resetVotes')}
               </button></li>
               <li><hr class="dropdown-divider"></li>
-              <li><button class="dropdown-item text-danger" data-action="delete-poll" data-pid="${p.poll_id}" data-title="${p.title}">
+              <li><button class="dropdown-item text-danger" data-action="delete-poll" data-pid="${pollId}" data-title="${p.title}">
                 ❌ ${i18n.t('admin.polls.deletePoll')}
               </button></li>
             </ul>
@@ -426,6 +420,11 @@ function bindActionDelegation(container) {
     const action = btn.dataset.action;
     const pid = btn.dataset.pid;
     const title = btn.dataset.title || '';
+
+    if (!pid) {
+      showToast('Missing poll id', 'error');
+      return;
+    }
 
     if (action === 'view-poll') {
       navigateTo(`/polls/${pid}?from=admin-polls`);
