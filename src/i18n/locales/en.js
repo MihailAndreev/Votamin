@@ -526,6 +526,8 @@ export default {
   admin: {
     title: 'Administration',
     subtitle: 'Manage users and polls',
+    headingUsers: 'Administration - manage users',
+    headingPolls: 'Administration - manage polls',
     actions: 'Actions',
     tabs: {
       users: '👥 Users',
@@ -534,6 +536,8 @@ export default {
     users: {
       totalUsers: 'Total users',
       adminCount: 'Administrators',
+      roleUser: 'User',
+      roleAdmin: 'Admin',
       newToday: 'New today',
       newThisWeek: 'New this week',
       active7d: 'Active (7d)',
@@ -588,6 +592,7 @@ export default {
       allStatuses: 'All statuses',
       allVisibility: 'All visibility',
       public: 'Public',
+      unlisted: 'Unlisted',
       private: 'Private',
       sortNewest: 'Newest',
       sortMostVotes: 'Most votes',

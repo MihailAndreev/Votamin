@@ -31,6 +31,10 @@ let state = {
 };
 
 const actionDelegationBound = new WeakSet();
+let activeLanguageChangedHandler = null;
+let activeSearchOutsideClickHandler = null;
+let keepSearchFocus = false;
+let searchCaretPosition = null;
 
 function getOffset() {
   return (state.page - 1) * PAGE_SIZE;
@@ -122,8 +126,8 @@ function renderFilters() {
         <div class="col-6 col-md-2">
           <select class="form-select form-select-sm" id="admin-user-role-filter">
             <option value="" ${!state.roleFilter ? 'selected' : ''}>${i18n.t('admin.users.allRoles')}</option>
-            <option value="user" ${state.roleFilter === 'user' ? 'selected' : ''}>User</option>
-            <option value="admin" ${state.roleFilter === 'admin' ? 'selected' : ''}>Admin</option>
+            <option value="user" ${state.roleFilter === 'user' ? 'selected' : ''}>${i18n.t('admin.users.roleUser')}</option>
+            <option value="admin" ${state.roleFilter === 'admin' ? 'selected' : ''}>${i18n.t('admin.users.roleAdmin')}</option>
           </select>
         </div>
         <div class="col-6 col-md-2">
@@ -133,8 +137,8 @@ function renderFilters() {
             <option value="blocked" ${state.statusFilter === 'blocked' ? 'selected' : ''}>${i18n.t('admin.users.statusBlocked')}</option>
           </select>
         </div>
-        <div class="col-6 col-md-2">
-          <button class="btn btn-sm btn-votamin-outline w-100" id="admin-user-reset-filters">
+        <div class="col-6 col-md-auto ms-md-auto">
+          <button class="btn btn-sm btn-votamin-outline w-100 vm-admin-filter-reset-btn" id="admin-user-reset-filters">
             <span data-i18n="admin.users.resetFilters">${i18n.t('admin.users.resetFilters')}</span>
           </button>
         </div>
@@ -225,7 +229,7 @@ function renderUsersTable() {
 
   return `
     <div class="table-responsive">
-      <table class="table table-hover align-middle mb-0 vm-admin-table">
+      <table class="table table-hover align-middle mb-0 vm-admin-table vm-admin-users-table">
         <thead>
           <tr class="text-muted small">
             <th class="vm-sortable" data-sort="email">${i18n.t('admin.users.colUser')}${sortIcon('email')}</th>
@@ -277,6 +281,14 @@ function renderContent(container) {
     </div>`;
   bindEvents(container);
   i18n.loadTranslations();
+
+  const searchInput = container.querySelector('#admin-user-search');
+  if (keepSearchFocus && searchInput) {
+    searchInput.focus();
+    const targetPos = searchCaretPosition ?? searchInput.value.length;
+    const safePos = Math.max(0, Math.min(targetPos, searchInput.value.length));
+    searchInput.setSelectionRange(safePos, safePos);
+  }
 }
 
 // ── Load Data ──────────────────────────────────────
@@ -412,10 +424,43 @@ function bindActionDelegation(container) {
 function bindEvents(container) {
   // Search
   const searchInput = container.querySelector('#admin-user-search');
+  searchInput?.addEventListener('focus', () => {
+    keepSearchFocus = true;
+  });
+
+  searchInput?.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      keepSearchFocus = false;
+      e.currentTarget.blur();
+    }
+  });
+
   searchInput?.addEventListener('input', (e) => {
+    keepSearchFocus = true;
+    searchCaretPosition = e.target.selectionStart ?? e.target.value.length;
     clearTimeout(searchTimeout);
     searchTimeout = setTimeout(() => {
-      state.search = e.target.value.trim();
+      const value = e.target.value.trim();
+
+      if (value.length === 0) {
+        if (state.search !== '') {
+          state.search = '';
+          state.page = 1;
+          loadData(container);
+        }
+        return;
+      }
+
+      if (value.length < 3) {
+        if (state.search !== '') {
+          state.search = '';
+          state.page = 1;
+          loadData(container);
+        }
+        return;
+      }
+
+      state.search = value;
       state.page = 1;
       loadData(container);
     }, 350);
@@ -472,6 +517,28 @@ function bindEvents(container) {
 
 // ── Export ──────────────────────────────────────────
 export default async function render(container) {
+  if (activeLanguageChangedHandler) {
+    window.removeEventListener('votamin:language-changed', activeLanguageChangedHandler);
+  }
+
+  if (activeSearchOutsideClickHandler) {
+    document.removeEventListener('pointerdown', activeSearchOutsideClickHandler);
+  }
+
+  activeLanguageChangedHandler = () => {
+    renderContent(container);
+  };
+  window.addEventListener('votamin:language-changed', activeLanguageChangedHandler);
+
+  activeSearchOutsideClickHandler = (event) => {
+    const searchInput = container.querySelector('#admin-user-search');
+    if (!searchInput) return;
+    if (event.target !== searchInput) {
+      keepSearchFocus = false;
+    }
+  };
+  document.addEventListener('pointerdown', activeSearchOutsideClickHandler);
+
   // Reset state
   state = { ...state, users: [], total: 0, page: 1, stats: null, loading: false };
   await loadData(container);

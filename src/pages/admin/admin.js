@@ -1,6 +1,6 @@
 /* ============================================================
-   Admin Panel – Shell (tabs: Users / Polls)
-   ============================================================ */
+  Admin Panel – Shell
+  ============================================================ */
 import './admin.css';
 import { getCurrentUser, isAdmin } from '@utils/auth.js';
 import { navigateTo } from '../../router.js';
@@ -9,8 +9,8 @@ import { renderDashboardLayout } from '@layouts/dashboardLayout.js';
 
 /**
  * Admin panel shell.
- * Uses the dashboard sidebar layout, then renders a tab container
- * that loads adminUsers or adminPolls sub-modules.
+ * Uses the dashboard sidebar layout, then loads adminUsers
+ * or adminPolls sub-modules based on the current route.
  */
 export default async function render(container, params, route) {
   if (!getCurrentUser()) {
@@ -30,13 +30,13 @@ export default async function render(container, params, route) {
   /* Determine active section from URL */
   const activePath = window.location.pathname;
   const isPollsSection = activePath === '/admin/polls';
+  const headingKey = isPollsSection ? 'admin.headingPolls' : 'admin.headingUsers';
 
   pageContainer.innerHTML = `
     <div class="vm-admin-panel">
       <div class="d-flex align-items-center justify-content-between mb-3 flex-wrap gap-2">
         <div>
-          <h2 class="fw-bold mb-0" data-i18n="admin.title">${i18n.t('admin.title')}</h2>
-          <p class="text-muted small mb-0" data-i18n="admin.subtitle">${i18n.t('admin.subtitle')}</p>
+          <h2 class="fw-bold mb-0 text-nowrap" data-i18n="${headingKey}">${i18n.t(headingKey)}</h2>
         </div>
       </div>
 

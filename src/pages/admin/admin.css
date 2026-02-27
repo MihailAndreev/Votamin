@@ -105,10 +105,49 @@
   border-bottom: 2px solid var(--vm-gray-200);
 }
 
+.vm-admin-table {
+  width: 100%;
+  table-layout: fixed;
+}
+
 .vm-admin-table td {
   vertical-align: middle;
   padding: 0.65rem 0.5rem;
 }
+
+.vm-admin-users-table th:nth-child(1),
+.vm-admin-users-table td:nth-child(1) { width: 26%; }
+.vm-admin-users-table th:nth-child(2),
+.vm-admin-users-table td:nth-child(2) { width: 10%; }
+.vm-admin-users-table th:nth-child(3),
+.vm-admin-users-table td:nth-child(3) { width: 10%; }
+.vm-admin-users-table th:nth-child(4),
+.vm-admin-users-table td:nth-child(4) { width: 13%; }
+.vm-admin-users-table th:nth-child(5),
+.vm-admin-users-table td:nth-child(5) { width: 13%; }
+.vm-admin-users-table th:nth-child(6),
+.vm-admin-users-table td:nth-child(6) { width: 8%; }
+.vm-admin-users-table th:nth-child(7),
+.vm-admin-users-table td:nth-child(7) { width: 8%; }
+.vm-admin-users-table th:nth-child(8),
+.vm-admin-users-table td:nth-child(8) { width: 12%; }
+
+.vm-admin-polls-table th:nth-child(1),
+.vm-admin-polls-table td:nth-child(1) { width: 24%; }
+.vm-admin-polls-table th:nth-child(2),
+.vm-admin-polls-table td:nth-child(2) { width: 14%; }
+.vm-admin-polls-table th:nth-child(3),
+.vm-admin-polls-table td:nth-child(3) { width: 10%; }
+.vm-admin-polls-table th:nth-child(4),
+.vm-admin-polls-table td:nth-child(4) { width: 10%; }
+.vm-admin-polls-table th:nth-child(5),
+.vm-admin-polls-table td:nth-child(5) { width: 8%; }
+.vm-admin-polls-table th:nth-child(6),
+.vm-admin-polls-table td:nth-child(6) { width: 11%; }
+.vm-admin-polls-table th:nth-child(7),
+.vm-admin-polls-table td:nth-child(7) { width: 11%; }
+.vm-admin-polls-table th:nth-child(8),
+.vm-admin-polls-table td:nth-child(8) { width: 12%; }
 
 .vm-admin-table tbody tr:hover {
   background: var(--vm-gray-50, #f8fafc);
@@ -128,6 +167,16 @@ th.vm-sortable:hover {
 .vm-admin-filters .form-select {
   font-size: 0.85rem;
   border-radius: var(--vm-radius-md, 10px);
+}
+
+.vm-admin-filter-reset-btn {
+  min-width: 200px;
+}
+
+@media (max-width: 767.98px) {
+  .vm-admin-filter-reset-btn {
+    min-width: 0;
+  }
 }
 
 /* ── Pagination ─────────────────────────────────── */
