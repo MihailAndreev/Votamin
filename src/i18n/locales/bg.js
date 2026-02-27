@@ -6,6 +6,7 @@ export default {
     logout: 'Изход',
     confirm: 'Потвърди',
     cancel: 'Отказ',
+    close: 'Затвори',
     confirmAction: 'Потвърждение'
   },
   navbar: {

@@ -196,7 +196,7 @@ function renderPollsTable() {
         <td class="text-muted small">${p.creator_name || p.creator_email}</td>
         <td>${statusBadge(p.status)}</td>
         <td>${visibilityBadge(p.visibility)}</td>
-        <td class="text-center"><span class="vm-badge">${p.votes_count}</span></td>
+        <td class="text-center"><span class="text-muted small">${p.votes_count}</span></td>
         <td class="text-muted small">${p.created_at ? formatDate(p.created_at) : '—'}</td>
         <td class="text-muted small">${p.ends_at ? formatDate(p.ends_at) : '—'}</td>
         <td>
@@ -317,7 +317,7 @@ function showVotersModal(voters, pollTitle) {
       ` : `<p class="text-muted">${i18n.t('admin.polls.noVoters')}</p>`}
       <div class="vm-confirm-actions">
         <button type="button" class="btn btn-votamin-outline" data-action="close-voters-modal">
-          ${i18n.t('common.cancel')}
+          ${i18n.t('common.close')}
         </button>
       </div>
     </div>

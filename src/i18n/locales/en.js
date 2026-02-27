@@ -5,8 +5,7 @@ export default {
     register: 'Sign Up',
     logout: 'Logout',
     confirm: 'Confirm',
-    cancel: 'Cancel',
-    confirmAction: 'Confirmation'
+    cancel: 'Cancel',    close: 'Close',    confirmAction: 'Confirmation'
   },
   navbar: {
     home: 'Home',
