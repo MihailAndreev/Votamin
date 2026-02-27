@@ -247,7 +247,7 @@
 
 .vm-dash-table-wrap {
   width: 100%;
-  overflow-x: hidden;
+  overflow: visible;
 }
 
 .vm-dash-table th:first-child,
