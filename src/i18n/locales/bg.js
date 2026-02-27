@@ -604,7 +604,7 @@ export default {
       colCreator: 'Автор',
       colStatus: 'Статус',
       colVisibility: 'Видимост',
-      colVotes: 'Гласове',
+      colParticipants: 'Участници',
       colCreated: 'Създадена',
       colExpires: 'Изтича',
       colActions: 'Действия',

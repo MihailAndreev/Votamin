@@ -604,7 +604,7 @@ export default {
       colCreator: 'Creator',
       colStatus: 'Status',
       colVisibility: 'Visibility',
-      colVotes: 'Votes',
+      colParticipants: 'Participants',
       colCreated: 'Created',
       colExpires: 'Expires',
       colActions: 'Actions',

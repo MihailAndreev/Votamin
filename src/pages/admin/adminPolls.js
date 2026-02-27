@@ -244,7 +244,7 @@ function renderPollsTable() {
             <th>${i18n.t('admin.polls.colCreator')}</th>
             <th>${i18n.t('admin.polls.colStatus')}</th>
             <th>${i18n.t('admin.polls.colVisibility')}</th>
-            <th class="text-center">${i18n.t('admin.polls.colVotes')}</th>
+            <th class="text-center">${i18n.t('admin.polls.colParticipants')}</th>
             <th>${i18n.t('admin.polls.colCreated')}</th>
             <th>${i18n.t('admin.polls.colExpires')}</th>
             <th>${i18n.t('admin.polls.colActions')}</th>
