@@ -24,7 +24,8 @@ let state = {
   polls: [],
   total: 0,
   page: 1,
-  search: '',
+  searchTitle: '',
+  searchAuthor: '',
   statusFilter: '',
   visibilityFilter: '',
   sortBy: 'created_at',
@@ -38,6 +39,7 @@ let activeLanguageChangedHandler = null;
 let activeSearchOutsideClickHandler = null;
 let keepSearchFocus = false;
 let searchCaretPosition = null;
+let activeSearchFieldId = null;
 
 function getOffset() {
   return (state.page - 1) * PAGE_SIZE;
@@ -136,13 +138,19 @@ function renderFilters() {
   return `
     <div class="vm-admin-filters mb-3">
       <div class="row g-2 align-items-end">
-        <div class="col-12 col-md-4">
+        <div class="col-12 col-lg-2">
           <input type="text" class="form-control form-control-sm"
-                 id="admin-poll-search"
+                 id="admin-poll-search-title"
                  placeholder="${i18n.t('admin.polls.searchPlaceholder')}"
-                 value="${state.search}">
+                 value="${state.searchTitle}">
         </div>
-        <div class="col-6 col-md-2">
+        <div class="col-12 col-lg-2">
+          <input type="text" class="form-control form-control-sm"
+                 id="admin-poll-search-author"
+                 placeholder="${i18n.t('admin.polls.searchPlaceholderAuthor')}"
+                 value="${state.searchAuthor}">
+        </div>
+        <div class="col-6 col-lg-2">
           <select class="form-select form-select-sm" id="admin-poll-status-filter">
             <option value="" ${!state.statusFilter ? 'selected' : ''}>${i18n.t('admin.polls.allStatuses')}</option>
             <option value="open" ${state.statusFilter === 'open' ? 'selected' : ''}>${i18n.t('dashboard.status.open')}</option>
@@ -150,21 +158,21 @@ function renderFilters() {
             <option value="draft" ${state.statusFilter === 'draft' ? 'selected' : ''}>${i18n.t('dashboard.status.draft')}</option>
           </select>
         </div>
-        <div class="col-6 col-md-2">
+        <div class="col-6 col-lg-2">
           <select class="form-select form-select-sm" id="admin-poll-vis-filter">
             <option value="" ${!state.visibilityFilter ? 'selected' : ''}>${i18n.t('admin.polls.allVisibility')}</option>
             <option value="public" ${state.visibilityFilter === 'public' ? 'selected' : ''}>${i18n.t('admin.polls.public')}</option>
             <option value="private" ${state.visibilityFilter === 'private' ? 'selected' : ''}>${i18n.t('admin.polls.private')}</option>
           </select>
         </div>
-        <div class="col-6 col-md-2">
+        <div class="col-6 col-lg-2">
           <select class="form-select form-select-sm" id="admin-poll-sort">
             <option value="created_at" ${state.sortBy === 'created_at' ? 'selected' : ''}>${i18n.t('admin.polls.sortNewest')}</option>
             <option value="votes" ${state.sortBy === 'votes' ? 'selected' : ''}>${i18n.t('admin.polls.sortMostVotes')}</option>
             <option value="title" ${state.sortBy === 'title' ? 'selected' : ''}>${i18n.t('admin.polls.sortTitle')}</option>
           </select>
         </div>
-        <div class="col-6 col-md-auto ms-md-auto">
+        <div class="col-12 col-lg-auto ms-lg-auto">
           <button class="btn btn-sm btn-votamin-outline w-100 vm-admin-filter-reset-btn" id="admin-poll-reset-filters">
             <span data-i18n="admin.polls.resetFilters">${i18n.t('admin.polls.resetFilters')}</span>
           </button>
@@ -364,7 +372,9 @@ function renderContent(container) {
   bindEvents(container);
   i18n.loadTranslations();
 
-  const searchInput = container.querySelector('#admin-poll-search');
+  const fallbackSearchFieldId = 'admin-poll-search-title';
+  const targetSearchFieldId = activeSearchFieldId || fallbackSearchFieldId;
+  const searchInput = container.querySelector(`#${targetSearchFieldId}`);
   if (keepSearchFocus && searchInput) {
     searchInput.focus();
     const targetPos = searchCaretPosition ?? searchInput.value.length;
@@ -382,7 +392,8 @@ async function loadData(container) {
     const [stats, polls, total] = await Promise.all([
       state.stats ? Promise.resolve(state.stats) : fetchAdminPollStats(),
       fetchAdminPolls({
-        search: state.search,
+        searchTitle: state.searchTitle,
+        searchAuthor: state.searchAuthor,
         status: state.statusFilter,
         visibility: state.visibilityFilter,
         sortBy: state.sortBy,
@@ -391,7 +402,8 @@ async function loadData(container) {
         offset: getOffset()
       }),
       countAdminPolls({
-        search: state.search,
+        searchTitle: state.searchTitle,
+        searchAuthor: state.searchAuthor,
         status: state.statusFilter,
         visibility: state.visibilityFilter
       })
@@ -409,7 +421,6 @@ async function loadData(container) {
 }
 
 // ── Event Bindings ─────────────────────────────────
-let searchTimeout = null;
 
 function bindActionDelegation(container) {
   if (actionDelegationBound.has(container)) return;
@@ -528,49 +539,62 @@ function bindActionDelegation(container) {
 }
 
 function bindEvents(container) {
-  // Search
-  const searchInput = container.querySelector('#admin-poll-search');
-  searchInput?.addEventListener('focus', () => {
-    keepSearchFocus = true;
-  });
+  // Search (title + author)
+  const searchTitleInput = container.querySelector('#admin-poll-search-title');
+  const searchAuthorInput = container.querySelector('#admin-poll-search-author');
 
-  searchInput?.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') {
-      keepSearchFocus = false;
-      e.currentTarget.blur();
-    }
-  });
+  const bindSearchInput = (input, stateKey) => {
+    if (!input) return;
+    let searchTimeout = null;
 
-  searchInput?.addEventListener('input', (e) => {
-    keepSearchFocus = true;
-    searchCaretPosition = e.target.selectionStart ?? e.target.value.length;
-    clearTimeout(searchTimeout);
-    searchTimeout = setTimeout(() => {
-      const value = e.target.value.trim();
+    input.addEventListener('focus', () => {
+      keepSearchFocus = true;
+      activeSearchFieldId = input.id;
+    });
 
-      if (value.length === 0) {
-        if (state.search !== '') {
-          state.search = '';
-          state.page = 1;
-          loadData(container);
-        }
-        return;
+    input.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        keepSearchFocus = false;
+        activeSearchFieldId = null;
+        e.currentTarget.blur();
       }
+    });
 
-      if (value.length < 3) {
-        if (state.search !== '') {
-          state.search = '';
-          state.page = 1;
-          loadData(container);
+    input.addEventListener('input', (e) => {
+      keepSearchFocus = true;
+      activeSearchFieldId = input.id;
+      searchCaretPosition = e.target.selectionStart ?? e.target.value.length;
+      clearTimeout(searchTimeout);
+      searchTimeout = setTimeout(() => {
+        const value = e.target.value.trim();
+
+        if (value.length === 0) {
+          if (state[stateKey] !== '') {
+            state[stateKey] = '';
+            state.page = 1;
+            loadData(container);
+          }
+          return;
         }
-        return;
-      }
 
-      state.search = value;
-      state.page = 1;
-      loadData(container);
-    }, 350);
-  });
+        if (value.length < 3) {
+          if (state[stateKey] !== '') {
+            state[stateKey] = '';
+            state.page = 1;
+            loadData(container);
+          }
+          return;
+        }
+
+        state[stateKey] = value;
+        state.page = 1;
+        loadData(container);
+      }, 350);
+    });
+  };
+
+  bindSearchInput(searchTitleInput, 'searchTitle');
+  bindSearchInput(searchAuthorInput, 'searchAuthor');
 
   // Status filter
   container.querySelector('#admin-poll-status-filter')?.addEventListener('change', (e) => {
@@ -595,7 +619,8 @@ function bindEvents(container) {
 
   // Reset filters
   container.querySelector('#admin-poll-reset-filters')?.addEventListener('click', () => {
-    state.search = '';
+    state.searchTitle = '';
+    state.searchAuthor = '';
     state.statusFilter = '';
     state.visibilityFilter = '';
     state.sortBy = 'created_at';
@@ -630,14 +655,25 @@ export default async function render(container) {
   window.addEventListener('votamin:language-changed', activeLanguageChangedHandler);
 
   activeSearchOutsideClickHandler = (event) => {
-    const searchInput = container.querySelector('#admin-poll-search');
-    if (!searchInput) return;
-    if (event.target !== searchInput) {
+    const searchTitleInput = container.querySelector('#admin-poll-search-title');
+    const searchAuthorInput = container.querySelector('#admin-poll-search-author');
+    if (!searchTitleInput && !searchAuthorInput) return;
+    if (event.target !== searchTitleInput && event.target !== searchAuthorInput) {
       keepSearchFocus = false;
+      activeSearchFieldId = null;
     }
   };
   document.addEventListener('pointerdown', activeSearchOutsideClickHandler);
 
-  state = { ...state, polls: [], total: 0, page: 1, stats: null, loading: false };
+  state = {
+    ...state,
+    polls: [],
+    total: 0,
+    page: 1,
+    searchTitle: '',
+    searchAuthor: '',
+    stats: null,
+    loading: false
+  };
   await loadData(container);
 }
