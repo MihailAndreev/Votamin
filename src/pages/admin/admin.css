@@ -33,6 +33,63 @@
   transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 
+.vm-admin-stats-row .col-6 {
+  min-width: 0;
+}
+
+.vm-admin-stat-card {
+  min-height: 80px;
+  border-radius: var(--vm-radius-md, 10px);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 0.2rem;
+}
+
+.vm-admin-stat-value {
+  font-size: 1.8rem;
+  line-height: 1;
+  margin: 0;
+}
+
+.vm-admin-stat-card--skeleton {
+  pointer-events: none;
+}
+
+.vm-admin-stat-skeleton-value,
+.vm-admin-stat-skeleton-label {
+  border-radius: var(--vm-radius-full);
+  background: var(--vm-gray-200);
+}
+
+.vm-admin-stat-skeleton-value {
+  width: 3.25rem;
+  height: 1.35rem;
+}
+
+.vm-admin-stat-skeleton-value--title {
+  width: 70%;
+  max-width: 16rem;
+}
+
+.vm-admin-stat-skeleton-label {
+  width: 5.4rem;
+  height: 0.7rem;
+}
+
+.vm-admin-stat-value--title {
+  font-size: 1.15rem;
+  line-height: 1.2;
+  max-width: 100%;
+}
+
+.vm-admin-stat-card .small {
+  font-size: 0.78rem;
+  line-height: 1.15;
+  margin: 0;
+}
+
 .vm-admin-panel .row .vm-card:hover {
   transform: translateY(-2px);
   box-shadow: var(--vm-shadow-md, 0 4px 6px -1px rgba(0,0,0,.1));
@@ -89,6 +146,18 @@ th.vm-sortable:hover {
 @media (max-width: 768px) {
   .vm-admin-table {
     font-size: 0.82rem;
+  }
+
+  .vm-admin-stat-card {
+    min-height: 74px;
+  }
+
+  .vm-admin-stat-value {
+    font-size: 1.55rem;
+  }
+
+  .vm-admin-stat-value--title {
+    font-size: 1rem;
   }
 
   .vm-admin-table th,

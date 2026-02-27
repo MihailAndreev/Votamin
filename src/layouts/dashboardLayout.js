@@ -5,6 +5,7 @@ import { isAdmin, logout } from '@utils/auth.js';
 import { navigateTo, currentPath } from '../router.js';
 import { i18n } from '../i18n/index.js';
 import { showToast } from '@utils/toast.js';
+import '@pages/dashboard/dashboard.css';
 
 const SIDEBAR_COLLAPSED_KEY = 'votamin_sidebar_collapsed';
 

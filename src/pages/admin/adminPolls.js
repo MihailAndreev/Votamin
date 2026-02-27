@@ -63,50 +63,60 @@ function visibilityBadge(vis) {
 
 // ── Stats Cards ────────────────────────────────────
 function renderStatsCards(stats) {
-  if (!stats) return '<div class="vm-admin-stats-loading">...</div>';
+  if (!stats) {
+    return `
+      <div class="row g-2 mb-3 vm-admin-stats-row vm-admin-stats-row--polls" aria-hidden="true">
+        ${Array.from({ length: 7 }).map((_, index) => `
+          <div class="${index === 6 ? 'col-12 col-lg-6 col-xl' : 'col-6 col-lg-3 col-xl'}">
+            <div class="vm-card p-2 text-center vm-admin-stat-card vm-admin-stat-card--skeleton">
+              <div class="vm-admin-stat-skeleton-value ${index === 6 ? 'vm-admin-stat-skeleton-value--title' : ''}"></div>
+              <div class="vm-admin-stat-skeleton-label"></div>
+            </div>
+          </div>
+        `).join('')}
+      </div>`;
+  }
   return `
-    <div class="row g-3 mb-4">
-      <div class="col-6 col-lg-3">
-        <div class="vm-card p-3 text-center">
-          <div class="fs-3 fw-bold vm-gradient-text">${stats.total_polls ?? 0}</div>
+    <div class="row g-2 mb-3 vm-admin-stats-row vm-admin-stats-row--polls">
+      <div class="col-6 col-lg-3 col-xl">
+        <div class="vm-card p-2 text-center vm-admin-stat-card">
+          <div class="fw-bold vm-gradient-text vm-admin-stat-value">${stats.total_polls ?? 0}</div>
           <div class="text-muted small" data-i18n="admin.polls.totalPolls">${i18n.t('admin.polls.totalPolls')}</div>
         </div>
       </div>
-      <div class="col-6 col-lg-3">
-        <div class="vm-card p-3 text-center">
-          <div class="fs-3 fw-bold" style="color:var(--vm-teal);">${stats.active_polls ?? 0}</div>
+      <div class="col-6 col-lg-3 col-xl">
+        <div class="vm-card p-2 text-center vm-admin-stat-card">
+          <div class="fw-bold vm-admin-stat-value" style="color:var(--vm-teal);">${stats.active_polls ?? 0}</div>
           <div class="text-muted small" data-i18n="admin.polls.activePolls">${i18n.t('admin.polls.activePolls')}</div>
         </div>
       </div>
-      <div class="col-6 col-lg-3">
-        <div class="vm-card p-3 text-center">
-          <div class="fs-3 fw-bold" style="color:var(--vm-orange);">${stats.total_votes ?? 0}</div>
+      <div class="col-6 col-lg-3 col-xl">
+        <div class="vm-card p-2 text-center vm-admin-stat-card">
+          <div class="fw-bold vm-admin-stat-value" style="color:var(--vm-orange);">${stats.total_votes ?? 0}</div>
           <div class="text-muted small" data-i18n="admin.polls.totalVotes">${i18n.t('admin.polls.totalVotes')}</div>
         </div>
       </div>
-      <div class="col-6 col-lg-3">
-        <div class="vm-card p-3 text-center">
-          <div class="fs-3 fw-bold" style="color:var(--vm-yellow);">${stats.avg_votes_per_poll ?? 0}</div>
+      <div class="col-6 col-lg-3 col-xl">
+        <div class="vm-card p-2 text-center vm-admin-stat-card">
+          <div class="fw-bold vm-admin-stat-value" style="color:var(--vm-yellow);">${stats.avg_votes_per_poll ?? 0}</div>
           <div class="text-muted small" data-i18n="admin.polls.avgVotes">${i18n.t('admin.polls.avgVotes')}</div>
         </div>
       </div>
-    </div>
-    <div class="row g-3 mb-4">
-      <div class="col-6 col-lg-4">
-        <div class="vm-card p-3 text-center">
-          <div class="fs-4 fw-bold text-danger">${stats.closed_polls ?? 0}</div>
+      <div class="col-6 col-lg-3 col-xl">
+        <div class="vm-card p-2 text-center vm-admin-stat-card">
+          <div class="fw-bold vm-admin-stat-value" style="color:var(--bs-danger);">${stats.closed_polls ?? 0}</div>
           <div class="text-muted small" data-i18n="admin.polls.closedPolls">${i18n.t('admin.polls.closedPolls')}</div>
         </div>
       </div>
-      <div class="col-6 col-lg-4">
-        <div class="vm-card p-3 text-center">
-          <div class="fs-4 fw-bold text-muted">${stats.polls_with_zero_votes ?? 0}</div>
+      <div class="col-6 col-lg-3 col-xl">
+        <div class="vm-card p-2 text-center vm-admin-stat-card">
+          <div class="fw-bold vm-admin-stat-value" style="color:var(--bs-secondary);">${stats.polls_with_zero_votes ?? 0}</div>
           <div class="text-muted small" data-i18n="admin.polls.zeroVotes">${i18n.t('admin.polls.zeroVotes')}</div>
         </div>
       </div>
-      <div class="col-12 col-lg-4">
-        <div class="vm-card p-3 text-center">
-          <div class="fs-6 fw-bold vm-gradient-text text-truncate" title="${stats.most_voted_poll_title || '—'}">
+      <div class="col-12 col-lg-6 col-xl">
+        <div class="vm-card p-2 text-center vm-admin-stat-card">
+          <div class="fw-bold vm-gradient-text vm-admin-stat-value vm-admin-stat-value--title text-truncate" title="${stats.most_voted_poll_title || '—'}">
             🏆 ${stats.most_voted_poll_title || '—'}
           </div>
           <div class="text-muted small">

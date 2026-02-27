@@ -42,54 +42,66 @@ function totalPages() {
 
 // ── Stats Cards ────────────────────────────────────
 function renderStatsCards(stats) {
-  if (!stats) return '<div class="vm-admin-stats-loading">...</div>';
+  if (!stats) {
+    return `
+      <div class="row g-2 mb-3 vm-admin-stats-row" aria-hidden="true">
+        ${Array.from({ length: 8 }).map(() => `
+          <div class="col-6 col-lg-3 col-xl">
+            <div class="vm-card p-2 text-center vm-admin-stat-card vm-admin-stat-card--skeleton">
+              <div class="vm-admin-stat-skeleton-value"></div>
+              <div class="vm-admin-stat-skeleton-label"></div>
+            </div>
+          </div>
+        `).join('')}
+      </div>`;
+  }
   return `
-    <div class="row g-3 mb-4">
+    <div class="row g-2 mb-3 vm-admin-stats-row">
       <div class="col-6 col-lg-3 col-xl">
-        <div class="vm-card p-3 text-center">
-          <div class="fs-3 fw-bold vm-gradient-text">${stats.total_users ?? 0}</div>
+        <div class="vm-card p-2 text-center vm-admin-stat-card">
+          <div class="fw-bold vm-gradient-text vm-admin-stat-value">${stats.total_users ?? 0}</div>
           <div class="text-muted small" data-i18n="admin.users.totalUsers">${i18n.t('admin.users.totalUsers')}</div>
         </div>
       </div>
       <div class="col-6 col-lg-3 col-xl">
-        <div class="vm-card p-3 text-center">
-          <div class="fs-3 fw-bold" style="color:var(--vm-orange);">${stats.admin_users ?? 0}</div>
+        <div class="vm-card p-2 text-center vm-admin-stat-card">
+          <div class="fw-bold vm-admin-stat-value" style="color:var(--vm-orange);">${stats.admin_users ?? 0}</div>
           <div class="text-muted small" data-i18n="admin.users.adminCount">${i18n.t('admin.users.adminCount')}</div>
         </div>
       </div>
       <div class="col-6 col-lg-3 col-xl">
-        <div class="vm-card p-3 text-center">
-          <div class="fs-3 fw-bold" style="color:var(--vm-teal);">${stats.new_today ?? 0}</div>
+        <div class="vm-card p-2 text-center vm-admin-stat-card">
+          <div class="fw-bold vm-admin-stat-value" style="color:var(--vm-teal);">${stats.new_today ?? 0}</div>
           <div class="text-muted small" data-i18n="admin.users.newToday">${i18n.t('admin.users.newToday')}</div>
         </div>
       </div>
       <div class="col-6 col-lg-3 col-xl">
-        <div class="vm-card p-3 text-center">
-          <div class="fs-3 fw-bold" style="color:var(--vm-yellow);">${stats.new_this_week ?? 0}</div>
+        <div class="vm-card p-2 text-center vm-admin-stat-card">
+          <div class="fw-bold vm-admin-stat-value" style="color:var(--vm-yellow);">${stats.new_this_week ?? 0}</div>
           <div class="text-muted small" data-i18n="admin.users.newThisWeek">${i18n.t('admin.users.newThisWeek')}</div>
         </div>
       </div>
       <div class="col-6 col-lg-3 col-xl">
-        <div class="vm-card p-3 text-center">
-          <div class="fs-3 fw-bold" style="color:var(--bs-success);">${stats.active_7d ?? 0}</div>
+        <div class="vm-card p-2 text-center vm-admin-stat-card">
+          <div class="fw-bold vm-admin-stat-value" style="color:var(--bs-success);">${stats.active_7d ?? 0}</div>
           <div class="text-muted small" data-i18n="admin.users.active7d">${i18n.t('admin.users.active7d')}</div>
         </div>
       </div>
       <div class="col-6 col-lg-3 col-xl">
-        <div class="vm-card p-3 text-center">
-          <div class="fs-3 fw-bold" style="color:var(--bs-info);">${stats.active_30d ?? 0}</div>
+        <div class="vm-card p-2 text-center vm-admin-stat-card">
+          <div class="fw-bold vm-admin-stat-value" style="color:var(--bs-info);">${stats.active_30d ?? 0}</div>
           <div class="text-muted small" data-i18n="admin.users.active30d">${i18n.t('admin.users.active30d')}</div>
         </div>
       </div>
       <div class="col-6 col-lg-3 col-xl">
-        <div class="vm-card p-3 text-center">
-          <div class="fs-3 fw-bold" style="color:var(--bs-secondary);">${stats.inactive_30d ?? 0}</div>
+        <div class="vm-card p-2 text-center vm-admin-stat-card">
+          <div class="fw-bold vm-admin-stat-value" style="color:var(--bs-secondary);">${stats.inactive_30d ?? 0}</div>
           <div class="text-muted small" data-i18n="admin.users.inactive30d">${i18n.t('admin.users.inactive30d')}</div>
         </div>
       </div>
       <div class="col-6 col-lg-3 col-xl">
-        <div class="vm-card p-3 text-center">
-          <div class="fs-3 fw-bold" style="color:var(--bs-danger);">${stats.blocked_users ?? 0}</div>
+        <div class="vm-card p-2 text-center vm-admin-stat-card">
+          <div class="fw-bold vm-admin-stat-value" style="color:var(--bs-danger);">${stats.blocked_users ?? 0}</div>
           <div class="text-muted small" data-i18n="admin.users.blockedUsers">${i18n.t('admin.users.blockedUsers')}</div>
         </div>
       </div>

@@ -27,9 +27,9 @@ export default async function render(container, params, route) {
   /* Render sidebar */
   const pageContainer = renderDashboardLayout(container);
 
-  /* Determine active tab from URL */
+  /* Determine active section from URL */
   const activePath = window.location.pathname;
-  const isPollsTab = activePath === '/admin/polls';
+  const isPollsSection = activePath === '/admin/polls';
 
   pageContainer.innerHTML = `
     <div class="vm-admin-panel">
@@ -39,18 +39,6 @@ export default async function render(container, params, route) {
           <p class="text-muted small mb-0" data-i18n="admin.subtitle">${i18n.t('admin.subtitle')}</p>
         </div>
       </div>
-
-      <!-- Tabs -->
-      <ul class="nav nav-pills vm-admin-tabs mb-4" role="tablist">
-        <li class="nav-item" role="presentation">
-          <a class="nav-link ${!isPollsTab ? 'active' : ''}" href="/admin"
-             data-i18n="admin.tabs.users">${i18n.t('admin.tabs.users')}</a>
-        </li>
-        <li class="nav-item" role="presentation">
-          <a class="nav-link ${isPollsTab ? 'active' : ''}" href="/admin/polls"
-             data-i18n="admin.tabs.polls">${i18n.t('admin.tabs.polls')}</a>
-        </li>
-      </ul>
 
       <!-- Tab content -->
       <div id="admin-tab-content">
@@ -64,7 +52,7 @@ export default async function render(container, params, route) {
   /* Load the right sub-module */
   const tabContent = pageContainer.querySelector('#admin-tab-content');
 
-  if (isPollsTab) {
+  if (isPollsSection) {
     const mod = await import('./adminPolls.js');
     await mod.default(tabContent);
   } else {

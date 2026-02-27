@@ -55,6 +55,12 @@ async function bootstrapApp() {
     }
     document.body.classList.remove('vm-auth-modal-open');
 
+    const guestOnlyRoute = route.path === '/' || route.path === '/login' || route.path === '/register';
+    if (guestOnlyRoute && isLoggedIn()) {
+      navigateTo('/dashboard');
+      return;
+    }
+
     // Route guard: redirect to login if auth required but not logged in
     if (route.auth && !isLoggedIn()) {
       navigateTo('/login');
