@@ -187,8 +187,8 @@ function renderUsersTable() {
         <td>${statusBadge}</td>
         <td class="text-muted small">${u.registered_at ? formatDate(u.registered_at) : '—'}</td>
         <td class="text-muted small">${u.last_sign_in ? formatDate(u.last_sign_in) : '—'}</td>
-        <td class="text-center"><span class="vm-badge">${u.polls_created}</span></td>
-        <td class="text-center"><span class="vm-badge">${u.votes_given}</span></td>
+        <td class="text-center"><span class="text-muted small">${u.polls_created}</span></td>
+        <td class="text-center"><span class="text-muted small">${u.votes_given}</span></td>
         <td>
           <div class="dropdown">
             <button class="btn btn-sm btn-votamin-outline dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
