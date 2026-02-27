@@ -6,7 +6,7 @@ import { getCurrentUser } from '@utils/auth.js';
 import { showToast } from '@utils/toast.js';
 import { i18n } from '../../../i18n/index.js';
 import { navigateTo } from '../../../router.js';
-import { closePollById, deletePollById, fetchPollById, updatePollById, fetchPollVoters } from '@utils/pollsData.js';
+import { closePollById, deletePollById, fetchPollById, updatePollById, fetchPollVoters, getOrCreatePollShareCode } from '@utils/pollsData.js';
 import { getLoaderMarkup } from '@components/loader.js';
 import { showConfirmModal } from '@components/confirmModal.js';
 
@@ -437,6 +437,14 @@ export default async function render(container, params) {
   const isEditModeFromUrl = new URLSearchParams(window.location.search).get('edit') === '1';
   let isEditMode = isEditModeFromUrl && poll.is_owner;
 
+  const ensureShareCodeForOpenPoll = async () => {
+    if (!poll?.is_owner) return;
+    if (poll.status !== 'open') return;
+    if (poll.share_code) return;
+
+    await getOrCreatePollShareCode(pollId);
+  };
+
   const renderView = () => {
     container.innerHTML = renderPollDetailMarkup(poll, { isEditMode, isFromAdminPolls });
 
@@ -505,6 +513,10 @@ export default async function render(container, params) {
             : null,
         });
 
+        if (status === 'open') {
+          await getOrCreatePollShareCode(pollId);
+        }
+
         poll = await fetchPollById(pollId);
         if (poll.is_owner) {
           poll._voters = await fetchPollVoters(pollId);
@@ -552,6 +564,7 @@ export default async function render(container, params) {
     container.querySelector('#btn-publish-poll')?.addEventListener('click', async () => {
       try {
         await updatePollById(pollId, { status: 'open' });
+        await getOrCreatePollShareCode(pollId);
         poll = await fetchPollById(pollId);
         if (poll.is_owner) {
           poll._voters = await fetchPollVoters(pollId);
@@ -583,6 +596,16 @@ export default async function render(container, params) {
       });
     });
   };
+
+  try {
+    await ensureShareCodeForOpenPoll();
+    poll = await fetchPollById(pollId);
+    if (poll.is_owner) {
+      poll._voters = await fetchPollVoters(pollId);
+    }
+  } catch (error) {
+    console.error('Failed to ensure share code for open poll:', error);
+  }
 
   renderView();
 
