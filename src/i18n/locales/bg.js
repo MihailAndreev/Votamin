@@ -469,6 +469,7 @@ export default {
     editCancel: 'Откажи',
     editAction: 'Редактирай',
     backToMyPolls: '← Обратно към моите анкети',
+    backToAdminPolls: '← Обратно към админ анкети',
     noDescription: 'Без описание',
     shareCode: 'Код за споделяне:',
     editTitle: 'Редакция',

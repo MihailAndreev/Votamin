@@ -428,7 +428,7 @@ function bindActionDelegation(container) {
     const title = btn.dataset.title || '';
 
     if (action === 'view-poll') {
-      navigateTo(`/polls/${pid}`);
+      navigateTo(`/polls/${pid}?from=admin-polls`);
     }
 
     if (action === 'view-voters') {

@@ -469,6 +469,7 @@ export default {
     editCancel: 'Cancel',
     editAction: 'Edit',
     backToMyPolls: '← Back to my polls',
+    backToAdminPolls: '← Back to admin polls',
     noDescription: 'No description',
     shareCode: 'Share code:',
     editTitle: 'Edit',

@@ -289,7 +289,24 @@ function renderRightSidebar(poll) {
     </aside>`;
 }
 
-function renderPollDetailMarkup(poll, { isEditMode }) {
+function renderBackLinks({ isFromAdminPolls }) {
+  const backToMyPolls = `
+    <a href="/dashboard/polls" class="vm-poll-back-link mb-3 d-inline-flex align-items-center">${i18n.t('pollDetail.backToMyPolls')}</a>
+  `;
+
+  if (!isFromAdminPolls) {
+    return backToMyPolls;
+  }
+
+  return `
+    <div class="d-flex flex-wrap gap-2 mb-3 vm-poll-back-links">
+      ${backToMyPolls}
+      <a href="/admin/polls" class="vm-poll-back-link vm-poll-back-link--admin d-inline-flex align-items-center">${i18n.t('pollDetail.backToAdminPolls')}</a>
+    </div>
+  `;
+}
+
+function renderPollDetailMarkup(poll, { isEditMode, isFromAdminPolls }) {
   const shareCode = poll.share_code || '—';
   const copyLinkHtml = poll.share_code
     ? `· <a href="#" id="copy-link" class="fw-semibold">${i18n.t('pollDetail.copyLink')}</a>`
@@ -298,7 +315,7 @@ function renderPollDetailMarkup(poll, { isEditMode }) {
 
   return `
   <section class="container vm-section vm-poll-detail-wrapper">
-    <a href="/dashboard/polls" class="vm-poll-back-link mb-3 d-inline-flex align-items-center">${i18n.t('pollDetail.backToMyPolls')}</a>
+    ${renderBackLinks({ isFromAdminPolls })}
 
     <div class="vm-poll-detail-grid">
       ${renderLeftSidebar(poll)}
@@ -391,6 +408,7 @@ export default async function render(container, params) {
   `;
 
   const pollId = params?.id;
+  const isFromAdminPolls = new URLSearchParams(window.location.search).get('from') === 'admin-polls';
   if (!pollId) {
     showToast(i18n.t('pollDetail.missingPollId'), 'error');
     navigateTo('/dashboard/polls');
@@ -420,7 +438,7 @@ export default async function render(container, params) {
   let isEditMode = isEditModeFromUrl && poll.is_owner;
 
   const renderView = () => {
-    container.innerHTML = renderPollDetailMarkup(poll, { isEditMode });
+    container.innerHTML = renderPollDetailMarkup(poll, { isEditMode, isFromAdminPolls });
 
     if (removeExportOutsideClickListener) {
       removeExportOutsideClickListener();
