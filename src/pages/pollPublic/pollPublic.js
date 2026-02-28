@@ -35,6 +35,13 @@ function t(key) {
   return i18n.t(`publicPoll.${key}`);
 }
 
+function getInviteText(inviterLabel) {
+  if (typeof inviterLabel === 'string' && inviterLabel.trim()) {
+    return t('inviteTextWithName').replace('{inviter}', inviterLabel.trim());
+  }
+  return t('inviteTextFallback');
+}
+
 function renderErrorState(message) {
   return `
     <div class="min-vh-100 d-flex align-items-center justify-content-center"
@@ -82,6 +89,7 @@ function renderPublicPollMarkup(poll) {
   const isClosed = poll.status === 'closed';
   const description = poll.description || '';
   const poweredByHref = getCurrentUser() ? '/dashboard' : '/';
+  const inviteText = getInviteText(poll.inviter_label);
 
   return `
     <div class="min-vh-100 d-flex align-items-center justify-content-center"
@@ -90,6 +98,7 @@ function renderPublicPollMarkup(poll) {
         <div class="vm-card p-4 p-md-5">
           <div class="text-center mb-4">
             <img src="/images/logo/logo.svg" alt="Votamin" class="vm-public-brand-logo" />
+            <p class="text-muted mb-2" id="public-poll-invite">${escapeHtml(inviteText)}</p>
             <h4 class="vm-public-poll-title fw-bold" id="public-poll-title">${escapeHtml(poll.title)}</h4>
             ${description ? `<p class="text-muted small" id="public-poll-desc">${escapeHtml(description)}</p>` : ''}
           </div>
@@ -150,9 +159,20 @@ async function fetchPublicPollByCode(code) {
 
   if (optionsError) throw optionsError;
 
+  let inviterLabel = null;
+  const { data: inviterRow, error: inviterError } = await supabaseClient
+    .rpc('get_public_poll_inviter', { p_share_code: code })
+    .maybeSingle();
+
+  if (!inviterError && typeof inviterRow?.inviter_label === 'string') {
+    const trimmed = inviterRow.inviter_label.trim();
+    inviterLabel = trimmed || null;
+  }
+
   return {
     ...poll,
     description: stripHtml(poll.description_html),
+    inviter_label: inviterLabel,
     options: options || [],
   };
 }

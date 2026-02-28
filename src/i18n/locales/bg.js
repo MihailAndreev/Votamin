@@ -286,6 +286,8 @@ export default {
   },
   publicPoll: {
     fallbackDescription: 'Избери своя отговор.',
+    inviteTextWithName: '{inviter} ви покани да участвате в тази анкета.',
+    inviteTextFallback: 'Авторът на анкетата ви покани да участвате в тази анкета.',
     notAccessibleTitle: 'Анкетата не е достъпна',
     numericLabel: 'Въведи стойност',
     numericPlaceholder: 'Например: 10',

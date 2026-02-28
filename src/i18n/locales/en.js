@@ -284,6 +284,8 @@ export default {
   },
   publicPoll: {
     fallbackDescription: 'Choose your answer.',
+    inviteTextWithName: '{inviter} invited you to participate in this poll.',
+    inviteTextFallback: 'The poll author invited you to participate in this poll.',
     notAccessibleTitle: 'This poll is not available',
     numericLabel: 'Enter a value',
     numericPlaceholder: 'For example: 10',
