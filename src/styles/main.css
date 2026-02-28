@@ -96,6 +96,25 @@ img {
   transform: scale(1.05);
 }
 
+.vm-navbar-main-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  flex-wrap: nowrap;
+}
+
+.vm-navbar-controls {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  margin-left: auto;
+}
+
+.vm-navbar .navbar-toggler {
+  margin-left: 0;
+}
+
 .vm-navbar .nav-link {
   color: var(--vm-gray-700);
   font-weight: 500;
@@ -165,6 +184,11 @@ img {
   display: none;
 }
 
+.vm-navbar-user-name,
+.vm-navbar-user-name-mobile {
+  display: none !important;
+}
+
 .vm-navbar-avatar-btn {
   width: 36px;
   height: 36px;
@@ -196,6 +220,16 @@ img {
 
 .vm-navbar-avatar-dropdown .dropdown-menu {
   min-width: 13rem;
+}
+
+@media (max-width: 767.98px) {
+  .vm-navbar .navbar-brand {
+    margin-right: 0;
+  }
+
+  .vm-navbar .navbar-collapse {
+    margin-top: 0.5rem;
+  }
 }
 
 /* ── Footer ───────────────────────────────────────── */

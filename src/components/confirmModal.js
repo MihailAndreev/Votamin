@@ -17,11 +17,14 @@ function injectStyles() {
       justify-content: center;
       z-index: 2000;
       padding: 1rem;
+      overflow-y: auto;
     }
 
     .vm-confirm-modal {
       width: 100%;
-      max-width: 460px;
+      max-width: min(460px, calc(100vw - 1.25rem));
+      max-height: calc(100vh - 1.5rem);
+      overflow: auto;
       background: var(--vm-white);
       border-radius: var(--vm-radius-xl, 16px);
       border: 1px solid var(--vm-gray-200);
@@ -47,6 +50,25 @@ function injectStyles() {
       display: flex;
       justify-content: flex-end;
       gap: .5rem;
+    }
+
+    @media (max-width: 575.98px) {
+      .vm-confirm-backdrop {
+        padding: 0.6rem;
+      }
+
+      .vm-confirm-modal {
+        border-radius: 12px;
+        padding: 1rem;
+      }
+
+      .vm-confirm-actions {
+        flex-direction: column-reverse;
+      }
+
+      .vm-confirm-actions .btn {
+        width: 100%;
+      }
     }
   `;
 

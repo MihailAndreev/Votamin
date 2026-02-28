@@ -17,11 +17,14 @@ function injectStyles() {
       align-items: center;
       justify-content: center;
       padding: 1rem;
+      overflow-y: auto;
     }
 
     .vm-avatar-crop-modal {
       width: 100%;
-      max-width: 520px;
+      max-width: min(520px, calc(100vw - 1.25rem));
+      max-height: calc(100vh - 1.5rem);
+      overflow: auto;
       background: var(--vm-white);
       border: 1px solid var(--vm-gray-200);
       border-radius: var(--vm-radius-xl, 16px);
@@ -86,6 +89,25 @@ function injectStyles() {
       display: flex;
       justify-content: flex-end;
       gap: 0.5rem;
+    }
+
+    @media (max-width: 575.98px) {
+      .vm-avatar-crop-backdrop {
+        padding: 0.6rem;
+      }
+
+      .vm-avatar-crop-modal {
+        border-radius: 12px;
+        padding: 0.85rem;
+      }
+
+      .vm-avatar-crop-actions {
+        flex-direction: column-reverse;
+      }
+
+      .vm-avatar-crop-actions .btn {
+        width: 100%;
+      }
     }
   `;
 

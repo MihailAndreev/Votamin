@@ -154,7 +154,15 @@
 
 .vm-auth-modal-card {
   width: 100%;
-  max-width: 460px;
+  max-width: min(460px, calc(100vw - 1.25rem));
+  max-height: calc(100vh - 1.5rem);
+  overflow: auto;
+}
+
+@media (max-width: 575.98px) {
+  .vm-auth-modal-backdrop {
+    padding: 0.6rem;
+  }
 }
 
 body.vm-auth-modal-open {

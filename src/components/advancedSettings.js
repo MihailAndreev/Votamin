@@ -58,6 +58,8 @@ export function renderAdvancedSettings(settings = {}, onChange) {
         align-items: center;
         gap: 0.5rem;
         margin: 0;
+        min-width: 0;
+        overflow-wrap: anywhere;
       }
 
       .settings-icon {
@@ -229,6 +231,26 @@ export function renderAdvancedSettings(settings = {}, onChange) {
       @media (max-width: 640px) {
         .theme-selector {
           grid-template-columns: repeat(3, 1fr);
+        }
+      }
+
+      @media (max-width: 420px) {
+        .advanced-settings-header {
+          padding: 0.85rem 1rem;
+        }
+
+        .advanced-settings-title {
+          font-size: 0.94rem;
+        }
+
+        .settings-grid {
+          padding: 1rem;
+          gap: 1.1rem;
+        }
+
+        .radio-option {
+          padding: 0.65rem;
+          gap: 0.6rem;
         }
       }
     </style>

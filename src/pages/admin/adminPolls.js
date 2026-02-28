@@ -191,24 +191,32 @@ function renderPollsTable() {
     return `<div class="text-center text-muted py-5" data-i18n="admin.polls.noPolls">${i18n.t('admin.polls.noPolls')}</div>`;
   }
 
-  const renderCardActions = (pollId, pollTitle, status) => {
-    const actions = [
-      `<button class="btn btn-sm btn-votamin-outline" data-action="view-poll" data-pid="${pollId}">${i18n.t('admin.polls.viewDetails')}</button>`,
-      `<button class="btn btn-sm btn-votamin-outline" data-action="view-voters" data-pid="${pollId}" data-title="${pollTitle}">${i18n.t('admin.polls.viewVoters')}</button>`
-    ];
-
-    if (status === 'open') {
-      actions.push(`<button class="btn btn-sm btn-votamin-outline" data-action="close-poll" data-pid="${pollId}">${i18n.t('admin.polls.closePoll')}</button>`);
-    }
-
-    if (status === 'closed') {
-      actions.push(`<button class="btn btn-sm btn-votamin-outline" data-action="reopen-poll" data-pid="${pollId}">${i18n.t('admin.polls.reopenPoll')}</button>`);
-    }
-
-    actions.push(`<button class="btn btn-sm btn-votamin-outline" data-action="reset-votes" data-pid="${pollId}" data-title="${pollTitle}">${i18n.t('admin.polls.resetVotes')}</button>`);
-    actions.push(`<button class="btn btn-sm btn-outline-danger" data-action="delete-poll" data-pid="${pollId}" data-title="${pollTitle}">${i18n.t('admin.polls.deletePoll')}</button>`);
-
-    return actions.join('');
+  const renderCardActions = (poll) => {
+    const pollId = poll.poll_id || poll.id;
+    return `
+      <button class="btn btn-sm btn-votamin-outline" data-action="view-poll" data-pid="${pollId}">
+        ${i18n.t('admin.polls.viewDetails')}
+      </button>
+      <button class="btn btn-sm btn-votamin-outline" data-action="view-voters" data-pid="${pollId}" data-title="${poll.title}">
+        ${i18n.t('admin.polls.viewVoters')}
+      </button>
+      ${poll.status === 'open' ? `
+        <button class="btn btn-sm btn-votamin-outline" data-action="close-poll" data-pid="${pollId}">
+          ${i18n.t('admin.polls.closePoll')}
+        </button>
+      ` : ''}
+      ${poll.status === 'closed' ? `
+        <button class="btn btn-sm btn-votamin-outline" data-action="reopen-poll" data-pid="${pollId}">
+          ${i18n.t('admin.polls.reopenPoll')}
+        </button>
+      ` : ''}
+      <button class="btn btn-sm btn-votamin-outline" data-action="reset-votes" data-pid="${pollId}" data-title="${poll.title}">
+        ${i18n.t('admin.polls.resetVotes')}
+      </button>
+      <button class="btn btn-sm btn-outline-danger" data-action="delete-poll" data-pid="${pollId}" data-title="${poll.title}">
+        ${i18n.t('admin.polls.deletePoll')}
+      </button>
+    `;
   };
 
   const rows = state.polls.map(p => {
@@ -265,26 +273,24 @@ function renderPollsTable() {
 
   const cards = state.polls.map((p) => {
     const pollId = p.poll_id || p.id;
-    const featuredBadge = p.featured ? '<span class="badge bg-warning text-dark">⭐</span>' : '';
-
+    const featuredBadge = p.featured ? ' <span class="badge bg-warning text-dark">⭐</span>' : '';
     return `
       <article class="vm-admin-poll-card">
         <div class="vm-admin-poll-card-head">
-          <div class="vm-admin-poll-card-title" title="${p.title}">${p.title}</div>
+          <div class="vm-admin-poll-card-title" title="${p.title}">${p.title}${featuredBadge}</div>
           <div class="vm-admin-poll-card-badges">
-            ${featuredBadge}
             ${statusBadge(p.status)}
             ${visibilityBadge(p.visibility)}
           </div>
         </div>
-        <div class="vm-admin-poll-card-creator">${p.creator_name || p.creator_email}</div>
+        <div class="vm-admin-poll-card-author">${p.creator_name || p.creator_email}</div>
         <div class="vm-admin-poll-card-meta">
           <span><strong>${i18n.t('admin.polls.colParticipants')}:</strong> ${p.votes_count}</span>
           <span><strong>${i18n.t('admin.polls.colCreated')}:</strong> ${p.created_at ? formatDate(p.created_at) : '—'}</span>
           <span><strong>${i18n.t('admin.polls.colExpires')}:</strong> ${p.ends_at ? formatDate(p.ends_at) : '—'}</span>
         </div>
         <div class="vm-admin-poll-card-actions">
-          ${renderCardActions(pollId, p.title, p.status)}
+          ${renderCardActions({ ...p, poll_id: pollId })}
         </div>
       </article>
     `;

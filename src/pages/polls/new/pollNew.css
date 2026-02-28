@@ -2,9 +2,12 @@
 
 .poll-wizard-container {
   max-width: 900px;
+  width: 100%;
   margin: 0 auto;
   padding: 2rem 1.5rem;
   min-height: 100vh;
+  box-sizing: border-box;
+  overflow-x: clip;
 }
 
 /* Wizard Header */
@@ -51,6 +54,7 @@
   font-weight: 700;
   color: var(--text-color, #111827);
   margin: 0.5rem 0;
+  overflow-wrap: anywhere;
 }
 
 .wizard-subtitle {
@@ -142,6 +146,9 @@
   padding: 2.5rem;
   margin-bottom: 2rem;
   min-height: 500px;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
   animation: fadeIn 0.3s ease;
 }
 
@@ -164,6 +171,15 @@
   display: block;
 }
 
+.step-content,
+.step-section,
+.form-field,
+.poll-type-selector,
+.advanced-settings {
+  min-width: 0;
+  max-width: 100%;
+}
+
 /* Form Fields */
 .form-field {
   margin-bottom: 1.5rem;
@@ -180,6 +196,7 @@
 .form-input,
 .form-textarea {
   width: 100%;
+  max-width: 100%;
   padding: 0.75rem 1rem;
   border: 2px solid var(--border-color, #e5e7eb);
   border-radius: 8px;
@@ -308,6 +325,7 @@
   font-weight: 700;
   color: var(--text-color, #111827);
   margin-bottom: 0.5rem;
+  overflow-wrap: anywhere;
 }
 
 .preview-description {
@@ -391,12 +409,14 @@
   display: flex;
   gap: 1rem;
   justify-content: center;
+  flex-wrap: wrap;
 }
 
 /* Responsive Design */
 @media (max-width: 768px) {
   .poll-wizard-container {
     padding: 1.5rem 1rem;
+    margin: 0;
   }
 
   .wizard-title {
@@ -405,10 +425,20 @@
 
   .wizard-content {
     padding: 1.5rem;
+    border-radius: 14px;
   }
 
   .wizard-stepper {
     padding: 0;
+    overflow-x: auto;
+    justify-content: flex-start;
+    gap: 0.75rem;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .wizard-step {
+    flex: 0 0 auto;
+    min-width: 72px;
   }
 
   .step-label {
@@ -433,15 +463,50 @@
     width: 100%;
     justify-content: center;
   }
+
+  .share-actions .wizard-btn,
+  .share-actions .btn {
+    width: 100%;
+    justify-content: center;
+  }
 }
 
 @media (max-width: 480px) {
+  .poll-wizard-container {
+    padding: 0.85rem 0.5rem;
+  }
+
+  .wizard-content {
+    padding: 0.9rem;
+  }
+
+  .back-link {
+    font-size: 0.85rem;
+    padding: 0.38rem 0.62rem;
+  }
+
   .wizard-stepper::before {
     display: none;
   }
 
+  .wizard-stepper {
+    overflow-x: visible;
+    justify-content: space-between;
+    gap: 0.35rem;
+  }
+
+  .wizard-step {
+    flex: 1 1 0;
+    min-width: 0;
+  }
+
   .step-label {
     display: none;
+  }
+
+  .step-indicator {
+    width: 34px;
+    height: 34px;
   }
 
   .preview-question {

@@ -105,18 +105,23 @@ export function renderPollTypeSelector(selectedType, onSelectType) {
 
       .poll-type-trigger-text {
         flex: 1;
+        min-width: 0;
       }
 
       .poll-type-trigger-title {
         font-weight: 600;
         color: var(--text-color, #111827);
         font-size: 0.9375rem;
+        display: block;
+        overflow-wrap: anywhere;
       }
 
       .poll-type-trigger-desc {
         font-size: 0.75rem;
         color: var(--text-secondary, #6b7280);
         margin-top: 0.125rem;
+        display: block;
+        overflow-wrap: anywhere;
       }
 
       .poll-type-chevron {
@@ -180,17 +185,22 @@ export function renderPollTypeSelector(selectedType, onSelectType) {
 
       .poll-type-option-text {
         flex: 1;
+        min-width: 0;
       }
 
       .poll-type-option-title {
         font-weight: 600;
         color: var(--text-color, #111827);
         font-size: 0.875rem;
+        display: block;
+        overflow-wrap: anywhere;
       }
 
       .poll-type-option-desc {
         font-size: 0.75rem;
         color: var(--text-secondary, #6b7280);
+        display: block;
+        overflow-wrap: anywhere;
       }
 
       .poll-type-option .check-icon {
@@ -203,6 +213,24 @@ export function renderPollTypeSelector(selectedType, onSelectType) {
 
       .poll-type-option.active .check-icon {
         display: block;
+      }
+
+      @media (max-width: 420px) {
+        .poll-type-trigger,
+        .poll-type-option {
+          padding: 0.65rem 0.75rem;
+          gap: 0.6rem;
+        }
+
+        .poll-type-trigger-title,
+        .poll-type-option-title {
+          font-size: 0.88rem;
+        }
+
+        .poll-type-trigger-desc,
+        .poll-type-option-desc {
+          font-size: 0.72rem;
+        }
       }
     </style>
 

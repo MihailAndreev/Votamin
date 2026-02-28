@@ -40,24 +40,38 @@ export function renderNavbar(container) {
 
   container.innerHTML = `
     <nav class="navbar navbar-expand-lg vm-navbar sticky-top">
-      <div class="${navContainerClass}">
-        <!-- Brand -->
-        <div class="d-flex align-items-center gap-3">
-          <a class="navbar-brand d-flex align-items-center" href="${brandHref}">
-            <img src="/images/logo/logo.svg" alt="Votamin" height="36" class="vm-brand-logo">
-          </a>
-          ${loggedIn ? `
-            <span class="vm-navbar-user-name vm-navbar-user-name-mobile d-inline d-md-none" id="navbar-user-name-mobile">${displayName}</span>
-            <span class="vm-navbar-user-name d-none d-md-inline" id="navbar-user-name">${displayName}</span>
-          ` : ''}
-        </div>
+      <div class="${navContainerClass} vm-navbar-main-row">
+        <a class="navbar-brand d-flex align-items-center" href="${brandHref}">
+          <img src="/images/logo/logo.svg" alt="Votamin" height="36" class="vm-brand-logo">
+        </a>
 
-        <!-- Toggler -->
-        <button class="navbar-toggler border-0" type="button"
-                data-bs-toggle="collapse" data-bs-target="#vmNav"
-                aria-controls="vmNav" aria-expanded="false" aria-label="Toggle navigation">
-          <span class="navbar-toggler-icon"></span>
-        </button>
+        <div class="vm-navbar-controls">
+          ${loggedIn ? `
+            <div class="dropdown vm-navbar-avatar-dropdown">
+              <button
+                type="button"
+                id="navbar-avatar-btn"
+                class="btn vm-navbar-avatar-btn dropdown-toggle"
+                data-bs-toggle="dropdown"
+                aria-expanded="false"
+                data-i18n-aria-label="navbar.accountMenu"
+                aria-label="${i18n.t('navbar.accountMenu')}"
+              >${renderAvatarInner(displayName, null)}</button>
+              <ul class="dropdown-menu dropdown-menu-end">
+                <li>
+                  <a class="dropdown-item" href="/dashboard/account" data-i18n="navbar.account">${i18n.t('navbar.account')}</a>
+                </li>
+              </ul>
+            </div>
+          ` : ''}
+
+          <!-- Toggler -->
+          <button class="navbar-toggler border-0" type="button"
+                  data-bs-toggle="collapse" data-bs-target="#vmNav"
+                  aria-controls="vmNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+        </div>
 
         <!-- Links -->
         <div class="collapse navbar-collapse" id="vmNav">
@@ -107,24 +121,6 @@ export function renderNavbar(container) {
                 </li>
               </ul>
             </li>
-            ${loggedIn ? `
-              <li class="nav-item dropdown ms-lg-1 vm-navbar-avatar-dropdown">
-                <button
-                  type="button"
-                  id="navbar-avatar-btn"
-                  class="btn vm-navbar-avatar-btn dropdown-toggle"
-                  data-bs-toggle="dropdown"
-                  aria-expanded="false"
-                  data-i18n-aria-label="navbar.accountMenu"
-                  aria-label="${i18n.t('navbar.accountMenu')}"
-                >${renderAvatarInner(displayName, null)}</button>
-                <ul class="dropdown-menu dropdown-menu-end">
-                  <li>
-                    <a class="dropdown-item" href="/dashboard/account" data-i18n="navbar.account">${i18n.t('navbar.account')}</a>
-                  </li>
-                </ul>
-              </li>
-            ` : ''}
           </ul>
         </div>
       </div>
@@ -145,20 +141,12 @@ export function renderNavbar(container) {
   }
 
   if (loggedIn) {
-    const userNameEl = container.querySelector('#navbar-user-name');
-    const userNameMobileEl = container.querySelector('#navbar-user-name-mobile');
     const avatarBtnEl = container.querySelector('#navbar-avatar-btn');
 
     const applyIdentity = (name, avatarUrl = null) => {
       const resolvedName = resolveDisplayName(name, currentUser?.email || '');
       const resolvedAvatar = avatarUrl || null;
 
-      if (userNameEl) {
-        userNameEl.textContent = resolvedName;
-      }
-      if (userNameMobileEl) {
-        userNameMobileEl.textContent = resolvedName;
-      }
       if (avatarBtnEl) {
         avatarBtnEl.innerHTML = renderAvatarInner(resolvedName, resolvedAvatar);
         avatarBtnEl.title = resolvedName;

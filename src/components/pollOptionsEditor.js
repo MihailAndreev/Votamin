@@ -51,6 +51,7 @@ export function renderPollOptionsEditor(options = ['', ''], onChange) {
           align-items: center;
           gap: 0.75rem;
           animation: slideIn 0.2s ease;
+          min-width: 0;
         }
 
         @keyframes slideIn {
@@ -80,6 +81,7 @@ export function renderPollOptionsEditor(options = ['', ''], onChange) {
 
         .option-input {
           flex: 1;
+          min-width: 0;
           padding: 0.75rem;
           border: 2px solid var(--border-color, #e5e7eb);
           border-radius: 8px;
@@ -147,6 +149,39 @@ export function renderPollOptionsEditor(options = ['', ''], onChange) {
           font-size: 0.875rem;
           color: var(--text-secondary, #6b7280);
           margin-top: 0.5rem;
+        }
+
+        @media (max-width: 420px) {
+          .option-item {
+            gap: 0.5rem;
+          }
+
+          .option-number {
+            width: 30px;
+            height: 30px;
+            font-size: 0.82rem;
+          }
+
+          .option-input {
+            padding: 0.62rem 0.68rem;
+            font-size: 0.95rem;
+          }
+
+          .remove-option-btn {
+            width: 34px;
+            height: 34px;
+          }
+
+          .add-option-btn {
+            width: 100%;
+            justify-content: center;
+            padding: 0.7rem 0.95rem;
+            font-size: 0.95rem;
+          }
+
+          .options-hint {
+            font-size: 0.82rem;
+          }
         }
       </style>
 

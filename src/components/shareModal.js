@@ -17,11 +17,14 @@ function injectStyles() {
       justify-content: center;
       z-index: 2000;
       padding: 1rem;
+      overflow-y: auto;
     }
 
     .vm-share-modal {
       width: 100%;
-      max-width: 520px;
+      max-width: min(520px, calc(100vw - 1.25rem));
+      max-height: calc(100vh - 1.5rem);
+      overflow: auto;
       background: var(--vm-white);
       border-radius: var(--vm-radius-xl, 16px);
       border: 1px solid var(--vm-gray-200);
@@ -64,6 +67,25 @@ function injectStyles() {
       display: flex;
       justify-content: flex-end;
       gap: .5rem;
+    }
+
+    @media (max-width: 575.98px) {
+      .vm-share-backdrop {
+        padding: 0.6rem;
+      }
+
+      .vm-share-modal {
+        border-radius: 12px;
+        padding: 1rem;
+      }
+
+      .vm-share-actions {
+        flex-direction: column-reverse;
+      }
+
+      .vm-share-actions .btn {
+        width: 100%;
+      }
     }
   `;
 
