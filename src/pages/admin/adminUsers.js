@@ -162,6 +162,50 @@ function renderUsersTable() {
     return state.sortDir === 'asc' ? ' ▲' : ' ▼';
   };
 
+  const renderCardActions = (user, isSelf, isAdminUser, isBlocked) => {
+    const actions = [];
+
+    if (isAdminUser && !isSelf) {
+      actions.push(`
+        <button class="btn btn-sm btn-votamin-outline" data-action="remove-admin" data-uid="${user.user_id}">
+          ${i18n.t('admin.users.removeAdmin')}
+        </button>
+      `);
+    }
+
+    if (!isAdminUser) {
+      actions.push(`
+        <button class="btn btn-sm btn-votamin-outline" data-action="make-admin" data-uid="${user.user_id}">
+          ${i18n.t('admin.users.makeAdmin')}
+        </button>
+      `);
+    }
+
+    if (!isSelf) {
+      if (isBlocked) {
+        actions.push(`
+          <button class="btn btn-sm btn-votamin-outline" data-action="unblock-user" data-uid="${user.user_id}" data-email="${user.email}">
+            ${i18n.t('admin.users.unblockUser')}
+          </button>
+        `);
+      } else {
+        actions.push(`
+          <button class="btn btn-sm btn-votamin-outline" data-action="block-user" data-uid="${user.user_id}" data-email="${user.email}">
+            ${i18n.t('admin.users.blockUser')}
+          </button>
+        `);
+      }
+
+      actions.push(`
+        <button class="btn btn-sm btn-outline-danger" data-action="delete-user" data-uid="${user.user_id}" data-email="${user.email}">
+          ${i18n.t('admin.users.deleteUser')}
+        </button>
+      `);
+    }
+
+    return actions.join('');
+  };
+
   const rows = state.users.map(u => {
     const isSelf = u.user_id === currentUserId;
     const isAdminUser = u.role === 'admin';
@@ -227,8 +271,42 @@ function renderUsersTable() {
       </tr>`;
   }).join('');
 
+  const cards = state.users.map((u) => {
+    const isSelf = u.user_id === currentUserId;
+    const isAdminUser = u.role === 'admin';
+    const isBlocked = u.status === 'blocked';
+    const roleBadge = isAdminUser
+      ? '<span class="badge bg-warning text-dark">Admin</span>'
+      : '<span class="badge bg-secondary">User</span>';
+    const statusBadge = isBlocked
+      ? `<span class="badge bg-danger">${i18n.t('admin.users.statusBlocked')}</span>`
+      : `<span class="badge bg-success">${i18n.t('admin.users.statusActive')}</span>`;
+
+    return `
+      <article class="vm-admin-user-card${isBlocked ? ' vm-admin-user-card--blocked' : ''}">
+        <div class="vm-admin-user-card-head">
+          <div class="vm-admin-user-card-name">${u.full_name || '—'}</div>
+          <div class="vm-admin-user-card-badges">
+            ${roleBadge}
+            ${statusBadge}
+          </div>
+        </div>
+        <div class="vm-admin-user-card-email">${u.email}</div>
+        <div class="vm-admin-user-card-meta">
+          <span><strong>${i18n.t('admin.users.colRegistered')}:</strong> ${u.registered_at ? formatDate(u.registered_at) : '—'}</span>
+          <span><strong>${i18n.t('admin.users.colLastLogin')}:</strong> ${u.last_sign_in ? formatDate(u.last_sign_in) : '—'}</span>
+          <span><strong>${i18n.t('admin.users.colPolls')}:</strong> ${u.polls_created}</span>
+          <span><strong>${i18n.t('admin.users.colVotes')}:</strong> ${u.votes_given}</span>
+        </div>
+        <div class="vm-admin-user-card-actions">
+          ${renderCardActions(u, isSelf, isAdminUser, isBlocked)}
+        </div>
+      </article>
+    `;
+  }).join('');
+
   return `
-    <div class="table-responsive">
+    <div class="table-responsive vm-admin-users-table-wrap">
       <table class="table table-hover align-middle mb-0 vm-admin-table vm-admin-users-table">
         <thead>
           <tr class="text-muted small">
@@ -244,7 +322,8 @@ function renderUsersTable() {
         </thead>
         <tbody>${rows}</tbody>
       </table>
-    </div>`;
+    </div>
+    <div class="vm-admin-users-cards">${cards}</div>`;
 }
 
 // ── Pagination ─────────────────────────────────────
@@ -272,7 +351,12 @@ function renderPagination() {
 // ── Full Render ────────────────────────────────────
 function renderContent(container) {
   container.innerHTML = `
-    ${renderStatsCards(state.stats)}
+    <details class="vm-admin-stats-accordion mb-3">
+      <summary class="vm-admin-stats-summary" data-i18n="admin.stats.toggle">${i18n.t('admin.stats.toggle')}</summary>
+      <div class="vm-admin-stats-accordion-body pt-2">
+        ${renderStatsCards(state.stats)}
+      </div>
+    </details>
     <div class="vm-card p-4">
       <h5 class="fw-bold mb-3" data-i18n="admin.users.tableTitle">${i18n.t('admin.users.tableTitle')}</h5>
       ${renderFilters()}

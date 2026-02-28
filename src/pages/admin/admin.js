@@ -36,7 +36,7 @@ export default async function render(container, params, route) {
     <div class="vm-admin-panel">
       <div class="d-flex align-items-center justify-content-between mb-3 flex-wrap gap-2">
         <div>
-          <h2 class="fw-bold mb-0 text-nowrap" data-i18n="${headingKey}">${i18n.t(headingKey)}</h2>
+          <h2 class="fw-bold mb-0 vm-admin-page-heading" data-i18n="${headingKey}">${i18n.t(headingKey)}</h2>
         </div>
       </div>
 

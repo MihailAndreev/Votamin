@@ -152,6 +152,19 @@ img {
   opacity: 0.95;
 }
 
+.vm-navbar-user-name-mobile {
+  max-width: 9.5rem;
+  font-size: 0.9rem;
+  line-height: 1.1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.vm-navbar-user-name-mobile::after {
+  display: none;
+}
+
 .vm-navbar-avatar-btn {
   width: 36px;
   height: 36px;

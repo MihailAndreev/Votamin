@@ -125,6 +125,7 @@ export default {
       closed: 'Closed',
       searchPlaceholder: 'Search by title...',
       selectAll: 'Select all',
+      toggle: 'Filters',
       reset: 'Clear filters'
     },
     status: {
@@ -528,6 +529,9 @@ export default {
     subtitle: 'Manage users and polls',
     headingUsers: 'Administration - manage users',
     headingPolls: 'Administration - manage polls',
+    stats: {
+      toggle: 'Statistics'
+    },
     actions: 'Actions',
     tabs: {
       users: '👥 Users',

@@ -33,6 +33,57 @@
   transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 
+.vm-admin-page-heading {
+  white-space: normal;
+  overflow-wrap: anywhere;
+  line-height: 1.2;
+}
+
+.vm-admin-stats-accordion {
+  border: 1px solid var(--vm-border);
+  border-radius: var(--vm-radius);
+  background: var(--vm-surface);
+  padding: 0.35rem;
+}
+
+.vm-admin-stats-summary {
+  list-style: none;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--vm-gray-700);
+  border: 1px solid var(--vm-border);
+  border-radius: var(--vm-radius-full);
+  padding: 0.4rem 0.85rem;
+  background: var(--vm-gray-50);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.vm-admin-stats-summary::-webkit-details-marker {
+  display: none;
+}
+
+.vm-admin-stats-summary::after {
+  content: '▾';
+  font-size: 0.72rem;
+  transition: transform var(--vm-transition);
+}
+
+.vm-admin-stats-accordion[open] .vm-admin-stats-summary::after {
+  transform: rotate(180deg);
+}
+
+.vm-admin-stats-accordion-body {
+  padding-left: 0.1rem;
+  padding-right: 0.1rem;
+}
+
+.vm-admin-stats-accordion .vm-admin-stats-row {
+  margin-bottom: 0 !important;
+}
+
 .vm-admin-stats-row .col-6 {
   min-width: 0;
 }
@@ -191,8 +242,147 @@ th.vm-sortable:hover {
   font-weight: 600;
 }
 
+.vm-admin-users-cards {
+  display: none;
+}
+
+.vm-admin-polls-cards {
+  display: none;
+}
+
+.vm-admin-user-card {
+  border: 1px solid var(--vm-border);
+  border-radius: var(--vm-radius);
+  background: var(--vm-surface);
+  padding: 0.75rem;
+}
+
+.vm-admin-user-card + .vm-admin-user-card {
+  margin-top: 0.75rem;
+}
+
+.vm-admin-user-card--blocked {
+  border-color: rgba(220, 53, 69, 0.35);
+}
+
+.vm-admin-user-card-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.vm-admin-user-card-name {
+  font-weight: 700;
+  color: var(--vm-gray-900);
+  line-height: 1.25;
+}
+
+.vm-admin-user-card-email {
+  margin-top: 0.2rem;
+  font-size: 0.82rem;
+  color: var(--vm-gray-500);
+  overflow-wrap: anywhere;
+}
+
+.vm-admin-user-card-badges {
+  display: inline-flex;
+  gap: 0.35rem;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.vm-admin-user-card-meta {
+  margin-top: 0.6rem;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.3rem;
+  font-size: 0.8rem;
+  color: var(--vm-gray-700);
+}
+
+.vm-admin-user-card-actions {
+  margin-top: 0.7rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+}
+
+.vm-admin-user-card-actions .btn {
+  font-size: 0.78rem;
+  padding: 0.28rem 0.65rem;
+}
+
+.vm-admin-poll-card {
+  border: 1px solid var(--vm-border);
+  border-radius: var(--vm-radius);
+  background: var(--vm-surface);
+  padding: 0.75rem;
+}
+
+.vm-admin-poll-card + .vm-admin-poll-card {
+  margin-top: 0.75rem;
+}
+
+.vm-admin-poll-card-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.vm-admin-poll-card-title {
+  font-weight: 700;
+  color: var(--vm-gray-900);
+  line-height: 1.25;
+  overflow-wrap: anywhere;
+}
+
+.vm-admin-poll-card-badges {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  justify-content: flex-end;
+}
+
+.vm-admin-poll-card-creator {
+  margin-top: 0.2rem;
+  font-size: 0.82rem;
+  color: var(--vm-gray-500);
+  overflow-wrap: anywhere;
+}
+
+.vm-admin-poll-card-meta {
+  margin-top: 0.6rem;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.3rem;
+  font-size: 0.8rem;
+  color: var(--vm-gray-700);
+}
+
+.vm-admin-poll-card-actions {
+  margin-top: 0.7rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+}
+
+.vm-admin-poll-card-actions .btn {
+  font-size: 0.78rem;
+  padding: 0.28rem 0.65rem;
+}
+
 /* ── Responsive: card view on mobile ────────────── */
 @media (max-width: 768px) {
+  .vm-admin-page-heading {
+    font-size: 1.7rem;
+  }
+
+  .vm-admin-stats-summary {
+    font-size: 0.86rem;
+  }
+
   .vm-admin-table {
     font-size: 0.82rem;
   }
@@ -212,6 +402,28 @@ th.vm-sortable:hover {
   .vm-admin-table th,
   .vm-admin-table td {
     padding: 0.4rem 0.35rem;
+  }
+
+  .vm-admin-users-table-wrap {
+    display: none;
+  }
+
+  .vm-admin-users-cards {
+    display: block;
+  }
+
+  .vm-admin-polls-table-wrap {
+    display: none;
+  }
+
+  .vm-admin-polls-cards {
+    display: block;
+  }
+
+  .vm-admin-pagination {
+    flex-direction: column;
+    align-items: flex-start !important;
+    gap: 0.5rem;
   }
 
   .vm-admin-tabs .nav-link {

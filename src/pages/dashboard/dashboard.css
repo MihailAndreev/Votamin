@@ -152,16 +152,26 @@
 /* ── Mobile sidebar ───────────────────────────────── */
 .vm-sidebar-mobile-toggle {
   position: fixed;
-  bottom: 1rem;
-  left: 1rem;
-  z-index: 1050;
+  top: calc(4.75rem + env(safe-area-inset-top, 0px));
+  left: 0.75rem;
+  z-index: 1060;
+  background: var(--vm-surface);
+  border: 2px solid var(--vm-green);
+  color: var(--vm-green-dark);
   border-radius: 50%;
   width: 44px;
   height: 44px;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: var(--vm-shadow);
+  box-shadow: var(--vm-shadow-lg);
+}
+
+.vm-sidebar-mobile-toggle:hover,
+.vm-sidebar-mobile-toggle:focus-visible {
+  background: var(--vm-green-light);
+  border-color: var(--vm-green-dark);
+  color: var(--vm-green-dark);
 }
 
 .vm-sidebar-backdrop {
@@ -180,6 +190,17 @@
 }
 
 @media (max-width: 991.98px) {
+  .vm-dash-wrapper {
+    flex-direction: column;
+  }
+
+  .vm-sidebar-mobile-toggle {
+    position: relative;
+    top: auto;
+    left: auto;
+    margin: 0.5rem 0 0 0.75rem;
+  }
+
   .vm-sidebar {
     position: fixed;
     top: 0;
@@ -613,8 +634,53 @@
   padding-top: 0.5rem;
 }
 
+.vm-mobile-filters-block {
+  display: block;
+}
+
+.vm-mobile-filters-toggle {
+  width: 100%;
+  border: 1px solid var(--vm-border);
+  background: var(--vm-surface);
+  color: var(--vm-gray-700);
+  border-radius: var(--vm-radius-full);
+  min-height: 2rem;
+  font-size: 0.82rem;
+  font-weight: 600;
+  padding: 0.35rem 0.9rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.vm-mobile-filters-toggle:focus {
+  outline: none;
+  border-color: var(--vm-green);
+}
+
+.vm-mobile-filters-caret {
+  font-size: 0.72rem;
+  transition: transform var(--vm-transition);
+}
+
+.vm-mobile-filters-block:not(.vm-mobile-filters-collapsed) .vm-mobile-filters-caret {
+  transform: rotate(180deg);
+}
+
+.vm-mobile-filters-block .vm-dash-tools {
+  margin-top: 0.55rem;
+}
+
 /* ── Responsive: tables → cards on mobile ─────────── */
 @media (max-width: 767.98px) {
+  .vm-mobile-filters-block.vm-mobile-filters-collapsed .vm-dash-tools {
+    display: none;
+  }
+
+  .vm-mobile-filters-block:not(.vm-mobile-filters-collapsed) .vm-dash-tools {
+    display: flex;
+  }
+
   .vm-dash-table-wrap {
     display: none;
   }
@@ -664,6 +730,19 @@
 }
 
 @media (min-width: 768px) {
+  .vm-mobile-filters-block {
+    display: block;
+  }
+
+  .vm-mobile-filters-toggle {
+    display: none;
+  }
+
+  .vm-mobile-filters-block .vm-dash-tools {
+    display: flex;
+    margin-top: 0;
+  }
+
   .vm-dash-cards {
     display: none !important;
   }

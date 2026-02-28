@@ -229,6 +229,7 @@ export default async function render(container) {
     const statusTitle = i18n.t('dashboard.table.columns.status');
     const typeTitle = i18n.t('dashboard.table.columns.type');
     const responseTitle = i18n.t('dashboard.table.columns.myResponse');
+    const filtersToggleLabel = i18n.t('dashboard.filters.toggle') || 'Filters';
 
     return `
     <div class="vm-my-polls-page">
@@ -236,20 +237,31 @@ export default async function render(container) {
       <h3>${i18n.t('dashboard.sidebar.myPolls')}</h3>
       <a href="/polls/new" class="btn btn-votamin btn-sm">${i18n.t('dashboard.actions.createPoll')}</a>
     </div>
-    <div class="vm-dash-tools mb-3" id="my-polls-filters">
-      <div class="vm-dash-search-wrap">
-        <input
-          type="search"
-          class="vm-dash-search"
-          id="my-polls-search"
-          value="${escapeHtmlAttr(searchQuery)}"
-          placeholder="${escapeHtmlAttr(searchPlaceholder)}"
-        >
+    <div class="vm-mobile-filters-block vm-mobile-filters-collapsed mb-3" id="my-polls-filters-block">
+      <button
+        type="button"
+        class="vm-mobile-filters-toggle d-md-none"
+        id="my-polls-filters-toggle"
+        aria-expanded="false"
+      >
+        <span class="vm-mobile-filters-label">${filtersToggleLabel}</span>
+        <span class="vm-mobile-filters-caret">▾</span>
+      </button>
+      <div class="vm-dash-tools" id="my-polls-filters">
+        <div class="vm-dash-search-wrap">
+          <input
+            type="search"
+            class="vm-dash-search"
+            id="my-polls-search"
+            value="${escapeHtmlAttr(searchQuery)}"
+            placeholder="${escapeHtmlAttr(searchPlaceholder)}"
+          >
+        </div>
+        ${renderMultiSelectFilter({ id: 'my-polls-status-btn', title: statusTitle, group: 'status', options: getStatusOptions(), selectedValues: activeStatuses })}
+        ${renderMultiSelectFilter({ id: 'my-polls-kind-btn', title: typeTitle, group: 'kind', options: getKindOptions(), selectedValues: activeKinds })}
+        ${renderMultiSelectFilter({ id: 'my-polls-response-btn', title: responseTitle, group: 'response', options: getResponseOptions(), selectedValues: activeMyResponses })}
+        <button type="button" class="vm-filter-btn vm-filter-btn--reset" id="my-polls-reset">${i18n.t('dashboard.filters.reset') || 'Reset filters'}</button>
       </div>
-      ${renderMultiSelectFilter({ id: 'my-polls-status-btn', title: statusTitle, group: 'status', options: getStatusOptions(), selectedValues: activeStatuses })}
-      ${renderMultiSelectFilter({ id: 'my-polls-kind-btn', title: typeTitle, group: 'kind', options: getKindOptions(), selectedValues: activeKinds })}
-      ${renderMultiSelectFilter({ id: 'my-polls-response-btn', title: responseTitle, group: 'response', options: getResponseOptions(), selectedValues: activeMyResponses })}
-      <button type="button" class="vm-filter-btn vm-filter-btn--reset" id="my-polls-reset">${i18n.t('dashboard.filters.reset') || 'Reset filters'}</button>
     </div>
     <div id="my-polls-content" class="vm-my-polls-content">
       <div class="vm-loader-wrapper"><div class="vm-loader"></div></div>
@@ -381,6 +393,13 @@ export default async function render(container) {
     const searchEl = container.querySelector('#my-polls-search');
     const filtersRoot = container.querySelector('#my-polls-filters');
     const resetEl = container.querySelector('#my-polls-reset');
+    const filtersBlockEl = container.querySelector('#my-polls-filters-block');
+    const filtersToggleEl = container.querySelector('#my-polls-filters-toggle');
+
+    filtersToggleEl?.addEventListener('click', () => {
+      const isCollapsed = filtersBlockEl?.classList.toggle('vm-mobile-filters-collapsed');
+      filtersToggleEl.setAttribute('aria-expanded', isCollapsed ? 'false' : 'true');
+    });
 
     searchEl?.addEventListener('input', (e) => {
       searchQuery = e.target.value || '';

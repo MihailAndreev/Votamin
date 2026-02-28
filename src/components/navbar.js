@@ -47,6 +47,7 @@ export function renderNavbar(container) {
             <img src="/images/logo/logo.svg" alt="Votamin" height="36" class="vm-brand-logo">
           </a>
           ${loggedIn ? `
+            <span class="vm-navbar-user-name vm-navbar-user-name-mobile d-inline d-md-none" id="navbar-user-name-mobile">${displayName}</span>
             <span class="vm-navbar-user-name d-none d-md-inline" id="navbar-user-name">${displayName}</span>
           ` : ''}
         </div>
@@ -145,6 +146,7 @@ export function renderNavbar(container) {
 
   if (loggedIn) {
     const userNameEl = container.querySelector('#navbar-user-name');
+    const userNameMobileEl = container.querySelector('#navbar-user-name-mobile');
     const avatarBtnEl = container.querySelector('#navbar-avatar-btn');
 
     const applyIdentity = (name, avatarUrl = null) => {
@@ -153,6 +155,9 @@ export function renderNavbar(container) {
 
       if (userNameEl) {
         userNameEl.textContent = resolvedName;
+      }
+      if (userNameMobileEl) {
+        userNameMobileEl.textContent = resolvedName;
       }
       if (avatarBtnEl) {
         avatarBtnEl.innerHTML = renderAvatarInner(resolvedName, resolvedAvatar);
