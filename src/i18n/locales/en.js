@@ -397,7 +397,7 @@ export default {
       orange: 'Orange'
     },
     actions: {
-      addOption: '+ Add Option',
+      addOption: 'Add Option',
       removeOption: 'Remove',
       next: 'Next',
       back: 'Back',

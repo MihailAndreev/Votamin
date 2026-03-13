@@ -399,7 +399,7 @@ export default {
       orange: 'Оранжева'
     },
     actions: {
-      addOption: '+ Добави опция',
+      addOption: 'Добави опция',
       removeOption: 'Премахни',
       next: 'Напред',
       back: 'Назад',
