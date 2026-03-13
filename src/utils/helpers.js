@@ -41,6 +41,68 @@ export function removeCSS(id) {
   document.getElementById(id)?.remove();
 }
 
+let blockingModalDepth = 0;
+
+function setBlockingModalState(isOpen) {
+  document.body.classList.toggle('vm-modal-open', isOpen);
+}
+
+/**
+ * Start a blocking modal session:
+ * - locks page scroll/interactions via body class
+ * - pushes history state so mobile/browser Back closes the modal first
+ */
+export function beginBlockingModalSession(onBackRequest) {
+  blockingModalDepth += 1;
+  setBlockingModalState(true);
+
+  const modalStateId = `vm-modal-${Date.now()}-${Math.random().toString(16).slice(2)}`;
+  let historyEntryActive = false;
+
+  const onPopState = (event) => {
+    if (!historyEntryActive) return;
+    if (event.state?.__vmModalId === modalStateId) return;
+
+    historyEntryActive = false;
+    window.removeEventListener('popstate', onPopState);
+    onBackRequest?.();
+  };
+
+  try {
+    const nextState = { ...(window.history.state || {}), __vmModalId: modalStateId };
+    window.history.pushState(nextState, '', window.location.href);
+    historyEntryActive = true;
+    window.addEventListener('popstate', onPopState);
+  } catch {
+    historyEntryActive = false;
+  }
+
+  let finished = false;
+
+  return function endBlockingModalSession(options = {}) {
+    const { closedByPopState = false } = options;
+    if (finished) return;
+    finished = true;
+
+    if (historyEntryActive) {
+      historyEntryActive = false;
+      window.removeEventListener('popstate', onPopState);
+      if (!closedByPopState) {
+        try {
+          window.history.back();
+        } catch {
+          // no-op fallback when history is unavailable
+        }
+      }
+    }
+
+    blockingModalDepth = Math.max(0, blockingModalDepth - 1);
+    if (blockingModalDepth === 0) {
+      setBlockingModalState(false);
+    }
+  };
+}
+
 /** Generate a random short code */
 export function shortCode(len = 6) {
   const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789';

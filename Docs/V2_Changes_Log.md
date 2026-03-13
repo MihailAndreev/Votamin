@@ -4,6 +4,20 @@
 
 ## Entries
 
+### 2026-03-13 — Modal blocking + mobile Back closes popup
+- Scope: Unified modal behavior so underlying page is non-interactive while popup is open and browser/mobile `Back` closes the popup first.
+- Files: `src/utils/helpers.js`, `src/components/confirmModal.js`, `src/components/shareModal.js`, `src/components/avatarCropModal.js`, `src/pages/admin/adminPolls.js`, `src/styles/main.css`
+- Migration(s): None
+- Validation/Test: `npm run build` (pending run after implementation)
+- Notes: Added shared `beginBlockingModalSession()` lifecycle (body lock + history state trap), integrated in key popup flows including Admin voters modal.
+
+### 2026-03-13 — Poll auto-close after End Date (persisted status + scheduler)
+- Scope: Implemented real automatic poll closing after `ends_at` with persisted DB status transition (`open` → `closed`), including runtime safeguards in poll read/vote flows.
+- Files: `src/utils/pollValidation.js`, `src/utils/pollsData.js`, `src/utils/dashboardData.js`, `src/utils/adminData.js`, `src/utils/helpers.js`, `src/pages/pollPublic/pollPublic.js`, `supabase/migrations/029_auto_close_expired_polls.sql`
+- Migration(s): `029_auto_close_expired_polls` (applied via Supabase MCP)
+- Validation/Test: `npm run build` (success), migration applied successfully, `cron.job` contains active job `auto-close-expired-polls-every-minute`.
+- Notes: Fixed `datetime-local` → UTC conversion when saving end date; added `auto_close_poll_if_expired(uuid)` for flow-level sync and `auto_close_expired_polls()` for scheduler/fallback; configured `pg_cron` (1-minute cadence).
+
 ### 2026-03-13 — Mobile navigation toggle behavior fix
 - Scope: Mobile navbar menu button and dashboard sidebar button open/close behavior
 - Files: `src/components/navbar.js`, `src/layouts/dashboardLayout.js`

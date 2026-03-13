@@ -16,7 +16,7 @@ import {
   adminToggleFeatured,
   adminDuplicatePoll
 } from '@utils/adminData.js';
-import { formatDate } from '@utils/helpers.js';
+import { formatDate, beginBlockingModalSession } from '@utils/helpers.js';
 
 const PAGE_SIZE = 15;
 
@@ -342,7 +342,11 @@ function renderPagination() {
 // ── Voters Modal ───────────────────────────────────
 function showVotersModal(voters, pollTitle) {
   const existing = document.getElementById('admin-voters-modal');
-  if (existing) existing.remove();
+  if (existing?.__vmCloseModal) {
+    existing.__vmCloseModal({ closedByPopState: true });
+  } else if (existing) {
+    existing.remove();
+  }
 
   const rows = voters.map(v => `
     <tr>
@@ -385,9 +389,25 @@ function showVotersModal(voters, pollTitle) {
     </div>
   `;
 
+  let isClosed = false;
+  let closeModal = () => {};
+
+  const endModalSession = beginBlockingModalSession(() => {
+    closeModal({ closedByPopState: true });
+  });
+
+  closeModal = (closeOptions = {}) => {
+    if (isClosed) return;
+    isClosed = true;
+    endModalSession(closeOptions);
+    modal.remove();
+  };
+
+  modal.__vmCloseModal = closeModal;
+
   modal.addEventListener('click', (e) => {
     if (e.target === modal || e.target.closest('[data-action="close-voters-modal"]')) {
-      modal.remove();
+      closeModal();
     }
     if (e.target.closest('#admin-export-voters-csv')) {
       exportVotersCSV(voters, pollTitle);
