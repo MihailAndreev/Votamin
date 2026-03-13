@@ -341,7 +341,7 @@ export default {
       options: 'Опции за отговор',
       minValue: 'Минимална стойност',
       maxValue: 'Максимална стойност',
-      visibility: 'Видимост',
+      visibility: 'Видимост на анкетата',
       resultsVisibility: 'Видимост на резултатите',
       endDate: 'Краен срок (по избор)',
       theme: 'Тема'

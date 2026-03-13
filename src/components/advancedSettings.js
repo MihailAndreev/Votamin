@@ -18,6 +18,9 @@ export function renderAdvancedSettings(settings = {}, onChange) {
 
   const container = document.createElement('div');
   container.className = 'advanced-settings';
+  const radioGroupId = `adv-${Math.random().toString(36).slice(2, 10)}`;
+  const visibilityGroupName = `visibility-${radioGroupId}`;
+  const resultsVisibilityGroupName = `resultsVisibility-${radioGroupId}`;
 
   function updateSetting(key, value) {
     defaultSettings[key] = value;
@@ -33,6 +36,9 @@ export function renderAdvancedSettings(settings = {}, onChange) {
         border: 2px solid var(--border-color, #e5e7eb);
         border-radius: 12px;
         overflow: hidden;
+        width: 100%;
+        max-width: 100%;
+        min-width: 0;
       }
 
       .advanced-settings-header {
@@ -95,12 +101,17 @@ export function renderAdvancedSettings(settings = {}, onChange) {
         grid-template-columns: 1fr;
         gap: 1.5rem;
         background: white;
+        width: 100%;
+        max-width: 100%;
+        min-width: 0;
       }
 
       .setting-field {
         display: flex;
         flex-direction: column;
         gap: 0.5rem;
+        width: 100%;
+        min-width: 0;
       }
 
       .setting-label {
@@ -119,6 +130,8 @@ export function renderAdvancedSettings(settings = {}, onChange) {
         display: flex;
         flex-direction: column;
         gap: 0.75rem;
+        width: 100%;
+        min-width: 0;
       }
 
       .radio-option {
@@ -130,6 +143,9 @@ export function renderAdvancedSettings(settings = {}, onChange) {
         border-radius: 8px;
         cursor: pointer;
         transition: all 0.2s;
+        width: 100%;
+        max-width: 100%;
+        min-width: 0;
       }
 
       .radio-option:hover {
@@ -152,6 +168,7 @@ export function renderAdvancedSettings(settings = {}, onChange) {
 
       .radio-label-wrapper {
         flex: 1;
+        min-width: 0;
       }
 
       .radio-label {
@@ -160,12 +177,14 @@ export function renderAdvancedSettings(settings = {}, onChange) {
         color: var(--text-color, #111827);
         display: block;
         cursor: pointer;
+        overflow-wrap: anywhere;
       }
 
       .radio-description {
         font-size: 0.75rem;
         color: var(--text-secondary, #6b7280);
         margin-top: 0.25rem;
+        overflow-wrap: anywhere;
       }
 
       .date-input {
@@ -252,6 +271,15 @@ export function renderAdvancedSettings(settings = {}, onChange) {
           padding: 0.65rem;
           gap: 0.6rem;
         }
+
+        .radio-label {
+          font-size: 0.84rem;
+        }
+
+        .radio-description {
+          font-size: 0.78rem;
+          line-height: 1.35;
+        }
       }
     </style>
 
@@ -274,20 +302,20 @@ export function renderAdvancedSettings(settings = {}, onChange) {
         <div class="setting-field">
           <label class="setting-label">${i18n.t('createPoll.fields.visibility')}</label>
           <div class="radio-group">
-            <div class="radio-option ${defaultSettings.visibility === 'public' ? 'selected' : ''}" data-value="public">
-              <input type="radio" name="visibility" value="public" class="radio-input" ${defaultSettings.visibility === 'public' ? 'checked' : ''}>
+            <label class="radio-option ${defaultSettings.visibility === 'public' ? 'selected' : ''}" data-value="public">
+              <input type="radio" name="${visibilityGroupName}" value="public" data-setting="visibility" class="radio-input" ${defaultSettings.visibility === 'public' ? 'checked' : ''}>
               <div class="radio-label-wrapper">
                 <span class="radio-label">${i18n.t('createPoll.visibility.public')}</span>
                 <span class="radio-description">${i18n.t('createPoll.visibility.publicDesc')}</span>
               </div>
-            </div>
-            <div class="radio-option ${defaultSettings.visibility === 'private' ? 'selected' : ''}" data-value="private">
-              <input type="radio" name="visibility" value="private" class="radio-input" ${defaultSettings.visibility === 'private' ? 'checked' : ''}>
+            </label>
+            <label class="radio-option ${defaultSettings.visibility === 'private' ? 'selected' : ''}" data-value="private">
+              <input type="radio" name="${visibilityGroupName}" value="private" data-setting="visibility" class="radio-input" ${defaultSettings.visibility === 'private' ? 'checked' : ''}>
               <div class="radio-label-wrapper">
                 <span class="radio-label">${i18n.t('createPoll.visibility.private')}</span>
                 <span class="radio-description">${i18n.t('createPoll.visibility.privateDesc')}</span>
               </div>
-            </div>
+            </label>
           </div>
         </div>
 
@@ -295,27 +323,27 @@ export function renderAdvancedSettings(settings = {}, onChange) {
         <div class="setting-field">
           <label class="setting-label">${i18n.t('createPoll.fields.resultsVisibility')}</label>
           <div class="radio-group">
-            <div class="radio-option ${defaultSettings.resultsVisibility === 'after_vote' ? 'selected' : ''}" data-value="after_vote">
-              <input type="radio" name="resultsVisibility" value="after_vote" class="radio-input" ${defaultSettings.resultsVisibility === 'after_vote' ? 'checked' : ''}>
+            <label class="radio-option ${defaultSettings.resultsVisibility === 'after_vote' ? 'selected' : ''}" data-value="after_vote">
+              <input type="radio" name="${resultsVisibilityGroupName}" value="after_vote" data-setting="resultsVisibility" class="radio-input" ${defaultSettings.resultsVisibility === 'after_vote' ? 'checked' : ''}>
               <div class="radio-label-wrapper">
                 <span class="radio-label">${i18n.t('createPoll.resultsVisibility.after_vote')}</span>
                 <span class="radio-description">${i18n.t('createPoll.resultsVisibility.after_voteDesc')}</span>
               </div>
-            </div>
-            <div class="radio-option ${defaultSettings.resultsVisibility === 'always' ? 'selected' : ''}" data-value="always">
-              <input type="radio" name="resultsVisibility" value="always" class="radio-input" ${defaultSettings.resultsVisibility === 'always' ? 'checked' : ''}>
+            </label>
+            <label class="radio-option ${defaultSettings.resultsVisibility === 'always' ? 'selected' : ''}" data-value="always">
+              <input type="radio" name="${resultsVisibilityGroupName}" value="always" data-setting="resultsVisibility" class="radio-input" ${defaultSettings.resultsVisibility === 'always' ? 'checked' : ''}>
               <div class="radio-label-wrapper">
                 <span class="radio-label">${i18n.t('createPoll.resultsVisibility.always')}</span>
                 <span class="radio-description">${i18n.t('createPoll.resultsVisibility.alwaysDesc')}</span>
               </div>
-            </div>
-            <div class="radio-option ${defaultSettings.resultsVisibility === 'creator_only' ? 'selected' : ''}" data-value="creator_only">
-              <input type="radio" name="resultsVisibility" value="creator_only" class="radio-input" ${defaultSettings.resultsVisibility === 'creator_only' ? 'checked' : ''}>
+            </label>
+            <label class="radio-option ${defaultSettings.resultsVisibility === 'creator_only' ? 'selected' : ''}" data-value="creator_only">
+              <input type="radio" name="${resultsVisibilityGroupName}" value="creator_only" data-setting="resultsVisibility" class="radio-input" ${defaultSettings.resultsVisibility === 'creator_only' ? 'checked' : ''}>
               <div class="radio-label-wrapper">
                 <span class="radio-label">${i18n.t('createPoll.resultsVisibility.creator_only')}</span>
                 <span class="radio-description">${i18n.t('createPoll.resultsVisibility.creator_onlyDesc')}</span>
               </div>
-            </div>
+            </label>
           </div>
         </div>
 
@@ -358,28 +386,29 @@ export function renderAdvancedSettings(settings = {}, onChange) {
     chevron.classList.toggle('open');
   });
 
-  // Visibility handlers
-  container.querySelectorAll('input[name="visibility"]').forEach(input => {
-    input.addEventListener('change', (e) => {
-      container.querySelectorAll('.radio-option[data-value]').forEach(opt => {
-        if (opt.dataset.value && opt.closest('.setting-field').querySelector('input[name="visibility"]')) {
-          opt.classList.toggle('selected', opt.dataset.value === e.target.value);
-        }
-      });
-      updateSetting('visibility', e.target.value);
+  function syncRadioSelection(groupName) {
+    const inputs = container.querySelectorAll(`input[name="${groupName}"]`);
+    inputs.forEach((input) => {
+      const option = input.closest('.radio-option');
+      if (option) {
+        option.classList.toggle('selected', input.checked);
+      }
     });
-  });
+  }
 
-  // Results Visibility handlers
-  container.querySelectorAll('input[name="resultsVisibility"]').forEach(input => {
-    input.addEventListener('change', (e) => {
-      container.querySelectorAll('.radio-option[data-value]').forEach(opt => {
-        if (opt.dataset.value && opt.closest('.setting-field').querySelector('input[name="resultsVisibility"]')) {
-          opt.classList.toggle('selected', opt.dataset.value === e.target.value);
+  [visibilityGroupName, resultsVisibilityGroupName].forEach((groupName) => {
+    const inputs = container.querySelectorAll(`input[name="${groupName}"]`);
+    inputs.forEach((input) => {
+      input.addEventListener('change', (e) => {
+        syncRadioSelection(groupName);
+        const settingKey = e.target.dataset.setting;
+        if (settingKey) {
+          updateSetting(settingKey, e.target.value);
         }
       });
-      updateSetting('resultsVisibility', e.target.value);
     });
+
+    syncRadioSelection(groupName);
   });
 
   // End date handler

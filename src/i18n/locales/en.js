@@ -339,7 +339,7 @@ export default {
       options: 'Answer Options',
       minValue: 'Minimum Value',
       maxValue: 'Maximum Value',
-      visibility: 'Visibility',
+      visibility: 'Poll Visibility',
       resultsVisibility: 'Results Visibility',
       endDate: 'End Date (optional)',
       theme: 'Theme'

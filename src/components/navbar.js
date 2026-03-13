@@ -67,7 +67,7 @@ export function renderNavbar(container) {
 
           <!-- Toggler -->
           <button class="navbar-toggler border-0" type="button"
-                  data-bs-toggle="collapse" data-bs-target="#vmNav"
+              id="vm-nav-toggle"
                   aria-controls="vmNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
           </button>
@@ -201,13 +201,33 @@ export function renderNavbar(container) {
   });
 
   /* Collapse on mobile click */
+  const navToggleBtn = container.querySelector('#vm-nav-toggle');
+  const navCollapseEl = container.querySelector('#vmNav');
+
+  async function setNavbarCollapsed(shouldCollapse) {
+    if (!navCollapseEl) return;
+
+    const { Collapse } = await import('bootstrap');
+    const collapseInstance = Collapse.getOrCreateInstance(navCollapseEl, { toggle: false });
+
+    if (shouldCollapse) {
+      collapseInstance.hide();
+    } else {
+      collapseInstance.show();
+    }
+
+    navToggleBtn?.setAttribute('aria-expanded', shouldCollapse ? 'false' : 'true');
+  }
+
+  navToggleBtn?.addEventListener('click', async () => {
+    const isOpen = navCollapseEl?.classList.contains('show');
+    await setNavbarCollapsed(Boolean(isOpen));
+  });
+
   container.querySelectorAll('.nav-link').forEach(link => {
-    link.addEventListener('click', () => {
-      const collapse = container.querySelector('.navbar-collapse');
-      if (collapse?.classList.contains('show')) {
-        import('bootstrap').then(({ Collapse }) => {
-          Collapse.getInstance(collapse)?.hide();
-        });
+    link.addEventListener('click', async () => {
+      if (navCollapseEl?.classList.contains('show')) {
+        await setNavbarCollapsed(true);
       }
     });
   });

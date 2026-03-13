@@ -82,7 +82,7 @@ export function renderDashboardLayout(contentContainer) {
     <div class="vm-dash-wrapper${collapsed ? ' vm-sidebar-collapsed' : ''}">
       <!-- Mobile toggle -->
       <button class="vm-sidebar-mobile-toggle d-lg-none btn btn-sm btn-votamin-outline"
-              id="sidebar-mobile-toggle" aria-label="Toggle menu">
+              id="sidebar-mobile-toggle" aria-expanded="false" aria-label="Toggle menu">
         <span class="vm-sidebar-icon">${ICONS.menu}</span>
       </button>
 
@@ -150,13 +150,22 @@ export function renderDashboardLayout(contentContainer) {
   function openMobileSidebar() {
     sidebar.classList.add('vm-sidebar-open');
     backdrop.classList.add('vm-backdrop-visible');
+    mobileToggle?.setAttribute('aria-expanded', 'true');
   }
   function closeMobileSidebar() {
     sidebar.classList.remove('vm-sidebar-open');
     backdrop.classList.remove('vm-backdrop-visible');
+    mobileToggle?.setAttribute('aria-expanded', 'false');
+  }
+  function toggleMobileSidebar() {
+    if (sidebar.classList.contains('vm-sidebar-open')) {
+      closeMobileSidebar();
+      return;
+    }
+    openMobileSidebar();
   }
 
-  mobileToggle?.addEventListener('click', openMobileSidebar);
+  mobileToggle?.addEventListener('click', toggleMobileSidebar);
   backdrop?.addEventListener('click', closeMobileSidebar);
   sidebar?.querySelectorAll('.vm-sidebar-link').forEach((link) => {
     link.addEventListener('click', closeMobileSidebar);
