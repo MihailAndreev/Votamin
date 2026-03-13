@@ -25,6 +25,13 @@
 - Validation/Test: Manual test by user — EN/BG labels and mobile rendering confirmed
 - Notes: `Visibility` renamed to `Poll Visibility` (EN) and `Видимост на анкетата` (BG); long localized text now wraps and fits better on small screens
 
+### 2026-03-13 — Mobile navbar language switcher dropdown fix
+- Scope: Correct functionality of the language dropdown explicitly in the mobile navbar without closing or breaking mobile menu behaviors
+- Files: `src/components/navbar.js`
+- Migration(s): None
+- Validation/Test: Manual test by user — dropdown opens correctly, language switches properly, updated UI to display flags without text
+- Notes: Removed Bootstrap's strict dropdown API (`data-bs-toggle`), replaced with custom JavaScript event handling logic (`classList.toggle('show')`) and custom click-outside-to-close behavior
+
 <!--
 Шаблон за запис (добавяме само след имплементация + успешен тест):
 
