@@ -85,7 +85,7 @@ function renderOptions(poll) {
   `;
 }
 
-function renderPublicPollMarkup(poll) {
+function renderPublicPollMarkup(poll, hasVoted = false) {
   const isClosed = poll.status === 'closed';
   const description = poll.description || '';
   const poweredByHref = getCurrentUser() ? '/dashboard' : '/';
@@ -96,21 +96,32 @@ function renderPublicPollMarkup(poll) {
          style="background: linear-gradient(135deg, var(--vm-green-light) 0%, var(--vm-white) 50%, var(--vm-orange-light) 100%);">
       <div style="width:100%; max-width:520px; padding:1rem;">
         <div class="vm-card p-4 p-md-5">
-          <div class="text-center mb-4">
-            <img src="/images/logo/logo.svg" alt="Votamin" class="vm-public-brand-logo" />
-            <p class="text-muted mb-2" id="public-poll-invite">${escapeHtml(inviteText)}</p>
-            <h4 class="vm-public-poll-title fw-bold" id="public-poll-title">${escapeHtml(poll.title)}</h4>
-            ${description ? `<p class="text-muted small" id="public-poll-desc">${escapeHtml(description)}</p>` : ''}
+          
+          <div class="text-center d-flex flex-column align-items-center" id="public-poll-header">
+            <img src="/images/logo/logo.svg" alt="Votamin" class="vm-public-brand-logo mb-3" />
+            <div class="vm-public-inviter-badge ${hasVoted ? 'd-none' : ''}">
+              <span class="inviter-text">${escapeHtml(inviteText)}</span>
+            </div>
+            
+            <div class="w-100 ${hasVoted ? 'd-none' : 'vm-public-poll-header'}">
+              <h4 class="vm-public-poll-title fw-bold" id="public-poll-title">${escapeHtml(poll.title)}</h4>
+              ${description ? `<p class="mt-2 mb-0 fw-medium" style="color: var(--vm-gray-800);" id="public-poll-desc">${escapeHtml(description)}</p>` : ''}
+              <p class="text-muted small fst-italic mt-2 mb-0">
+                (${escapeHtml(t(`instructions.${poll.kind}`) || '')})
+              </p>
+            </div>
           </div>
 
-          ${isClosed ? `<div class="alert alert-secondary">${escapeHtml(t('closedAlert'))}</div>` : ''}
+          <div class="${hasVoted ? 'd-none' : ''}">
+            ${isClosed ? `<div class="alert alert-secondary">${escapeHtml(t('closedAlert'))}</div>` : ''}
 
-          <form id="public-vote-form">
-            ${renderOptions(poll)}
-            <button type="submit" class="btn btn-votamin w-100 btn-lg" ${isClosed ? 'disabled' : ''}>${escapeHtml(t('voteButton'))}</button>
-          </form>
+            <form id="public-vote-form">
+              ${renderOptions(poll)}
+              <button type="submit" class="btn btn-votamin w-100 btn-lg" ${isClosed ? 'disabled' : ''}>${escapeHtml(t('voteButton'))}</button>
+            </form>
+          </div>
 
-          <div id="public-thanks" class="text-center d-none py-4">
+          <div id="public-thanks" class="text-center ${hasVoted ? '' : 'd-none'} py-4">
             <h4 class="fw-bold">${escapeHtml(t('thanksTitle'))}</h4>
             <p class="text-muted">${escapeHtml(t('thanksText'))}</p>
             <a href="/dashboard" class="btn btn-votamin mt-2" id="public-return-dashboard">${escapeHtml(t('returnToDashboard'))}</a>
@@ -274,16 +285,11 @@ export default async function render(container, params) {
   let hasVoted = false;
 
   const renderPollView = () => {
-    container.innerHTML = renderPublicPollMarkup(poll);
+    container.innerHTML = renderPublicPollMarkup(poll, hasVoted);
 
     const form = container.querySelector('#public-vote-form');
     const thanks = container.querySelector('#public-thanks');
     const submitBtn = form?.querySelector('button[type="submit"]');
-
-    if (hasVoted) {
-      form?.classList.add('d-none');
-      thanks?.classList.remove('d-none');
-    }
 
     form?.addEventListener('submit', async (e) => {
       e.preventDefault();

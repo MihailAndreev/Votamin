@@ -313,6 +313,12 @@ export default {
     },
     success: {
       voteSaved: 'Your vote was recorded successfully.'
+    },
+    instructions: {
+      single_choice: 'Single option allowed',
+      multiple_choice: 'Multiple options allowed',
+      numeric: 'Enter a numeric value',
+      rating: 'Provide a rating'
     }
   },
   createPoll: {

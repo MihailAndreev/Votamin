@@ -315,6 +315,12 @@ export default {
     },
     success: {
       voteSaved: 'Гласът ти е записан успешно.'
+    },
+    instructions: {
+      single_choice: 'Възможна е една опция',
+      multiple_choice: 'Възможни са повече от една опции',
+      numeric: 'Въведете числова стойност',
+      rating: 'Дайте оценка'
     }
   },
   createPoll: {
