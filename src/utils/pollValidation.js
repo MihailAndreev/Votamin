@@ -158,6 +158,13 @@ export function validateForPublish(pollData) {
  * @returns {Object} Sanitized poll data
  */
 export function sanitizePollData(pollData) {
+  const toUtcIso = (value) => {
+    if (!value || typeof value !== 'string') return null;
+    const parsed = new Date(value);
+    if (Number.isNaN(parsed.getTime())) return null;
+    return parsed.toISOString();
+  };
+
   const mapResultsVisibilityToDb = (value) => {
     if (value === 'owner_only') return 'creator_only';
     if (value === 'after_close') return 'always';
@@ -171,7 +178,7 @@ export function sanitizePollData(pollData) {
     visibility: pollData.visibility || 'public',
     results_visibility: mapResultsVisibilityToDb(pollData.resultsVisibility),
     theme: pollData.theme || 'default',
-    ends_at: pollData.endDate || null
+    ends_at: toUtcIso(pollData.endDate)
   };
 
   // Handle options based on poll type

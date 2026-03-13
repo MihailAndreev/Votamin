@@ -1,5 +1,6 @@
 import { supabaseClient } from '@utils/supabase.js';
 import { getCurrentUser } from '@utils/auth.js';
+import { computePollStatus } from '@utils/helpers.js';
 
 function requireCurrentUser() {
   const user = getCurrentUser();
@@ -16,6 +17,14 @@ function stripHtml(html) {
 
 function applyStatusFilter(query, status) {
   if (!status || status === 'all') return query;
+  
+  const now = new Date().toISOString();
+  if (status === 'open') {
+    return query.eq('status', 'open').or(`ends_at.is.null,ends_at.gt.${now}`);
+  }
+  if (status === 'closed') {
+    return query.or(`status.eq.closed,and(status.eq.open,ends_at.lte.${now})`);
+  }
   return query.eq('status', status);
 }
 
@@ -28,12 +37,20 @@ function generateShareCode(length = 8) {
   return code;
 }
 
+export async function syncExpiredPolls() {
+  const { error } = await supabaseClient.rpc('auto_close_expired_polls');
+  if (error) {
+    console.warn('Failed to auto-close expired polls:', error);
+  }
+}
+
 export async function fetchMyPollsList({ status = 'all' } = {}) {
   const user = requireCurrentUser();
+  await syncExpiredPolls();
 
   let pollsQuery = supabaseClient
     .from('polls')
-    .select('id, title, status, response_count, updated_at')
+    .select('id, title, status, ends_at, response_count, updated_at')
     .eq('owner_id', user.id)
     .order('updated_at', { ascending: false });
 
@@ -86,6 +103,7 @@ export async function fetchMyPollsList({ status = 'all' } = {}) {
 
   return polls.map((poll) => ({
     ...poll,
+    status: computePollStatus(poll),
     response_count: responseCountByPoll.get(poll.id) || 0,
     options_count: optionsCountByPoll.get(poll.id) || 0,
     share_code: shareCodeByPoll.get(poll.id) || null,
@@ -98,6 +116,7 @@ export async function fetchPollById(pollId) {
   }
 
   const user = requireCurrentUser();
+  await syncExpiredPolls();
 
   const { data: poll, error: pollError } = await supabaseClient
     .from('polls')
@@ -176,7 +195,7 @@ export async function fetchPollById(pollId) {
     description_html: poll.description_html,
     kind: poll.kind,
     visibility: poll.visibility,
-    status: poll.status,
+    status: computePollStatus(poll),
     ends_at: poll.ends_at,
     created_at: poll.created_at,
     updated_at: poll.updated_at,

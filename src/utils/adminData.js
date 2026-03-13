@@ -3,7 +3,7 @@
    Calls admin-only Supabase RPCs for the admin panel.
    ============================================================ */
 import { supabaseClient } from './supabase.js';
-
+import { computePollStatus } from '@utils/helpers.js';
 // ── User Stats ───────────────────────────────────────
 export async function fetchAdminUserStats() {
   const { data, error } = await supabaseClient.rpc('admin_get_user_stats');
@@ -91,7 +91,11 @@ export async function fetchAdminPolls({
     p_offset: offset
   });
   if (error) throw error;
-  return data || [];
+  
+  return (data || []).map(poll => ({
+    ...poll,
+    status: computePollStatus(poll)
+  }));
 }
 
 // ── Count Polls ──────────────────────────────────────

@@ -4,6 +4,9 @@
 import { supabaseClient } from '@utils/supabase.js';
 import { getCurrentUser } from '@utils/auth.js';
 
+import { computePollStatus } from '@utils/helpers.js';
+import { syncExpiredPolls } from '@utils/pollsData.js';
+
 const UNKNOWN_OWNER_NAME = 'Unknown';
 
 function requireCurrentUser() {
@@ -22,6 +25,14 @@ function normalizeOwnerName(fullName) {
 
 function applyPollStatusFilter(query, status) {
   if (!status || status === 'all') return query;
+  
+  const now = new Date().toISOString();
+  if (status === 'open') {
+    return query.eq('status', 'open').or(`ends_at.is.null,ends_at.gt.${now}`);
+  }
+  if (status === 'closed') {
+    return query.or(`status.eq.closed,and(status.eq.open,ends_at.lte.${now})`);
+  }
   return query.eq('status', status);
 }
 
@@ -57,6 +68,7 @@ async function getLiveResponseCountByPollId(pollIds) {
 
 export async function fetchDashboardMyPolls({ status = 'all' } = {}) {
   const user = requireCurrentUser();
+  await syncExpiredPolls();
 
   let pollsQuery = supabaseClient
     .from('polls')
@@ -86,6 +98,7 @@ export async function fetchDashboardMyPolls({ status = 'all' } = {}) {
 
   return polls.map((poll) => ({
     ...poll,
+    status: computePollStatus(poll),
     response_count: responseCountByPollId.get(poll.id) || 0,
     my_response: votedPollIds.has(poll.id),
   }));
@@ -93,6 +106,7 @@ export async function fetchDashboardMyPolls({ status = 'all' } = {}) {
 
 export async function fetchDashboardSharedPolls({ status = 'all' } = {}) {
   const user = requireCurrentUser();
+  await syncExpiredPolls();
 
   const { data: voteRows, error: votesError } = await supabaseClient
     .from('votes')
@@ -130,6 +144,7 @@ export async function fetchDashboardSharedPolls({ status = 'all' } = {}) {
     const owner = ownersById.get(poll.owner_id);
     return {
       ...poll,
+      status: computePollStatus(poll),
       response_count: responseCountByPollId.get(poll.id) || 0,
       owner_name: owner?.full_name ?? UNKNOWN_OWNER_NAME,
       owner_avatar_url: owner?.avatar_url ?? null,

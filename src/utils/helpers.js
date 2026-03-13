@@ -15,6 +15,18 @@ export function htmlToElement(html) {
   return tpl.content.firstChild;
 }
 
+/** Compute the real status of a poll based on its ends_at date */
+export function computePollStatus(poll) {
+  if (!poll) return 'draft';
+  if (poll.status === 'closed') return 'closed';
+  if (poll.status === 'open' && poll.ends_at) {
+    if (new Date(poll.ends_at).getTime() <= Date.now()) {
+      return 'closed';
+    }
+  }
+  return poll.status;
+}
+
 /** Inject CSS text into the <head>  (deduped by id) */
 export function injectCSS(id, cssText) {
   if (document.getElementById(id)) return;

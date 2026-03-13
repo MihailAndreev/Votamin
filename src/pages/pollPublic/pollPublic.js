@@ -8,6 +8,7 @@ import { supabaseClient } from '@utils/supabase.js';
 import { getLoaderMarkup } from '@components/loader.js';
 import { getCurrentUser } from '@utils/auth.js';
 import { navigateTo } from '../../router.js';
+import { computePollStatus } from '@utils/helpers.js';
 
 let removeLanguageChangedListener = null;
 
@@ -139,6 +140,8 @@ function renderPublicPollMarkup(poll, hasVoted = false) {
 }
 
 async function fetchPublicPollByCode(code) {
+  await supabaseClient.rpc('auto_close_expired_polls');
+
   const { data: share, error: shareError } = await supabaseClient
     .from('poll_shares')
     .select('poll_id, expires_at')
@@ -156,7 +159,7 @@ async function fetchPublicPollByCode(code) {
 
   const { data: poll, error: pollError } = await supabaseClient
     .from('polls')
-    .select('id, title, description_html, status, kind')
+    .select('id, title, description_html, status, kind, ends_at')
     .eq('id', share.poll_id)
     .single();
 
@@ -182,10 +185,25 @@ async function fetchPublicPollByCode(code) {
 
   return {
     ...poll,
+    status: computePollStatus(poll),
     description: stripHtml(poll.description_html),
     inviter_label: inviterLabel,
     options: options || [],
   };
+}
+
+async function refreshPublicPollStatus(pollId) {
+  const { data, error } = await supabaseClient
+    .from('polls')
+    .select('status, ends_at')
+    .eq('id', pollId)
+    .maybeSingle();
+
+  if (error || !data) {
+    return null;
+  }
+
+  return computePollStatus(data);
 }
 
 function mapVoteErrorToMessage(error) {
@@ -300,7 +318,14 @@ export default async function render(container, params) {
         return;
       }
 
+      await supabaseClient.rpc('auto_close_expired_polls');
+      const latestStatus = await refreshPublicPollStatus(poll.id);
+      if (latestStatus) {
+        poll.status = latestStatus;
+      }
+
       if (poll.status !== 'open') {
+        renderPollView();
         showToast(t('errors.pollNotOpen'), 'error');
         return;
       }
