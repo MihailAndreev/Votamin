@@ -120,7 +120,7 @@ export async function fetchDashboardSharedPolls({ status = 'all' } = {}) {
 
   let sharedPollsQuery = supabaseClient
     .from('polls')
-    .select('id, title, owner_id, ends_at, status, kind, response_count, updated_at')
+    .select('id, title, owner_id, ends_at, status, kind, results_visibility, response_count, updated_at')
     .in('id', pollIds)
     .neq('owner_id', user.id)
     .neq('status', 'draft')

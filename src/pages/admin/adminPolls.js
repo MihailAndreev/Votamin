@@ -27,7 +27,7 @@ let state = {
   searchTitle: '',
   searchAuthor: '',
   statusFilter: '',
-  visibilityFilter: '',
+  resultsVisibilityFilter: '',
   sortBy: 'created_at',
   sortDir: 'desc',
   stats: null,
@@ -62,9 +62,9 @@ function statusBadge(status) {
 }
 
 function visibilityBadge(vis) {
-  if (vis === 'public') return `<span class="badge bg-info text-dark">${i18n.t('admin.polls.public')}</span>`;
-  if (vis === 'unlisted') return `<span class="badge bg-warning text-dark">${i18n.t('admin.polls.unlisted')}</span>`;
-  return `<span class="badge bg-secondary">${i18n.t('admin.polls.private')}</span>`;
+  if (vis === 'participants') return `<span class="badge bg-info text-dark">${i18n.t('admin.polls.resultsParticipants')}</span>`;
+  if (vis === 'author') return `<span class="badge bg-secondary">${i18n.t('admin.polls.resultsAuthor')}</span>`;
+  return `<span class="badge bg-light text-dark">—</span>`;
 }
 
 // ── Stats Cards ────────────────────────────────────
@@ -160,9 +160,9 @@ function renderFilters() {
         </div>
         <div class="col-6 col-lg-2">
           <select class="form-select form-select-sm" id="admin-poll-vis-filter">
-            <option value="" ${!state.visibilityFilter ? 'selected' : ''}>${i18n.t('admin.polls.allVisibility')}</option>
-            <option value="public" ${state.visibilityFilter === 'public' ? 'selected' : ''}>${i18n.t('admin.polls.public')}</option>
-            <option value="private" ${state.visibilityFilter === 'private' ? 'selected' : ''}>${i18n.t('admin.polls.private')}</option>
+            <option value="" ${!state.resultsVisibilityFilter ? 'selected' : ''}>${i18n.t('admin.polls.allResultsVisibility')}</option>
+            <option value="participants" ${state.resultsVisibilityFilter === 'participants' ? 'selected' : ''}>${i18n.t('admin.polls.resultsParticipants')}</option>
+            <option value="author" ${state.resultsVisibilityFilter === 'author' ? 'selected' : ''}>${i18n.t('admin.polls.resultsAuthor')}</option>
           </select>
         </div>
         <div class="col-6 col-lg-2">
@@ -231,7 +231,7 @@ function renderPollsTable() {
         </td>
         <td class="text-muted small">${p.creator_name || p.creator_email}</td>
         <td>${statusBadge(p.status)}</td>
-        <td>${visibilityBadge(p.visibility)}</td>
+        <td>${visibilityBadge(p.results_visibility)}</td>
         <td class="text-center"><span class="text-muted small">${p.votes_count}</span></td>
         <td class="text-muted small">${p.created_at ? formatDate(p.created_at) : '—'}</td>
         <td class="text-muted small">${p.ends_at ? formatDate(p.ends_at) : '—'}</td>
@@ -280,7 +280,7 @@ function renderPollsTable() {
           <div class="vm-admin-poll-card-title" title="${p.title}">${p.title}${featuredBadge}</div>
           <div class="vm-admin-poll-card-badges">
             ${statusBadge(p.status)}
-            ${visibilityBadge(p.visibility)}
+            ${visibilityBadge(p.results_visibility)}
           </div>
         </div>
         <div class="vm-admin-poll-card-author">${p.creator_name || p.creator_email}</div>
@@ -304,7 +304,7 @@ function renderPollsTable() {
             <th>${i18n.t('admin.polls.colTitle')}</th>
             <th>${i18n.t('admin.polls.colCreator')}</th>
             <th>${i18n.t('admin.polls.colStatus')}</th>
-            <th>${i18n.t('admin.polls.colVisibility')}</th>
+            <th>${i18n.t('admin.polls.colResultsVisibility')}</th>
             <th class="text-center">${i18n.t('admin.polls.colParticipants')}</th>
             <th>${i18n.t('admin.polls.colCreated')}</th>
             <th>${i18n.t('admin.polls.colExpires')}</th>
@@ -474,7 +474,7 @@ async function loadData(container) {
         searchTitle: state.searchTitle,
         searchAuthor: state.searchAuthor,
         status: state.statusFilter,
-        visibility: state.visibilityFilter,
+        resultsVisibility: state.resultsVisibilityFilter,
         sortBy: state.sortBy,
         sortDir: state.sortDir,
         limit: PAGE_SIZE,
@@ -484,7 +484,7 @@ async function loadData(container) {
         searchTitle: state.searchTitle,
         searchAuthor: state.searchAuthor,
         status: state.statusFilter,
-        visibility: state.visibilityFilter
+        resultsVisibility: state.resultsVisibilityFilter
       })
     ]);
     state.stats = stats;
@@ -684,7 +684,7 @@ function bindEvents(container) {
 
   // Visibility filter
   container.querySelector('#admin-poll-vis-filter')?.addEventListener('change', (e) => {
-    state.visibilityFilter = e.target.value;
+    state.resultsVisibilityFilter = e.target.value;
     state.page = 1;
     loadData(container);
   });
@@ -701,7 +701,7 @@ function bindEvents(container) {
     state.searchTitle = '';
     state.searchAuthor = '';
     state.statusFilter = '';
-    state.visibilityFilter = '';
+    state.resultsVisibilityFilter = '';
     state.sortBy = 'created_at';
     state.page = 1;
     loadData(container);

@@ -74,7 +74,7 @@ export async function fetchAdminPolls({
   searchTitle = '',
   searchAuthor = '',
   status = '',
-  visibility = '',
+  resultsVisibility = '',
   sortBy = 'created_at',
   sortDir = 'desc',
   limit = 20,
@@ -84,7 +84,7 @@ export async function fetchAdminPolls({
     p_search_title: searchTitle || null,
     p_search_author: searchAuthor || null,
     p_status: status || null,
-    p_visibility: visibility || null,
+    p_results_visibility: resultsVisibility || null,
     p_sort_by: sortBy,
     p_sort_dir: sortDir,
     p_limit: limit,
@@ -99,12 +99,12 @@ export async function fetchAdminPolls({
 }
 
 // ── Count Polls ──────────────────────────────────────
-export async function countAdminPolls({ searchTitle = '', searchAuthor = '', status = '', visibility = '' } = {}) {
+export async function countAdminPolls({ searchTitle = '', searchAuthor = '', status = '', resultsVisibility = '' } = {}) {
   const { data, error } = await supabaseClient.rpc('admin_count_polls', {
     p_search_title: searchTitle || null,
     p_search_author: searchAuthor || null,
     p_status: status || null,
-    p_visibility: visibility || null
+    p_results_visibility: resultsVisibility || null
   });
   if (error) throw error;
   return Number(data) || 0;

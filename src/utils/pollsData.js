@@ -120,7 +120,7 @@ export async function fetchPollById(pollId) {
 
   const { data: poll, error: pollError } = await supabaseClient
     .from('polls')
-    .select('id, owner_id, title, description_html, kind, visibility, status, ends_at, response_count, created_at, updated_at')
+    .select('id, owner_id, title, description_html, kind, visibility, results_visibility, status, ends_at, response_count, created_at, updated_at')
     .eq('id', pollId)
     .single();
 
@@ -141,6 +141,14 @@ export async function fetchPollById(pollId) {
     .order('created_at', { ascending: false })
     .limit(1)
     .maybeSingle();
+
+  let resultsAccess = null;
+  const { data: accessRows, error: accessError } = await supabaseClient
+    .rpc('get_poll_results_access', { p_poll_id: pollId });
+
+  if (!accessError && Array.isArray(accessRows) && accessRows.length > 0) {
+    resultsAccess = accessRows[0];
+  }
 
   const { data: voteRows, error: voteRowsError } = await supabaseClient
     .from('votes')
@@ -195,6 +203,7 @@ export async function fetchPollById(pollId) {
     description_html: poll.description_html,
     kind: poll.kind,
     visibility: poll.visibility,
+    results_visibility: poll.results_visibility,
     status: computePollStatus(poll),
     ends_at: poll.ends_at,
     created_at: poll.created_at,
@@ -203,6 +212,9 @@ export async function fetchPollById(pollId) {
     owner_id: poll.owner_id,
     share_code: shareRow?.share_code || null,
     is_owner: poll.owner_id === user.id,
+    is_admin: Boolean(resultsAccess?.is_admin),
+    has_voted: Boolean(resultsAccess?.has_voted),
+    can_view_results: Boolean(resultsAccess?.can_view_results ?? (poll.owner_id === user.id)),
     options: normalizedOptions,
     total_votes: totalVotes,
     numeric_summary: numericSummary,
