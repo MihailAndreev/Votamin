@@ -27,6 +27,10 @@ function statusLabel(status) {
   return i18n.t(`pollDetail.status.${status}`) || status;
 }
 
+function resultsVisibilityLabel(resultsVisibility) {
+  return i18n.t(`pollDetail.resultsVisibility.${resultsVisibility}`) || '—';
+}
+
 function renderResultsSection(poll) {
   if (!poll.can_view_results) {
     return `<p class="text-muted mb-0">${i18n.t('pollDetail.resultsAccessDenied')}</p>`;
@@ -320,6 +324,8 @@ function renderPollDetailMarkup(poll, { isEditMode, isFromAdminPolls }) {
     ? `· <a href="#" id="copy-link" class="fw-semibold">${i18n.t('pollDetail.copyLink')}</a>`
     : '';
   const editButtonText = isEditMode ? i18n.t('pollDetail.editCancel') : i18n.t('pollDetail.editAction');
+  const resultsVisibilityBadgeTitle = i18n.t('pollDetail.resultsVisibilityLabel');
+  const statusBadgeTitle = i18n.t('pollDetail.statusLabel');
 
   return `
   <section class="container vm-section vm-poll-detail-wrapper">
@@ -332,7 +338,20 @@ function renderPollDetailMarkup(poll, { isEditMode, isFromAdminPolls }) {
         <div class="vm-card p-4 mb-4">
           <div class="d-flex justify-content-between align-items-start mb-2">
             <h3 class="fw-bold mb-0" id="poll-title">${escapeHtml(poll.title)}</h3>
-            <span class="vm-badge ms-3 ${poll.status === 'draft' ? 'vm-poll-status-badge--draft' : ''}">${statusLabel(poll.status)}</span>
+            <div class="d-flex align-items-center gap-2 flex-wrap justify-content-end">
+              <span
+                class="vm-badge vm-badge--with-tooltip"
+                data-tooltip="${escapeHtml(resultsVisibilityBadgeTitle)}"
+                aria-label="${escapeHtml(resultsVisibilityBadgeTitle)}"
+                tabindex="0"
+              >${resultsVisibilityLabel(poll.results_visibility)}</span>
+              <span
+                class="vm-badge vm-badge--with-tooltip ${poll.status === 'draft' ? 'vm-poll-status-badge--draft' : ''}"
+                data-tooltip="${escapeHtml(statusBadgeTitle)}"
+                aria-label="${escapeHtml(statusBadgeTitle)}"
+                tabindex="0"
+              >${statusLabel(poll.status)}</span>
+            </div>
           </div>
           <p class="text-muted" id="poll-desc">${escapeHtml(poll.description || i18n.t('pollDetail.noDescription'))}</p>
           <small class="text-muted">${i18n.t('pollDetail.shareCode')} <strong id="poll-code">${escapeHtml(shareCode)}</strong>
