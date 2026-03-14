@@ -12,6 +12,7 @@
 
 const routes = [];
 let notFoundHandler = null;
+let lastHandledUrl = null;
 
 /* ── Public API ───────────────────────────────────── */
 
@@ -41,6 +42,12 @@ export function currentPath() {
  */
 export function startRouter(renderFn) {
   const handle = async () => {
+    const fullUrl = `${window.location.pathname}${window.location.search}${window.location.hash}`;
+    if (lastHandledUrl === fullUrl) {
+      return;
+    }
+    lastHandledUrl = fullUrl;
+
     const path = currentPath();
     const match = matchRoute(path);
 

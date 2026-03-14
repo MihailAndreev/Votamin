@@ -180,7 +180,7 @@ export default {
       showing: 'Showing'
     },
     account: {
-      title: 'Account',
+      title: 'Profile',
       emailLabel: 'Email',
       photoLabel: 'Photo',
       uploadPhoto: 'Upload photo',

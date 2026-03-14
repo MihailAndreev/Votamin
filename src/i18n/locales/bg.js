@@ -182,7 +182,7 @@ export default {
       showing: 'Показани'
     },
     account: {
-      title: 'Акаунт',
+      title: 'Профил',
       emailLabel: 'Имейл',
       photoLabel: 'Снимка',
       uploadPhoto: 'Качи снимка',
