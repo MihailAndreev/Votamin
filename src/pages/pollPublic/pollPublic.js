@@ -91,6 +91,7 @@ function renderPublicPollMarkup(poll, hasVoted = false) {
   const description = poll.description || '';
   const poweredByHref = getCurrentUser() ? '/dashboard' : '/';
   const inviteText = getInviteText(poll.inviter_label);
+  const resultsTarget = poll.is_owner ? `/polls/${poll.id}` : `/polls/${poll.id}?from=shared`;
 
   return `
     <div class="min-vh-100 d-flex align-items-center justify-content-center"
@@ -125,7 +126,10 @@ function renderPublicPollMarkup(poll, hasVoted = false) {
           <div id="public-thanks" class="text-center ${hasVoted ? '' : 'd-none'} py-4">
             <h4 class="fw-bold">${escapeHtml(t('thanksTitle'))}</h4>
             <p class="text-muted">${escapeHtml(t('thanksText'))}</p>
-            <a href="/dashboard" class="btn btn-votamin mt-2" id="public-return-dashboard">${escapeHtml(t('returnToDashboard'))}</a>
+            <div class="d-flex flex-column gap-2 mt-2">
+              ${poll.can_view_results_after_vote ? `<a href="${resultsTarget}" class="btn btn-votamin" id="public-return-results">${escapeHtml(t('returnToResults'))}</a>` : ''}
+              <a href="/dashboard" class="btn btn-votamin-outline" id="public-return-dashboard">${escapeHtml(t('returnToDashboard'))}</a>
+            </div>
           </div>
         </div>
         <p class="text-center mt-3 small text-muted">
@@ -159,7 +163,7 @@ async function fetchPublicPollByCode(code) {
 
   const { data: poll, error: pollError } = await supabaseClient
     .from('polls')
-    .select('id, title, description_html, status, kind, ends_at')
+    .select('id, owner_id, title, description_html, status, kind, results_visibility, ends_at')
     .eq('id', share.poll_id)
     .single();
 
@@ -234,17 +238,18 @@ async function submitPublicVote(poll, { selectedOptionIds, numericValue }) {
     throw new Error('auth_required');
   }
 
+  const voteId = crypto.randomUUID();
+
   const votePayload = {
+    id: voteId,
     poll_id: poll.id,
     voter_user_id: user.id,
     numeric_value: poll.kind === 'numeric' ? numericValue : null,
   };
 
-  const { data: voteRow, error: voteError } = await supabaseClient
+  const { error: voteError } = await supabaseClient
     .from('votes')
-    .insert(votePayload)
-    .select('id')
-    .single();
+    .insert(votePayload);
 
   if (voteError) throw voteError;
 
@@ -253,7 +258,7 @@ async function submitPublicVote(poll, { selectedOptionIds, numericValue }) {
   }
 
   const voteOptionsRows = selectedOptionIds.map((optionId) => ({
-    vote_id: voteRow.id,
+    vote_id: voteId,
     option_id: optionId,
   }));
 
@@ -301,6 +306,20 @@ export default async function render(container, params) {
   }
 
   let hasVoted = false;
+
+  async function getResultsAccessAfterVote() {
+    const user = getCurrentUser();
+    if (!user?.id) return false;
+
+    const { data, error } = await supabaseClient.rpc('can_view_poll_results', { p_poll_id: poll.id });
+    if (error) {
+      return false;
+    }
+    return Boolean(data);
+  }
+
+  poll.is_owner = Boolean(getCurrentUser()?.id && poll.owner_id === getCurrentUser().id);
+  poll.can_view_results_after_vote = false;
 
   const renderPollView = () => {
     container.innerHTML = renderPublicPollMarkup(poll, hasVoted);
@@ -361,6 +380,7 @@ export default async function render(container, params) {
       try {
         await submitPublicVote(poll, { selectedOptionIds, numericValue });
         hasVoted = true;
+        poll.can_view_results_after_vote = await getResultsAccessAfterVote();
         renderPollView();
         showToast(t('success.voteSaved'), 'success');
       } catch (error) {

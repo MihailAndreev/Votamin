@@ -110,6 +110,7 @@ export default {
       columns: {
         title: 'Title',
         type: 'Type',
+        resultsVisibility: 'Results Visibility',
         responses: 'Participants',
         deadline: 'Modified Date',
         status: 'Status',
@@ -295,6 +296,7 @@ export default {
     thanksTitle: 'Thank you!',
     thanksText: 'Your vote has been received.',
     returnToDashboard: 'Back to dashboard',
+    returnToResults: 'Go to results',
     poweredBy: 'Powered by',
     errors: {
       missingCode: 'Missing share code.',
@@ -382,12 +384,10 @@ export default {
       privateDesc: 'Only shared participants can access'
     },
     resultsVisibility: {
-      after_vote: 'After Vote',
-      always: 'Always',
-      creator_only: 'Creator Only',
-      after_voteDesc: 'Voters see results immediately',
-      alwaysDesc: 'Results are visible to everyone',
-      creator_onlyDesc: 'Only you can see the results'
+      participants: 'Every participant',
+      author: 'Author only',
+      participantsDesc: 'Voted participants can view results',
+      authorDesc: 'Results are visible only to the poll author'
     },
     themes: {
       default: 'Default',
@@ -434,7 +434,6 @@ export default {
       summaryTitle: 'Poll Summary',
       summaryQuestion: 'Question',
       summaryType: 'Type',
-      summaryVisibility: 'Visibility',
       summaryResults: 'Results',
       summaryHint: 'Use the buttons below to save as draft or publish your poll.'
     },
@@ -477,6 +476,7 @@ export default {
     editCancel: 'Cancel',
     editAction: 'Edit',
     backToMyPolls: '← Back to my polls',
+    backToSharedPolls: '← Back to shared with me',
     backToAdminPolls: '← Back to admin polls',
     noDescription: 'No description',
     shareCode: 'Share code:',
@@ -484,14 +484,15 @@ export default {
     titleLabel: 'Title',
     descriptionLabel: 'Description',
     statusLabel: 'Status',
-    visibilityLabel: 'Visibility',
-    visibility: {
-      public: 'Public',
-      private: 'Private'
+    resultsVisibilityLabel: 'Results Visibility',
+    resultsVisibility: {
+      participants: 'Every participant',
+      author: 'Author only'
     },
     saveChanges: 'Save changes',
     editHint: 'Use "Edit" to change title, description, and status.',
     resultsTitle: 'Results',
+    resultsAccessDenied: 'Results are visible only to the poll author.',
     votesSuffix: 'votes',
     closePoll: 'Close poll',
     deletePoll: 'Delete',
@@ -512,7 +513,7 @@ export default {
       created: 'Created',
       adminTitle: 'Administration',
       shareCode: 'Share Code',
-      visibility: 'Visibility',
+      resultsVisibility: 'Results Visibility',
       kind: 'Type',
       justNow: 'just now',
       minutesAgo: 'min ago',

@@ -166,16 +166,16 @@ export function sanitizePollData(pollData) {
   };
 
   const mapResultsVisibilityToDb = (value) => {
-    if (value === 'owner_only') return 'creator_only';
-    if (value === 'after_close') return 'always';
-    return value || 'after_vote';
+    if (value === 'creator_only' || value === 'owner_only') return 'author';
+    if (value === 'after_vote' || value === 'always' || value === 'after_close') return 'participants';
+    return value === 'author' ? 'author' : 'participants';
   };
 
   const sanitized = {
     question: pollData.question?.trim() || '',
     description: pollData.description?.trim() || null,
     kind: pollData.kind,
-    visibility: pollData.visibility || 'public',
+    visibility: 'public',
     results_visibility: mapResultsVisibilityToDb(pollData.resultsVisibility),
     theme: pollData.theme || 'default',
     ends_at: toUtcIso(pollData.endDate)

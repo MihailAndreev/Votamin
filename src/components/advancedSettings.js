@@ -2,15 +2,13 @@ import { i18n } from '../i18n/index.js';
 
 /**
  * Advanced Settings Component (Collapsible)
- * - Visibility (public/private)
- * - Results Visibility (after_vote/always/creator_only)
+ * - Results Visibility (participants/author)
  * - End Date (optional)
  * - Theme (default/blue/green/purple/orange)
  */
 export function renderAdvancedSettings(settings = {}, onChange) {
   const defaultSettings = {
-    visibility: 'public',
-    resultsVisibility: 'after_vote',
+    resultsVisibility: 'participants',
     endDate: '',
     theme: 'default',
     ...settings
@@ -19,7 +17,6 @@ export function renderAdvancedSettings(settings = {}, onChange) {
   const container = document.createElement('div');
   container.className = 'advanced-settings';
   const radioGroupId = `adv-${Math.random().toString(36).slice(2, 10)}`;
-  const visibilityGroupName = `visibility-${radioGroupId}`;
   const resultsVisibilityGroupName = `resultsVisibility-${radioGroupId}`;
 
   function updateSetting(key, value) {
@@ -298,50 +295,22 @@ export function renderAdvancedSettings(settings = {}, onChange) {
     <div class="advanced-settings-content">
       <div class="settings-grid">
         
-        <!-- Visibility -->
-        <div class="setting-field">
-          <label class="setting-label">${i18n.t('createPoll.fields.visibility')}</label>
-          <div class="radio-group">
-            <label class="radio-option ${defaultSettings.visibility === 'public' ? 'selected' : ''}" data-value="public">
-              <input type="radio" name="${visibilityGroupName}" value="public" data-setting="visibility" class="radio-input" ${defaultSettings.visibility === 'public' ? 'checked' : ''}>
-              <div class="radio-label-wrapper">
-                <span class="radio-label">${i18n.t('createPoll.visibility.public')}</span>
-                <span class="radio-description">${i18n.t('createPoll.visibility.publicDesc')}</span>
-              </div>
-            </label>
-            <label class="radio-option ${defaultSettings.visibility === 'private' ? 'selected' : ''}" data-value="private">
-              <input type="radio" name="${visibilityGroupName}" value="private" data-setting="visibility" class="radio-input" ${defaultSettings.visibility === 'private' ? 'checked' : ''}>
-              <div class="radio-label-wrapper">
-                <span class="radio-label">${i18n.t('createPoll.visibility.private')}</span>
-                <span class="radio-description">${i18n.t('createPoll.visibility.privateDesc')}</span>
-              </div>
-            </label>
-          </div>
-        </div>
-
         <!-- Results Visibility -->
         <div class="setting-field">
           <label class="setting-label">${i18n.t('createPoll.fields.resultsVisibility')}</label>
           <div class="radio-group">
-            <label class="radio-option ${defaultSettings.resultsVisibility === 'after_vote' ? 'selected' : ''}" data-value="after_vote">
-              <input type="radio" name="${resultsVisibilityGroupName}" value="after_vote" data-setting="resultsVisibility" class="radio-input" ${defaultSettings.resultsVisibility === 'after_vote' ? 'checked' : ''}>
+            <label class="radio-option ${defaultSettings.resultsVisibility === 'participants' ? 'selected' : ''}" data-value="participants">
+              <input type="radio" name="${resultsVisibilityGroupName}" value="participants" data-setting="resultsVisibility" class="radio-input" ${defaultSettings.resultsVisibility === 'participants' ? 'checked' : ''}>
               <div class="radio-label-wrapper">
-                <span class="radio-label">${i18n.t('createPoll.resultsVisibility.after_vote')}</span>
-                <span class="radio-description">${i18n.t('createPoll.resultsVisibility.after_voteDesc')}</span>
+                <span class="radio-label">${i18n.t('createPoll.resultsVisibility.participants')}</span>
+                <span class="radio-description">${i18n.t('createPoll.resultsVisibility.participantsDesc')}</span>
               </div>
             </label>
-            <label class="radio-option ${defaultSettings.resultsVisibility === 'always' ? 'selected' : ''}" data-value="always">
-              <input type="radio" name="${resultsVisibilityGroupName}" value="always" data-setting="resultsVisibility" class="radio-input" ${defaultSettings.resultsVisibility === 'always' ? 'checked' : ''}>
+            <label class="radio-option ${defaultSettings.resultsVisibility === 'author' ? 'selected' : ''}" data-value="author">
+              <input type="radio" name="${resultsVisibilityGroupName}" value="author" data-setting="resultsVisibility" class="radio-input" ${defaultSettings.resultsVisibility === 'author' ? 'checked' : ''}>
               <div class="radio-label-wrapper">
-                <span class="radio-label">${i18n.t('createPoll.resultsVisibility.always')}</span>
-                <span class="radio-description">${i18n.t('createPoll.resultsVisibility.alwaysDesc')}</span>
-              </div>
-            </label>
-            <label class="radio-option ${defaultSettings.resultsVisibility === 'creator_only' ? 'selected' : ''}" data-value="creator_only">
-              <input type="radio" name="${resultsVisibilityGroupName}" value="creator_only" data-setting="resultsVisibility" class="radio-input" ${defaultSettings.resultsVisibility === 'creator_only' ? 'checked' : ''}>
-              <div class="radio-label-wrapper">
-                <span class="radio-label">${i18n.t('createPoll.resultsVisibility.creator_only')}</span>
-                <span class="radio-description">${i18n.t('createPoll.resultsVisibility.creator_onlyDesc')}</span>
+                <span class="radio-label">${i18n.t('createPoll.resultsVisibility.author')}</span>
+                <span class="radio-description">${i18n.t('createPoll.resultsVisibility.authorDesc')}</span>
               </div>
             </label>
           </div>
@@ -396,7 +365,7 @@ export function renderAdvancedSettings(settings = {}, onChange) {
     });
   }
 
-  [visibilityGroupName, resultsVisibilityGroupName].forEach((groupName) => {
+  [resultsVisibilityGroupName].forEach((groupName) => {
     const inputs = container.querySelectorAll(`input[name="${groupName}"]`);
     inputs.forEach((input) => {
       input.addEventListener('change', (e) => {

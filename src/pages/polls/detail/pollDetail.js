@@ -28,6 +28,10 @@ function statusLabel(status) {
 }
 
 function renderResultsSection(poll) {
+  if (!poll.can_view_results) {
+    return `<p class="text-muted mb-0">${i18n.t('pollDetail.resultsAccessDenied')}</p>`;
+  }
+
   if (poll.kind === 'numeric') {
     if (!poll.numeric_summary) {
       return `<p class="text-muted mb-0">${i18n.t('pollDetail.noAnswersYet')}</p>`;
@@ -224,8 +228,8 @@ function renderLeftSidebar(poll) {
             <span class="vm-kpi-value">${escapeHtml(poll.share_code || '—')}</span>
           </li>
           <li>
-            <span class="vm-kpi-label">${t('visibility')}</span>
-            <span class="vm-kpi-value">${poll.visibility || '—'}</span>
+            <span class="vm-kpi-label">${t('resultsVisibility')}</span>
+            <span class="vm-kpi-value">${i18n.t(`pollDetail.resultsVisibility.${poll.results_visibility}`) || '—'}</span>
           </li>
           <li>
             <span class="vm-kpi-label">${t('kind')}</span>
@@ -295,6 +299,10 @@ function renderBackLinks({ isFromAdminPolls }) {
   `;
 
   if (!isFromAdminPolls) {
+    const isFromSharedPolls = new URLSearchParams(window.location.search).get('from') === 'shared';
+    if (isFromSharedPolls) {
+      return `<a href="/dashboard/shared" class="vm-poll-back-link mb-3 d-inline-flex align-items-center">${i18n.t('pollDetail.backToSharedPolls')}</a>`;
+    }
     return backToMyPolls;
   }
 
@@ -352,10 +360,10 @@ function renderPollDetailMarkup(poll, { isEditMode, isFromAdminPolls }) {
               </select>
             </div>
             <div class="mb-3">
-              <label class="form-label">${i18n.t('pollDetail.visibilityLabel')}</label>
-              <select class="form-select" id="edit-visibility">
-                <option value="public" ${poll.visibility === 'public' ? 'selected' : ''}>${i18n.t('pollDetail.visibility.public')}</option>
-                <option value="private" ${poll.visibility === 'private' ? 'selected' : ''}>${i18n.t('pollDetail.visibility.private')}</option>
+                <label class="form-label">${i18n.t('pollDetail.resultsVisibilityLabel')}</label>
+                <select class="form-select" id="edit-results-visibility">
+                  <option value="participants" ${poll.results_visibility === 'participants' ? 'selected' : ''}>${i18n.t('pollDetail.resultsVisibility.participants')}</option>
+                  <option value="author" ${poll.results_visibility === 'author' ? 'selected' : ''}>${i18n.t('pollDetail.resultsVisibility.author')}</option>
               </select>
             </div>
             <button class="btn btn-votamin" id="btn-save-edit">${i18n.t('pollDetail.saveChanges')}</button>
@@ -496,7 +504,7 @@ export default async function render(container, params) {
       const title = container.querySelector('#edit-title')?.value?.trim();
       const description = container.querySelector('#edit-description')?.value?.trim();
       const status = container.querySelector('#edit-status')?.value;
-      const visibility = container.querySelector('#edit-visibility')?.value;
+      const resultsVisibility = container.querySelector('#edit-results-visibility')?.value;
 
       if (!title) {
         showToast(i18n.t('pollDetail.titleRequired'), 'error');
@@ -507,7 +515,7 @@ export default async function render(container, params) {
         await updatePollById(pollId, {
           title,
           status,
-          visibility,
+          results_visibility: resultsVisibility,
           description_html: description
             ? `<p>${description.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')}</p>`
             : null,

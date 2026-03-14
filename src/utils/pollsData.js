@@ -150,49 +150,35 @@ export async function fetchPollById(pollId) {
     resultsAccess = accessRows[0];
   }
 
-  const { data: voteRows, error: voteRowsError } = await supabaseClient
-    .from('votes')
-    .select('id, numeric_value')
-    .eq('poll_id', pollId);
+  let summary = null;
+  const { data: summaryRows, error: summaryError } = await supabaseClient
+    .rpc('get_poll_results_summary', { p_poll_id: pollId });
 
-  if (voteRowsError) throw voteRowsError;
-
-  const voteIds = (voteRows || []).map((row) => row.id);
-  const numericValues = (voteRows || []).map((row) => row.numeric_value).filter((value) => typeof value === 'number');
-
-  let optionSelections = [];
-  if (voteIds.length > 0) {
-    const { data: selections, error: selectionsError } = await supabaseClient
-      .from('vote_options')
-      .select('option_id')
-      .in('vote_id', voteIds);
-
-    if (selectionsError) throw selectionsError;
-    optionSelections = selections || [];
+  if (!summaryError && Array.isArray(summaryRows) && summaryRows.length > 0) {
+    summary = summaryRows[0];
   }
 
-  const optionCountMap = new Map();
-  optionSelections.forEach((selection) => {
-    const currentCount = optionCountMap.get(selection.option_id) || 0;
-    optionCountMap.set(selection.option_id, currentCount + 1);
-  });
+  const totalVotes = Number(summary?.total_votes ?? poll.response_count ?? 0);
 
-  const totalVotes = voteRows?.length || 0;
-  const normalizedOptions = (options || []).map((option) => {
-    const votesCount = optionCountMap.get(option.id) || 0;
-    const percentage = totalVotes > 0 ? Math.round((votesCount / totalVotes) * 100) : 0;
-    return {
-      ...option,
-      votes_count: votesCount,
-      percentage,
-    };
-  });
+  const normalizedOptions = Array.isArray(summary?.option_results)
+    ? summary.option_results.map((item) => ({
+        id: item.id,
+        text: item.text,
+        position: item.position,
+        votes_count: item.votes_count,
+        percentage: item.percentage,
+      }))
+    : (options || []).map((option) => ({
+        ...option,
+        votes_count: 0,
+        percentage: 0,
+      }));
 
-  const numericSummary = numericValues.length > 0
+  const numericSummary = (summary?.numeric_avg !== null && summary?.numeric_avg !== undefined)
     ? {
-        avg: Number((numericValues.reduce((sum, value) => sum + value, 0) / numericValues.length).toFixed(2)),
-        min: Math.min(...numericValues),
-        max: Math.max(...numericValues),
+        avg: Number(summary.numeric_avg),
+        min: Number(summary.numeric_min),
+        max: Number(summary.numeric_max),
       }
     : null;
 
@@ -214,7 +200,7 @@ export async function fetchPollById(pollId) {
     is_owner: poll.owner_id === user.id,
     is_admin: Boolean(resultsAccess?.is_admin),
     has_voted: Boolean(resultsAccess?.has_voted),
-    can_view_results: Boolean(resultsAccess?.can_view_results ?? (poll.owner_id === user.id)),
+    can_view_results: Boolean(summary?.can_view_results ?? resultsAccess?.can_view_results ?? (poll.owner_id === user.id)),
     options: normalizedOptions,
     total_votes: totalVotes,
     numeric_summary: numericSummary,

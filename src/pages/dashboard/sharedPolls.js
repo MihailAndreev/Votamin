@@ -15,6 +15,11 @@ function modifiedText(updatedAt) {
   return formatDate(updatedAt);
 }
 
+function resultsVisibilityBadge(value) {
+  const label = i18n.t(`createPoll.resultsVisibility.${value}`) || '—';
+  return `<span class="vm-results-visibility-badge">${label}</span>`;
+}
+
 function renderTable(polls) {
   const t = (k) => i18n.t(`dashboard.table.columns.${k}`);
   return `
@@ -32,12 +37,12 @@ function renderTable(polls) {
         <tbody>
           ${polls.map(p => `
           <tr>
-            <td><a href="/polls/${p.id}" class="fw-semibold">${p.title}</a></td>
+            <td><a href="/polls/${p.id}?from=shared" class="fw-semibold">${p.title}</a></td>
             <td>${p.owner_name}</td>
             <td>${modifiedText(p.updated_at)}</td>
             <td>${statusBadge(p.status)}</td>
             <td>
-              <a href="/polls/${p.id}" class="btn btn-sm btn-votamin-outline">${i18n.t('dashboard.actions.view')}</a>
+              <a href="/polls/${p.id}?from=shared" class="btn btn-sm btn-votamin-outline">${i18n.t('dashboard.actions.view')}</a>
             </td>
           </tr>`).join('')}
         </tbody>
@@ -50,14 +55,15 @@ function renderCards(polls) {
     <div class="vm-dash-cards">
       ${polls.map(p => `
       <div class="vm-dash-card">
-        <div class="vm-dash-card-title"><a href="/polls/${p.id}">${p.title}</a></div>
+        <div class="vm-dash-card-title"><a href="/polls/${p.id}?from=shared">${p.title}</a></div>
         <div class="vm-dash-card-meta">
           <span>${i18n.t('dashboard.table.columns.owner')}: ${p.owner_name}</span>
           ${statusBadge(p.status)}
+          ${resultsVisibilityBadge(p.results_visibility)}
           <span>${modifiedText(p.updated_at)}</span>
         </div>
         <div class="vm-dash-card-actions">
-          <a href="/polls/${p.id}" class="btn btn-sm btn-votamin-outline">${i18n.t('dashboard.actions.view')}</a>
+          <a href="/polls/${p.id}?from=shared" class="btn btn-sm btn-votamin-outline">${i18n.t('dashboard.actions.view')}</a>
         </div>
       </div>`).join('')}
     </div>`;

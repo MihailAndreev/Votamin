@@ -42,8 +42,7 @@ export default function render(container) {
       options: ['', ''],
       minValue: null,
       maxValue: null,
-      visibility: 'public',
-      resultsVisibility: 'after_vote',
+      resultsVisibility: 'participants',
       endDate: '',
       theme: 'default'
     }
@@ -220,13 +219,11 @@ export default function render(container) {
     advancedSection.className = 'step-section';
     const advancedSettings = renderAdvancedSettings(
       {
-        visibility: wizardState.pollData.visibility,
         resultsVisibility: wizardState.pollData.resultsVisibility,
         endDate: wizardState.pollData.endDate,
         theme: wizardState.pollData.theme
       },
       (settings) => {
-        wizardState.pollData.visibility = settings.visibility;
         wizardState.pollData.resultsVisibility = settings.resultsVisibility;
         wizardState.pollData.endDate = settings.endDate;
         wizardState.pollData.theme = settings.theme;
@@ -355,7 +352,6 @@ export default function render(container) {
             <div style="display: flex; flex-direction: column; gap: 0.75rem; font-size: 0.875rem;">
               <div><strong>${i18n.t('createPoll.publish.summaryQuestion')}:</strong> ${wizardState.pollData.question}</div>
               <div><strong>${i18n.t('createPoll.publish.summaryType')}:</strong> ${i18n.t(`dashboard.kind.${wizardState.pollData.kind}`)}</div>
-              <div><strong>${i18n.t('createPoll.publish.summaryVisibility')}:</strong> ${i18n.t(`createPoll.visibility.${wizardState.pollData.visibility}`)}</div>
               <div><strong>${i18n.t('createPoll.publish.summaryResults')}:</strong> ${i18n.t(`createPoll.resultsVisibility.${wizardState.pollData.resultsVisibility}`)}</div>
             </div>
           </div>

@@ -72,7 +72,7 @@ export async function fetchDashboardMyPolls({ status = 'all' } = {}) {
 
   let pollsQuery = supabaseClient
     .from('polls')
-    .select('id, title, kind, response_count, ends_at, status, owner_id, updated_at')
+    .select('id, title, kind, results_visibility, response_count, ends_at, status, owner_id, updated_at')
     .eq('owner_id', user.id)
     .order('updated_at', { ascending: false });
 
@@ -108,14 +108,23 @@ export async function fetchDashboardSharedPolls({ status = 'all' } = {}) {
   const user = requireCurrentUser();
   await syncExpiredPolls();
 
-  const { data: voteRows, error: votesError } = await supabaseClient
-    .from('votes')
-    .select('poll_id')
-    .eq('voter_user_id', user.id);
+  let pollIds = [];
 
-  if (votesError) throw votesError;
+  const { data: sharedPollIdRows, error: sharedIdsError } = await supabaseClient
+    .rpc('get_shared_poll_ids');
 
-  const pollIds = [...new Set((voteRows || []).map((row) => row.poll_id).filter(Boolean))];
+  if (!sharedIdsError) {
+    pollIds = [...new Set((sharedPollIdRows || []).map((row) => row.poll_id).filter(Boolean))];
+  } else {
+    const { data: voteRows, error: votesError } = await supabaseClient
+      .from('votes')
+      .select('poll_id')
+      .eq('voter_user_id', user.id);
+
+    if (votesError) throw votesError;
+    pollIds = [...new Set((voteRows || []).map((row) => row.poll_id).filter(Boolean))];
+  }
+
   if (pollIds.length === 0) return [];
 
   let sharedPollsQuery = supabaseClient

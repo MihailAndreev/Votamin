@@ -112,6 +112,7 @@ export default {
       columns: {
         title: 'Заглавие',
         type: 'Тип',
+        resultsVisibility: 'Видимост на резултатите',
         responses: 'Участници',
         deadline: 'Модификация',
         status: 'Статус',
@@ -296,7 +297,8 @@ export default {
     submitting: 'Изпращане...',
     thanksTitle: 'Благодарим ти!',
     thanksText: 'Гласът ти е получен.',
-    returnToDashboard: 'Към Dashboard',
+    returnToDashboard: 'Към Табло',
+    returnToResults: 'Към резултат',
     poweredBy: 'Задвижвано от',
     errors: {
       missingCode: 'Липсва код за споделяне.',
@@ -384,12 +386,10 @@ export default {
       privateDesc: 'Само споделени участници могат да достъпят'
     },
     resultsVisibility: {
-      after_vote: 'След гласуване',
-      always: 'Винаги',
-      creator_only: 'Само автор',
-      after_voteDesc: 'Гласувалите виждат резултатите веднага',
-      alwaysDesc: 'Резултатите са видими за всички',
-      creator_onlyDesc: 'Само ти можеш да видиш резултатите'
+      participants: 'Всеки участник',
+      author: 'Само автор',
+      participantsDesc: 'Гласувалите участници виждат резултатите',
+      authorDesc: 'Резултатите са видими само за автора'
     },
     themes: {
       default: 'По подразбиране',
@@ -436,7 +436,6 @@ export default {
       summaryTitle: 'Обобщение на анкетата',
       summaryQuestion: 'Въпрос',
       summaryType: 'Тип',
-      summaryVisibility: 'Видимост',
       summaryResults: 'Резултати',
       summaryHint: 'Използвай бутоните отдолу, за да запазиш като чернова или да публикуваш анкетата.'
     },
@@ -479,6 +478,7 @@ export default {
     editCancel: 'Откажи',
     editAction: 'Редактирай',
     backToMyPolls: '← Обратно към моите анкети',
+    backToSharedPolls: '← Обратно към споделени с мен',
     backToAdminPolls: '← Обратно към админ анкети',
     noDescription: 'Без описание',
     shareCode: 'Код за споделяне:',
@@ -486,14 +486,15 @@ export default {
     titleLabel: 'Заглавие',
     descriptionLabel: 'Описание',
     statusLabel: 'Статус',
-    visibilityLabel: 'Видимост',
-    visibility: {
-      public: 'Публична',
-      private: 'Частна'
+    resultsVisibilityLabel: 'Видимост на резултатите',
+    resultsVisibility: {
+      participants: 'Всеки участник',
+      author: 'Само автор'
     },
     saveChanges: 'Запази промените',
     editHint: 'Използвай "Редактирай", за да промениш заглавие, описание и статус.',
     resultsTitle: 'Резултати',
+    resultsAccessDenied: 'Резултатите са видими само за автора на анкетата.',
     votesSuffix: 'гласа',
     closePoll: 'Затвори анкетата',
     deletePoll: 'Изтрий',
@@ -514,7 +515,7 @@ export default {
       created: 'Създадена',
       adminTitle: 'Администрация',
       shareCode: 'Код за споделяне',
-      visibility: 'Видимост',
+      resultsVisibility: 'Видимост на резултатите',
       kind: 'Тип',
       justNow: 'току-що',
       minutesAgo: 'мин. назад',
