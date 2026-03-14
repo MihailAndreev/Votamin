@@ -381,7 +381,9 @@
 .vm-date-hover-tooltip:hover::before,
 .vm-date-hover-tooltip:hover::after,
 .vm-date-hover-tooltip:focus-visible::before,
-.vm-date-hover-tooltip:focus-visible::after {
+.vm-date-hover-tooltip:focus-visible::after,
+.vm-date-hover-tooltip.is-open::before,
+.vm-date-hover-tooltip.is-open::after {
   opacity: 1;
   transform: translate(-50%, 0);
 }

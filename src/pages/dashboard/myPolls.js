@@ -142,8 +142,8 @@ function renderCards(polls) {
           ${statusBadge(p.status)}
           ${resultsVisibilityBadge(p.results_visibility)}
           <span>${p.response_count} ${i18n.t('dashboard.table.columns.responses').toLowerCase()}</span>
-          <span title="${escapeHtmlAttr(formatTimeOnly(p.ends_at) || i18n.t('dashboard.noDeadline'))}">${i18n.t('dashboard.table.columns.deadline')}: ${deadlineText(p.ends_at)}</span>
-          <span title="${escapeHtmlAttr(formatTimeOnly(p.updated_at) || i18n.t('dashboard.noModifiedDate'))}">${modifiedText(p.updated_at)}</span>
+          <span>${i18n.t('dashboard.table.columns.deadline')}: ${renderDateWithHover(p.ends_at, i18n.t('dashboard.noDeadline'))}</span>
+          <span>${renderDateWithHover(p.updated_at, i18n.t('dashboard.noModifiedDate'))}</span>
         </div>
         <div class="vm-dash-card-actions">
           <a href="/polls/${p.id}" class="btn btn-sm btn-votamin-outline">${i18n.t('dashboard.actions.view')}</a>
@@ -512,6 +512,23 @@ export default async function render(container) {
 
   /* Delete handler */
   container.addEventListener('click', async (e) => {
+    const clickedTooltip = e.target.closest('.vm-date-hover-tooltip');
+    if (clickedTooltip) {
+      e.preventDefault();
+      const isOpen = clickedTooltip.classList.contains('is-open');
+      container.querySelectorAll('.vm-date-hover-tooltip.is-open').forEach((tooltipEl) => {
+        tooltipEl.classList.remove('is-open');
+      });
+      if (!isOpen) {
+        clickedTooltip.classList.add('is-open');
+      }
+      return;
+    }
+
+    container.querySelectorAll('.vm-date-hover-tooltip.is-open').forEach((tooltipEl) => {
+      tooltipEl.classList.remove('is-open');
+    });
+
     const pageBtn = e.target.closest('[data-page]');
     if (pageBtn) {
       e.preventDefault();
