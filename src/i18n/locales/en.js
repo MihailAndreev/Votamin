@@ -148,8 +148,8 @@ export default {
         cta: 'Create your first poll'
       },
       shared: {
-        title: "You haven't participated in any polls yet.",
-        subtitle: 'When you vote in a poll created by someone else, it will appear here.'
+        title: "You haven't participated in any polls of this type yet.",
+        subtitle: 'When you vote in a poll created by another user of this type, it will appear here.'
       }
     },
     actions: {
