@@ -200,6 +200,22 @@
 .vm-admin-polls-table th:nth-child(8),
 .vm-admin-polls-table td:nth-child(8) { width: 12%; }
 
+.vm-admin-polls-table th:nth-child(4) {
+  white-space: normal;
+  line-height: 1.2;
+}
+
+.vm-admin-polls-card {
+  display: flex;
+  flex-direction: column;
+}
+
+@media (min-width: 768px) {
+  .vm-admin-polls-card {
+    min-height: calc(100vh - 15.5rem);
+  }
+}
+
 .vm-admin-table tbody tr:hover {
   background: var(--vm-gray-50, #f8fafc);
 }

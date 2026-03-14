@@ -297,7 +297,7 @@ function renderPollsTable() {
   }).join('');
 
   return `
-    <div class="table-responsive vm-admin-polls-table-wrap">
+    <div class="vm-admin-polls-table-wrap">
       <table class="table table-hover align-middle mb-0 vm-admin-table vm-admin-polls-table">
         <thead>
           <tr class="text-muted small">
@@ -442,7 +442,7 @@ function renderContent(container) {
         ${renderStatsCards(state.stats)}
       </div>
     </details>
-    <div class="vm-card p-4">
+    <div class="vm-card p-4 vm-admin-polls-card">
       <h5 class="fw-bold mb-3" data-i18n="admin.polls.tableTitle">${i18n.t('admin.polls.tableTitle')}</h5>
       ${renderFilters()}
       ${renderPollsTable()}
