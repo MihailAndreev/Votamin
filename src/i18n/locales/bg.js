@@ -494,6 +494,12 @@ export default {
     titleLabel: 'Заглавие',
     descriptionLabel: 'Описание',
     statusLabel: 'Статус',
+    endDateLabel: 'Краен срок',
+    noEndDate: 'Без краен срок',
+    endDateRequired: 'Избери краен срок или маркирай „Без краен срок“.',
+    endDateHint: 'Анкетата ще се затвори автоматично на тази дата и час.',
+    hourLabel: 'Час',
+    minuteLabel: 'Минути',
     resultsVisibilityLabel: 'Видимост на резултатите',
     resultsVisibility: {
       participants: 'Всеки участник',

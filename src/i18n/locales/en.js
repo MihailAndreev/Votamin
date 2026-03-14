@@ -492,6 +492,12 @@ export default {
     titleLabel: 'Title',
     descriptionLabel: 'Description',
     statusLabel: 'Status',
+    endDateLabel: 'Deadline',
+    noEndDate: 'No deadline',
+    endDateRequired: 'Pick a deadline or check “No deadline”.',
+    endDateHint: 'The poll will close automatically at this date and time.',
+    hourLabel: 'Hour',
+    minuteLabel: 'Minute',
     resultsVisibilityLabel: 'Results Visibility',
     resultsVisibility: {
       participants: 'Every participant',

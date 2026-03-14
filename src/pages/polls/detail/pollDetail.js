@@ -90,6 +90,36 @@ function formatDateTime(dateStr) {
   });
 }
 
+function getCurrentLocalDateTimeValue() {
+  const now = new Date();
+  const localOffsetMs = now.getTimezoneOffset() * 60000;
+  return new Date(now.getTime() - localOffsetMs).toISOString().slice(0, 16);
+}
+
+function isoToLocalDateTimeInputValue(isoValue) {
+  if (!isoValue) return '';
+  const parsed = new Date(isoValue);
+  if (Number.isNaN(parsed.getTime())) return '';
+
+  const localOffsetMs = parsed.getTimezoneOffset() * 60000;
+  return new Date(parsed.getTime() - localOffsetMs).toISOString().slice(0, 16);
+}
+
+function getEndDateParts(isoValue) {
+  const localDateTime = isoToLocalDateTimeInputValue(isoValue);
+  if (!localDateTime) {
+    return { date: '', hour: '', minute: '' };
+  }
+
+  const [datePart = '', timePart = ''] = localDateTime.split('T');
+  const [hourPart = '', minutePart = ''] = timePart.split(':');
+  return {
+    date: datePart,
+    hour: hourPart,
+    minute: minutePart,
+  };
+}
+
 function slugifyFileName(value) {
   return String(value || 'poll')
     .toLowerCase()
@@ -320,6 +350,20 @@ function renderBackLinks({ isFromAdminPolls }) {
 
 function renderPollDetailMarkup(poll, { isEditMode, isFromAdminPolls }) {
   const shareCode = poll.share_code || '—';
+  const minDateValue = getCurrentLocalDateTimeValue().split('T')[0];
+  const currentTimeParts = getEndDateParts(new Date().toISOString());
+  const endDateParts = getEndDateParts(poll.ends_at);
+  const hasNoDeadline = !endDateParts.date;
+  const selectedHour = endDateParts.hour || currentTimeParts.hour || '00';
+  const selectedMinute = endDateParts.minute || currentTimeParts.minute || '00';
+  const hourOptions = Array.from({ length: 24 }, (_, hour) => {
+    const value = String(hour).padStart(2, '0');
+    return `<option value="${value}" ${value === selectedHour ? 'selected' : ''}>${value}</option>`;
+  }).join('');
+  const minuteOptions = Array.from({ length: 60 }, (_, minute) => {
+    const value = String(minute).padStart(2, '0');
+    return `<option value="${value}" ${value === selectedMinute ? 'selected' : ''}>${value}</option>`;
+  }).join('');
   const copyLinkHtml = poll.share_code
     ? `· <a href="#" id="copy-link" class="fw-semibold">${i18n.t('pollDetail.copyLink')}</a>`
     : '';
@@ -363,15 +407,15 @@ function renderPollDetailMarkup(poll, { isEditMode, isFromAdminPolls }) {
           <h5 class="fw-bold mb-3">${i18n.t('pollDetail.editTitle')}</h5>
           <div id="poll-edit-view" class="${isEditMode ? '' : 'd-none'}">
             <div class="mb-3">
-              <label class="form-label">${i18n.t('pollDetail.titleLabel')}</label>
+              <label class="form-label vm-edit-field-label">${i18n.t('pollDetail.titleLabel')}</label>
               <input class="form-control" id="edit-title" type="text" maxlength="200" value="${escapeHtml(poll.title)}" />
             </div>
             <div class="mb-3">
-              <label class="form-label">${i18n.t('pollDetail.descriptionLabel')}</label>
+              <label class="form-label vm-edit-field-label">${i18n.t('pollDetail.descriptionLabel')}</label>
               <textarea class="form-control" id="edit-description" rows="3">${escapeHtml(poll.description || '')}</textarea>
             </div>
             <div class="mb-3">
-              <label class="form-label">${i18n.t('pollDetail.statusLabel')}</label>
+              <label class="form-label vm-edit-field-label">${i18n.t('pollDetail.statusLabel')}</label>
               <select class="form-select" id="edit-status">
                 <option value="draft" ${poll.status === 'draft' ? 'selected' : ''}>${i18n.t('pollDetail.status.draft')}</option>
                 <option value="open" ${poll.status === 'open' ? 'selected' : ''}>${i18n.t('pollDetail.status.open')}</option>
@@ -379,7 +423,37 @@ function renderPollDetailMarkup(poll, { isEditMode, isFromAdminPolls }) {
               </select>
             </div>
             <div class="mb-3">
-                <label class="form-label">${i18n.t('pollDetail.resultsVisibilityLabel')}</label>
+              <label class="form-label vm-edit-field-label">${i18n.t('pollDetail.endDateLabel')}</label>
+              <div class="form-check mb-2">
+                <input class="form-check-input" type="checkbox" id="edit-no-deadline" ${hasNoDeadline ? 'checked' : ''} />
+                <label class="form-check-label" for="edit-no-deadline">${i18n.t('pollDetail.noEndDate')}</label>
+              </div>
+              <div class="row g-2">
+                <div class="col-md-6">
+                  <input
+                    class="form-control"
+                    id="edit-ends-at-date"
+                    type="date"
+                    min="${minDateValue}"
+                    value="${endDateParts.date}"
+                    ${hasNoDeadline ? 'disabled' : ''}
+                  />
+                </div>
+                <div class="col-md-3">
+                  <select class="form-select" id="edit-ends-at-hour" aria-label="${i18n.t('pollDetail.hourLabel')}" ${hasNoDeadline ? 'disabled' : ''}>
+                    ${hourOptions}
+                  </select>
+                </div>
+                <div class="col-md-3">
+                  <select class="form-select" id="edit-ends-at-minute" aria-label="${i18n.t('pollDetail.minuteLabel')}" ${hasNoDeadline ? 'disabled' : ''}>
+                    ${minuteOptions}
+                  </select>
+                </div>
+              </div>
+              <p class="vm-edit-field-hint mb-0">${i18n.t('pollDetail.endDateHint')}</p>
+            </div>
+            <div class="mb-3">
+                <label class="form-label vm-edit-field-label">${i18n.t('pollDetail.resultsVisibilityLabel')}</label>
                 <select class="form-select" id="edit-results-visibility">
                   <option value="participants" ${poll.results_visibility === 'participants' ? 'selected' : ''}>${i18n.t('pollDetail.resultsVisibility.participants')}</option>
                   <option value="author" ${poll.results_visibility === 'author' ? 'selected' : ''}>${i18n.t('pollDetail.resultsVisibility.author')}</option>
@@ -519,26 +593,91 @@ export default async function render(container, params) {
       renderView();
     });
 
+    const noDeadlineInput = container.querySelector('#edit-no-deadline');
+    const endsAtDateInput = container.querySelector('#edit-ends-at-date');
+    const endsAtHourInput = container.querySelector('#edit-ends-at-hour');
+    const endsAtMinuteInput = container.querySelector('#edit-ends-at-minute');
+    const syncEndDateState = () => {
+      if (!noDeadlineInput) return;
+
+      if (endsAtDateInput) {
+        endsAtDateInput.disabled = noDeadlineInput.checked;
+      }
+      if (endsAtHourInput) {
+        endsAtHourInput.disabled = noDeadlineInput.checked;
+      }
+      if (endsAtMinuteInput) {
+        endsAtMinuteInput.disabled = noDeadlineInput.checked;
+      }
+
+      if (noDeadlineInput.checked) {
+        if (endsAtDateInput) {
+          endsAtDateInput.value = '';
+        }
+      } else if (endsAtDateInput && !endsAtDateInput.value && poll?.ends_at) {
+        const restoredEndDate = getEndDateParts(poll.ends_at);
+        endsAtDateInput.value = restoredEndDate.date;
+        if (endsAtHourInput && restoredEndDate.hour) {
+          endsAtHourInput.value = restoredEndDate.hour;
+        }
+        if (endsAtMinuteInput && restoredEndDate.minute) {
+          endsAtMinuteInput.value = restoredEndDate.minute;
+        }
+      }
+    };
+
+    noDeadlineInput?.addEventListener('change', syncEndDateState);
+
     container.querySelector('#btn-save-edit')?.addEventListener('click', async () => {
       const title = container.querySelector('#edit-title')?.value?.trim();
       const description = container.querySelector('#edit-description')?.value?.trim();
       const status = container.querySelector('#edit-status')?.value;
       const resultsVisibility = container.querySelector('#edit-results-visibility')?.value;
+      const hasNoDeadline = container.querySelector('#edit-no-deadline')?.checked;
+      const endsAtDate = container.querySelector('#edit-ends-at-date')?.value || '';
+      const endsAtHour = container.querySelector('#edit-ends-at-hour')?.value || '00';
+      const endsAtMinute = container.querySelector('#edit-ends-at-minute')?.value || '00';
 
       if (!title) {
         showToast(i18n.t('pollDetail.titleRequired'), 'error');
         return;
       }
 
+      let endsAtIso = null;
+      if (!hasNoDeadline) {
+        if (!endsAtDate) {
+          showToast(i18n.t('pollDetail.endDateRequired'), 'error');
+          return;
+        }
+
+        const endsAtValue = `${endsAtDate}T${endsAtHour}:${endsAtMinute}`;
+
+        const parsedEndsAt = new Date(endsAtValue);
+        if (Number.isNaN(parsedEndsAt.getTime())) {
+          showToast(i18n.t('createPoll.validation.endDateFuture'), 'error');
+          return;
+        }
+
+        if (status === 'open' && parsedEndsAt.getTime() < Date.now()) {
+          showToast(i18n.t('createPoll.validation.endDateFuture'), 'error');
+          return;
+        }
+
+        endsAtIso = parsedEndsAt.toISOString();
+      }
+
       try {
-        await updatePollById(pollId, {
+        const updates = {
           title,
           status,
+          ends_at: endsAtIso,
           results_visibility: resultsVisibility,
           description_html: description
             ? `<p>${description.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')}</p>`
             : null,
-        });
+        };
+
+        await updatePollById(pollId, updates);
 
         if (status === 'open') {
           await getOrCreatePollShareCode(pollId);
@@ -590,7 +729,15 @@ export default async function render(container, params) {
 
     container.querySelector('#btn-publish-poll')?.addEventListener('click', async () => {
       try {
-        await updatePollById(pollId, { status: 'open' });
+        const shouldClearExpiredEndDate = poll?.ends_at
+          && new Date(poll.ends_at).getTime() <= Date.now();
+
+        const updates = { status: 'open' };
+        if (shouldClearExpiredEndDate) {
+          updates.ends_at = null;
+        }
+
+        await updatePollById(pollId, updates);
         await getOrCreatePollShareCode(pollId);
         poll = await fetchPollById(pollId);
         if (poll.is_owner) {

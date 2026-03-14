@@ -119,6 +119,22 @@
 	overflow-wrap: anywhere;
 }
 
+#poll-edit-card .vm-edit-field-label {
+	font-size: 0.75rem;
+	font-weight: 700;
+	text-transform: uppercase;
+	letter-spacing: 0.04em;
+	color: var(--vm-teal, #14b8a6);
+	margin-bottom: 0.45rem;
+	display: inline-block;
+}
+
+#poll-edit-card .vm-edit-field-hint {
+	margin-top: 0.45rem;
+	font-size: 0.8rem;
+	color: var(--vm-text-muted, #6b7280);
+}
+
 /* ── Sidebars shared ── */
 .vm-poll-sidebar {
 	position: sticky;
