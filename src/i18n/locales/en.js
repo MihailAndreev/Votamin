@@ -285,8 +285,8 @@ export default {
   },
   publicPoll: {
     fallbackDescription: 'Choose your answer.',
-    inviteTextWithName: '{inviter} invited you to participate in this poll.',
-    inviteTextFallback: 'The poll author invited you to participate in this poll.',
+    inviteTextWithName: '{inviter} invited you to vote',
+    inviteTextFallback: 'The poll author invited you to participate in this poll',
     notAccessibleTitle: 'This poll is not available',
     numericLabel: 'Enter a value',
     numericPlaceholder: 'For example: 10',
@@ -413,12 +413,13 @@ export default {
       minTwoOptions: 'At least 2 options are required',
       optionEmpty: 'Option cannot be empty',
       minLessThanMax: 'Minimum must be less than maximum',
-      maxRequired: 'Maximum value is recommended for numeric polls'
+      maxRequired: 'Maximum value is recommended for numeric polls',
+      endDateFuture: 'End date cannot be in the past'
     },
     preview: {
       title: 'Preview Your Poll',
       subtitle: 'This is how participants will see your poll',
-      closesOn: 'Closes on {date}',
+      closesOn: 'Deadline: {date}',
       noEndDate: 'No end date',
       questionFallback: 'Your question will appear here',
       rangeLabel: 'Range:',

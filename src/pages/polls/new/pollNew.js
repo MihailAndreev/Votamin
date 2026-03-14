@@ -220,13 +220,11 @@ export default function render(container) {
     const advancedSettings = renderAdvancedSettings(
       {
         resultsVisibility: wizardState.pollData.resultsVisibility,
-        endDate: wizardState.pollData.endDate,
-        theme: wizardState.pollData.theme
+        endDate: wizardState.pollData.endDate
       },
       (settings) => {
         wizardState.pollData.resultsVisibility = settings.resultsVisibility;
         wizardState.pollData.endDate = settings.endDate;
-        wizardState.pollData.theme = settings.theme;
       }
     );
     advancedSection.appendChild(advancedSettings);
@@ -255,38 +253,96 @@ export default function render(container) {
     const stepDiv = document.createElement('div');
     stepDiv.className = 'step-content active';
 
-    const { question, description, kind, options, minValue, maxValue, endDate, theme } = wizardState.pollData;
+    const { question, description, kind, options, minValue, maxValue, endDate, theme, resultsVisibility } = wizardState.pollData;
+    const normalizedDescription = typeof description === 'string' ? description.trim() : '';
+    const hasDescription = normalizedDescription.length > 0;
+    const fallbackQuestion = i18n.t('createPoll.preview.questionFallback');
+    const inviterName = user?.email || i18n.t('common.appName');
+    const inviteText = i18n.t('publicPoll.inviteTextWithName').replace('{inviter}', inviterName);
+    const instructionText = i18n.t(`publicPoll.instructions.${kind}`);
+    const descriptionLabel = i18n.t('createPoll.fields.description').replace(/\s*\([^)]*\)\s*$/u, '').trim();
+
+    function escapeHtml(value) {
+      if (value === null || value === undefined) return '';
+      return String(value)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    function renderDeadlineText() {
+      return endDate
+        ? i18n.t('createPoll.preview.closesOn').replace('{date}', new Date(endDate).toLocaleString([], { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit', hour12: false }))
+        : i18n.t('createPoll.preview.noEndDate');
+    }
+
+    function getNumericExampleValue() {
+      if (typeof minValue === 'number' && typeof maxValue === 'number') {
+        const middle = (minValue + maxValue) / 2;
+        return Number.isInteger(middle) ? String(middle) : middle.toFixed(2).replace(/\.00$/, '');
+      }
+      if (typeof minValue === 'number') return String(minValue);
+      if (typeof maxValue === 'number') return String(maxValue);
+      return '10';
+    }
+
+    function getNumericPlaceholderByRange() {
+      const template = i18n.t('publicPoll.numericPlaceholder');
+      return template.replace(/\d+(?:[\.,]\d+)?/, getNumericExampleValue());
+    }
+
+    function renderInviteLine() {
+      const baseText = escapeHtml(inviteText).replace(escapeHtml(inviterName), `<strong class="preview-public-invite-strong">${escapeHtml(inviterName)}</strong>`);
+      const deadlineText = `<span class="preview-public-deadline-badge">${escapeHtml(renderDeadlineText())}</span>`;
+      const optionsText = `<strong class="preview-public-invite-strong">${escapeHtml(instructionText || '')}</strong>`;
+
+      return `${baseText} • ${deadlineText} • ${optionsText}`;
+    }
 
     stepDiv.innerHTML = `
       <div class="preview-container">
         <h2 class="step-section-title">${i18n.t('createPoll.preview.title')}</h2>
-        <p style="color: var(--text-secondary); margin-bottom: 2rem;">${i18n.t('createPoll.preview.subtitle')}</p>
+        <p class="preview-subtitle">${i18n.t('createPoll.preview.subtitle')}</p>
 
         <div class="preview-card" data-theme="${theme}">
-          <h3 class="preview-question">${question || i18n.t('createPoll.preview.questionFallback')}</h3>
-          ${description ? `<p class="preview-description">${description}</p>` : ''}
+          <div class="preview-public-shell">
+          <div class="preview-public-card vm-card">
+            <div class="preview-public-header">
+              <div class="preview-public-organizer">
+                <span class="preview-public-inviter-text">${renderInviteLine()}</span>
+              </div>
+              <div class="preview-public-organizer-divider" role="presentation"></div>
 
-          <div class="preview-meta">
-            <div class="preview-meta-item">
-              <strong>${i18n.t('dashboard.table.columns.type')}:</strong>
-              ${i18n.t(`dashboard.kind.${kind}`)}
-            </div>
-            <div class="preview-meta-item">
-              <strong>${i18n.t('createPoll.fields.theme')}:</strong>
-              ${i18n.t(`createPoll.themes.${theme}`)}
-            </div>
-            ${endDate ? `
-              <div class="preview-meta-item">
-                <strong>${i18n.t('createPoll.preview.closesOn').replace('{date}', new Date(endDate).toLocaleString())}</strong>
+              <div class="preview-public-poll-header">
+                <h3 class="preview-public-question">${escapeHtml(question || fallbackQuestion)}</h3>
+                ${hasDescription ? `
+                  <details class="preview-public-description-accordion">
+                    <summary class="preview-public-description-summary"><span class="preview-public-description-summary-text">${escapeHtml(descriptionLabel)}</span></summary>
+                    <p class="preview-public-description">${escapeHtml(normalizedDescription)}</p>
+                  </details>
+                  <div class="preview-public-description-divider" role="presentation"></div>
+                ` : ''}
               </div>
-            ` : `
-              <div class="preview-meta-item">
-                <strong>${i18n.t('createPoll.preview.noEndDate')}</strong>
-              </div>
-            `}
+            </div>
+
+            ${renderPreviewOptions()}
+
+            <button type="button" class="btn btn-votamin btn-lg w-100 preview-public-vote-btn" disabled>
+              ${i18n.t('publicPoll.voteButton')}
+            </button>
+            ${resultsVisibility === 'author'
+              ? `<p class="preview-public-results-note">${escapeHtml(i18n.t('createPoll.resultsVisibility.authorDesc'))}</p>`
+              : ''}
           </div>
-
-          ${renderPreviewOptions()}
+          </div>
+          <p class="preview-public-powered-by">
+            ${i18n.t('publicPoll.poweredBy')}
+            <span class="preview-public-powered-logo-wrap" aria-label="Votamin">
+              <img src="/images/logo/logo.svg" alt="Votamin" class="preview-public-powered-logo" />
+            </span>
+          </p>
         </div>
       </div>
     `;
@@ -295,36 +351,42 @@ export default function render(container) {
 
     function renderPreviewOptions() {
       if (kind === 'single_choice' || kind === 'multiple_choice') {
+        const inputType = kind === 'multiple_choice' ? 'checkbox' : 'radio';
+        const previewOptions = Array.isArray(options) && options.length > 0 ? options : ['', ''];
+
         return `
-          <div style="display: flex; flex-direction: column; gap: 0.75rem;">
-            ${options.map((opt, i) => `
-              <div style="padding: 1rem; border: 2px solid var(--border-color); border-radius: 8px; display: flex; align-items: center; gap: 0.75rem;">
-                <div style="width: 20px; height: 20px; border: 2px solid var(--primary-color); border-radius: ${kind === 'single_choice' ? '50%' : '4px'};"></div>
-                <span>${opt || i18n.t('createPoll.placeholders.option').replace('{number}', i + 1)}</span>
-              </div>
+          <div class="preview-public-options-list">
+            ${previewOptions.map((opt, i) => `
+              <label class="preview-public-option vm-card">
+                <input type="${inputType}" name="preview-vote" class="form-check-input mt-0" disabled />
+                <span class="preview-public-option-text">${escapeHtml(opt || i18n.t('createPoll.placeholders.option').replace('{number}', i + 1))}</span>
+              </label>
             `).join('')}
           </div>
         `;
       } else if (kind === 'rating') {
         return `
-          <div style="display: flex; justify-content: center; gap: 0.5rem; padding: 1.5rem;">
-            ${Array.from({ length: 5 }, () => `
-              <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/>
-              </svg>
+          <div class="preview-public-options-list preview-public-rating-list">
+            ${Array.from({ length: 5 }, (_, i) => `
+              <label class="preview-public-option vm-card">
+                <input type="radio" name="preview-vote" class="form-check-input mt-0" disabled />
+                <span class="preview-public-option-text preview-public-rating-text">${'★'.repeat(i + 1)}</span>
+              </label>
             `).join('')}
           </div>
         `;
       } else if (kind === 'numeric') {
         return `
-          <div style="padding: 1.5rem; text-align: center;">
+          <div class="preview-public-numeric-wrap">
             <input 
               type="number" 
-              style="width: 200px; padding: 0.875rem; border: 2px solid var(--border-color); border-radius: 8px; text-align: center; font-size: 1.25rem; font-family: monospace;"
-              placeholder="${minValue !== null ? `Min: ${minValue}` : ''} ${maxValue !== null ? `Max: ${maxValue}` : ''}"
+              class="preview-public-numeric-input"
+              placeholder="${escapeHtml(getNumericPlaceholderByRange())}"
+              ${typeof minValue === 'number' ? `min="${minValue}"` : ''}
+              ${typeof maxValue === 'number' ? `max="${maxValue}"` : ''}
               disabled
             />
-            <p style="margin-top: 0.5rem; font-size: 0.875rem; color: var(--text-secondary);">
+            <p class="preview-public-numeric-help">
               ${minValue !== null || maxValue !== null
                 ? `${i18n.t('createPoll.preview.rangeLabel')} ${minValue ?? '—'} ${i18n.t('createPoll.preview.to')} ${maxValue ?? '—'}`
                 : i18n.t('createPoll.preview.noRangeLimits')}
@@ -537,6 +599,10 @@ export default function render(container) {
 
     if (errors.numeric) {
       showToast(errors.numeric, 'error');
+    }
+
+    if (errors.endDate) {
+      showToast(errors.endDate, 'error');
     }
   }
 

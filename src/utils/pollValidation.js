@@ -37,6 +37,8 @@ export function validatePoll(pollData) {
       errors.kind = 'Invalid poll type';
   }
 
+  errors.endDate = validateEndDate(pollData.endDate);
+
   // Remove undefined/null error entries
   Object.keys(errors).forEach(key => {
     if (!errors[key]) {
@@ -48,6 +50,23 @@ export function validatePoll(pollData) {
     isValid: Object.keys(errors).length === 0,
     errors
   };
+}
+
+function validateEndDate(endDate) {
+  if (!endDate || typeof endDate !== 'string') {
+    return null;
+  }
+
+  const parsed = new Date(endDate);
+  if (Number.isNaN(parsed.getTime())) {
+    return i18n.t('createPoll.validation.endDateFuture');
+  }
+
+  if (parsed.getTime() < Date.now()) {
+    return i18n.t('createPoll.validation.endDateFuture');
+  }
+
+  return null;
 }
 
 /**

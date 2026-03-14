@@ -287,8 +287,8 @@ export default {
   },
   publicPoll: {
     fallbackDescription: 'Избери своя отговор.',
-    inviteTextWithName: '{inviter} ви покани да участвате в тази анкета.',
-    inviteTextFallback: 'Авторът на анкетата ви покани да участвате в тази анкета.',
+    inviteTextWithName: '{inviter} ви покани да гласувате',
+    inviteTextFallback: 'Авторът на анкетата ви покани да участвате в тази анкета',
     notAccessibleTitle: 'Анкетата не е достъпна',
     numericLabel: 'Въведи стойност',
     numericPlaceholder: 'Например: 10',
@@ -415,12 +415,13 @@ export default {
       minTwoOptions: 'Необходими са поне 2 опции',
       optionEmpty: 'Опцията не може да е празна',
       minLessThanMax: 'Минималната стойност трябва да е по-малка от максималната',
-      maxRequired: 'Максималната стойност се препоръчва за числови анкети'
+      maxRequired: 'Максималната стойност се препоръчва за числови анкети',
+      endDateFuture: 'Крайният срок не може да е в миналото'
     },
     preview: {
       title: 'Преглед на анкетата',
       subtitle: 'Така ще изглежда анкетата за участниците',
-      closesOn: 'Затваря на {date}',
+      closesOn: 'Краен срок: {date}',
       noEndDate: 'Без краен срок',
       questionFallback: 'Тук ще се покаже въпросът ти',
       rangeLabel: 'Диапазон:',

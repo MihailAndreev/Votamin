@@ -4,15 +4,47 @@ import { i18n } from '../i18n/index.js';
  * Advanced Settings Component (Collapsible)
  * - Results Visibility (participants/author)
  * - End Date (optional)
- * - Theme (default/blue/green/purple/orange)
  */
 export function renderAdvancedSettings(settings = {}, onChange) {
   const defaultSettings = {
     resultsVisibility: 'participants',
     endDate: '',
-    theme: 'default',
     ...settings
   };
+
+  const minimumDateTime = getCurrentLocalDateTimeValue();
+  const [minimumDate, minimumTime] = minimumDateTime.split('T');
+
+  function splitDateTimeValue(dateTimeValue) {
+    if (!dateTimeValue || typeof dateTimeValue !== 'string') {
+      return { date: '', time: '' };
+    }
+
+    const [datePart = '', timePart = ''] = dateTimeValue.split('T');
+    return {
+      date: datePart,
+      time: timePart.slice(0, 5)
+    };
+  }
+
+  const initialEndDate = splitDateTimeValue(defaultSettings.endDate);
+  const [initialHour = '', initialMinute = ''] = initialEndDate.time
+    ? initialEndDate.time.split(':')
+    : ['', ''];
+  const hourOptions = Array.from({ length: 24 }, (_, hour) => {
+    const value = String(hour).padStart(2, '0');
+    return `<option value="${value}" ${value === initialHour ? 'selected' : ''}>${value}</option>`;
+  }).join('');
+  const minuteOptions = Array.from({ length: 60 }, (_, minute) => {
+    const value = String(minute).padStart(2, '0');
+    return `<option value="${value}" ${value === initialMinute ? 'selected' : ''}>${value}</option>`;
+  }).join('');
+
+  function getCurrentLocalDateTimeValue() {
+    const now = new Date();
+    const localOffsetMs = now.getTimezoneOffset() * 60000;
+    return new Date(now.getTime() - localOffsetMs).toISOString().slice(0, 16);
+  }
 
   const container = document.createElement('div');
   container.className = 'advanced-settings';
@@ -192,6 +224,28 @@ export function renderAdvancedSettings(settings = {}, onChange) {
         transition: border-color 0.2s;
       }
 
+      .date-time-group {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+        gap: 0.75rem;
+      }
+
+      .time-select-group {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+        gap: 0.5rem;
+        align-items: center;
+      }
+
+      .time-select {
+        font-variant-numeric: tabular-nums;
+      }
+
+      .time-separator {
+        font-weight: 700;
+        color: var(--text-secondary, #6b7280);
+      }
+
       .date-input:focus {
         outline: none;
         border-color: var(--primary-color, #6366f1);
@@ -277,6 +331,14 @@ export function renderAdvancedSettings(settings = {}, onChange) {
           font-size: 0.78rem;
           line-height: 1.35;
         }
+
+        .date-time-group {
+          grid-template-columns: 1fr;
+        }
+
+        .time-select-group {
+          grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+        }
       }
     </style>
 
@@ -320,24 +382,25 @@ export function renderAdvancedSettings(settings = {}, onChange) {
         <div class="setting-field">
           <label class="setting-label">${i18n.t('createPoll.fields.endDate')}</label>
           <p class="setting-description">${i18n.t('createPoll.advancedSettings.endDateHint')}</p>
-          <input 
-            type="datetime-local" 
-            class="date-input" 
-            id="end-date-input"
-            value="${defaultSettings.endDate}"
-          />
-        </div>
-
-        <!-- Theme -->
-        <div class="setting-field">
-          <label class="setting-label">${i18n.t('createPoll.fields.theme')}</label>
-          <div class="theme-selector">
-            ${['default', 'blue', 'green', 'purple', 'orange'].map(theme => `
-              <div class="theme-option ${defaultSettings.theme === theme ? 'selected' : ''}" data-theme="${theme}">
-                <div class="theme-preview ${theme}"></div>
-                <span class="theme-name">${i18n.t(`createPoll.themes.${theme}`)}</span>
-              </div>
-            `).join('')}
+          <div class="date-time-group">
+            <input 
+              type="date" 
+              class="date-input" 
+              id="end-date-date-input"
+              value="${initialEndDate.date}"
+              min="${minimumDate}"
+            />
+            <div class="time-select-group">
+              <select class="date-input time-select" id="end-date-hour-input">
+                <option value="">HH</option>
+                ${hourOptions}
+              </select>
+              <span class="time-separator">:</span>
+              <select class="date-input time-select" id="end-date-minute-input">
+                <option value="">MM</option>
+                ${minuteOptions}
+              </select>
+            </div>
           </div>
         </div>
 
@@ -380,21 +443,135 @@ export function renderAdvancedSettings(settings = {}, onChange) {
     syncRadioSelection(groupName);
   });
 
-  // End date handler
-  const endDateInput = container.querySelector('#end-date-input');
-  endDateInput.addEventListener('change', (e) => {
-    updateSetting('endDate', e.target.value);
+  // End date handlers (date + time, 24h format)
+  const endDateDateInput = container.querySelector('#end-date-date-input');
+  const endDateHourInput = container.querySelector('#end-date-hour-input');
+  const endDateMinuteInput = container.querySelector('#end-date-minute-input');
+
+  function getCurrentMinimumParts() {
+    const currentMinDateTime = getCurrentLocalDateTimeValue();
+    const [currentMinDate, currentMinTime] = currentMinDateTime.split('T');
+    return { currentMinDate, currentMinTime };
+  }
+
+  function combineDateTime(dateValue, timeValue) {
+    if (!dateValue) {
+      return '';
+    }
+
+    const normalizedTime = timeValue || '00:00';
+    return `${dateValue}T${normalizedTime}`;
+  }
+
+  function parseMinutes(timeValue) {
+    const [hours = '0', minutes = '0'] = String(timeValue || '00:00').split(':');
+    return (Number(hours) * 60) + Number(minutes);
+  }
+
+  function getSelectedTimeValue() {
+    if (!endDateHourInput.value || !endDateMinuteInput.value) {
+      return '';
+    }
+
+    return `${endDateHourInput.value}:${endDateMinuteInput.value}`;
+  }
+
+  function setSelectedTimeValue(timeValue) {
+    const [hours = '', minutes = ''] = String(timeValue || '').split(':');
+    endDateHourInput.value = hours;
+    endDateMinuteInput.value = minutes;
+  }
+
+  function updateTimeSelectConstraints(selectedDate, currentMinDate, currentMinTime) {
+    const hourOptionsList = Array.from(endDateHourInput.options).slice(1);
+    const minuteOptionsList = Array.from(endDateMinuteInput.options).slice(1);
+
+    hourOptionsList.forEach((option) => {
+      option.disabled = false;
+    });
+
+    minuteOptionsList.forEach((option) => {
+      option.disabled = false;
+    });
+
+    if (!selectedDate || selectedDate !== currentMinDate) {
+      return;
+    }
+
+    const minMinutes = parseMinutes(currentMinTime);
+    const minHour = Math.floor(minMinutes / 60);
+    const minMinute = minMinutes % 60;
+
+    hourOptionsList.forEach((option) => {
+      const hour = Number(option.value);
+      option.disabled = (hour * 60) + 59 < minMinutes;
+    });
+
+    const selectedHour = Number(endDateHourInput.value);
+    if (!Number.isNaN(selectedHour) && selectedHour === minHour) {
+      minuteOptionsList.forEach((option) => {
+        option.disabled = Number(option.value) < minMinute;
+      });
+    }
+  }
+
+  function syncEndDateSetting() {
+    const { currentMinDate, currentMinTime } = getCurrentMinimumParts();
+    endDateDateInput.min = currentMinDate;
+
+    const selectedDate = endDateDateInput.value;
+    const selectedTime = getSelectedTimeValue();
+
+    if (!selectedDate) {
+      endDateHourInput.value = '';
+      endDateMinuteInput.value = '';
+      updateSetting('endDate', '');
+      return;
+    }
+
+    if (!selectedTime) {
+      setSelectedTimeValue(selectedDate === currentMinDate ? currentMinTime : '00:00');
+    }
+
+    updateTimeSelectConstraints(selectedDate, currentMinDate, currentMinTime);
+
+    if (endDateHourInput.selectedOptions[0]?.disabled) {
+      setSelectedTimeValue(selectedDate === currentMinDate ? currentMinTime : '00:00');
+      updateTimeSelectConstraints(selectedDate, currentMinDate, currentMinTime);
+    }
+
+    if (endDateMinuteInput.selectedOptions[0]?.disabled) {
+      setSelectedTimeValue(selectedDate === currentMinDate ? currentMinTime : '00:00');
+      updateTimeSelectConstraints(selectedDate, currentMinDate, currentMinTime);
+    }
+
+    const normalizedSelectedTime = getSelectedTimeValue() || (selectedDate === currentMinDate ? currentMinTime : '00:00');
+    const combined = combineDateTime(endDateDateInput.value, normalizedSelectedTime);
+    const currentMinimum = `${currentMinDate}T${currentMinTime}`;
+
+    if (combined && combined < currentMinimum) {
+      endDateDateInput.value = currentMinDate;
+      setSelectedTimeValue(currentMinTime);
+      updateTimeSelectConstraints(currentMinDate, currentMinDate, currentMinTime);
+      updateSetting('endDate', currentMinimum);
+      return;
+    }
+
+    updateSetting('endDate', combined);
+  }
+
+  syncEndDateSetting();
+
+  endDateDateInput.addEventListener('change', () => {
+    syncEndDateSetting();
   });
 
-  // Theme handlers
-  container.querySelectorAll('.theme-option').forEach(option => {
-    option.addEventListener('click', () => {
-      const theme = option.dataset.theme;
-      container.querySelectorAll('.theme-option').forEach(opt => {
-        opt.classList.toggle('selected', opt.dataset.theme === theme);
-      });
-      updateSetting('theme', theme);
-    });
+  endDateHourInput.addEventListener('change', () => {
+    syncEndDateSetting();
+  });
+
+  endDateMinuteInput.addEventListener('change', () => {
+    syncEndDateSetting();
   });
 
   return container;
