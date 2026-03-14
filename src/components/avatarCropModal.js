@@ -1,4 +1,5 @@
 import { i18n } from '../i18n/index.js';
+import { beginBlockingModalSession } from '../utils/helpers.js';
 
 let stylesInjected = false;
 
@@ -239,10 +240,20 @@ export async function showAvatarCropModal(file) {
       draw();
     });
 
-    const close = (result) => {
+    let isClosed = false;
+    let close = () => {};
+
+    const endModalSession = beginBlockingModalSession(() => {
+      close(null, { closedByPopState: true });
+    });
+
+    close = (result, closeOptions = {}) => {
+      if (isClosed) return;
+      isClosed = true;
       window.removeEventListener('pointermove', onPointerMove);
       window.removeEventListener('pointerup', onPointerUp);
       document.removeEventListener('keydown', onKeyDown);
+      endModalSession(closeOptions);
       root.remove();
       resolve(result);
     };

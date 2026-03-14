@@ -16,7 +16,7 @@ import {
   adminToggleFeatured,
   adminDuplicatePoll
 } from '@utils/adminData.js';
-import { formatDate } from '@utils/helpers.js';
+import { formatDate, beginBlockingModalSession } from '@utils/helpers.js';
 
 const PAGE_SIZE = 15;
 
@@ -27,7 +27,7 @@ let state = {
   searchTitle: '',
   searchAuthor: '',
   statusFilter: '',
-  visibilityFilter: '',
+  resultsVisibilityFilter: '',
   sortBy: 'created_at',
   sortDir: 'desc',
   stats: null,
@@ -62,9 +62,9 @@ function statusBadge(status) {
 }
 
 function visibilityBadge(vis) {
-  if (vis === 'public') return `<span class="badge bg-info text-dark">${i18n.t('admin.polls.public')}</span>`;
-  if (vis === 'unlisted') return `<span class="badge bg-warning text-dark">${i18n.t('admin.polls.unlisted')}</span>`;
-  return `<span class="badge bg-secondary">${i18n.t('admin.polls.private')}</span>`;
+  if (vis === 'participants') return `<span class="badge bg-info text-dark">${i18n.t('admin.polls.resultsParticipants')}</span>`;
+  if (vis === 'author') return `<span class="badge bg-secondary">${i18n.t('admin.polls.resultsAuthor')}</span>`;
+  return `<span class="badge bg-light text-dark">—</span>`;
 }
 
 // ── Stats Cards ────────────────────────────────────
@@ -72,10 +72,10 @@ function renderStatsCards(stats) {
   if (!stats) {
     return `
       <div class="row g-2 mb-3 vm-admin-stats-row vm-admin-stats-row--polls" aria-hidden="true">
-        ${Array.from({ length: 7 }).map((_, index) => `
-          <div class="${index === 6 ? 'col-12 col-lg-6 col-xl' : 'col-6 col-lg-3 col-xl'}">
+        ${Array.from({ length: 6 }).map(() => `
+          <div class="col-6 col-lg-3 col-xl">
             <div class="vm-card p-2 text-center vm-admin-stat-card vm-admin-stat-card--skeleton">
-              <div class="vm-admin-stat-skeleton-value ${index === 6 ? 'vm-admin-stat-skeleton-value--title' : ''}"></div>
+              <div class="vm-admin-stat-skeleton-value"></div>
               <div class="vm-admin-stat-skeleton-label"></div>
             </div>
           </div>
@@ -120,16 +120,6 @@ function renderStatsCards(stats) {
           <div class="text-muted small" data-i18n="admin.polls.zeroVotes">${i18n.t('admin.polls.zeroVotes')}</div>
         </div>
       </div>
-      <div class="col-12 col-lg-6 col-xl">
-        <div class="vm-card p-2 text-center vm-admin-stat-card">
-          <div class="fw-bold vm-gradient-text vm-admin-stat-value vm-admin-stat-value--title text-truncate" title="${stats.most_voted_poll_title || '—'}">
-            🏆 ${stats.most_voted_poll_title || '—'}
-          </div>
-          <div class="text-muted small">
-            ${i18n.t('admin.polls.mostVoted')} (${stats.most_voted_poll_votes ?? 0} ${i18n.t('admin.polls.votesLabel')})
-          </div>
-        </div>
-      </div>
     </div>`;
 }
 
@@ -160,9 +150,9 @@ function renderFilters() {
         </div>
         <div class="col-6 col-lg-2">
           <select class="form-select form-select-sm" id="admin-poll-vis-filter">
-            <option value="" ${!state.visibilityFilter ? 'selected' : ''}>${i18n.t('admin.polls.allVisibility')}</option>
-            <option value="public" ${state.visibilityFilter === 'public' ? 'selected' : ''}>${i18n.t('admin.polls.public')}</option>
-            <option value="private" ${state.visibilityFilter === 'private' ? 'selected' : ''}>${i18n.t('admin.polls.private')}</option>
+            <option value="" ${!state.resultsVisibilityFilter ? 'selected' : ''}>${i18n.t('admin.polls.allResultsVisibility')}</option>
+            <option value="participants" ${state.resultsVisibilityFilter === 'participants' ? 'selected' : ''}>${i18n.t('admin.polls.resultsParticipants')}</option>
+            <option value="author" ${state.resultsVisibilityFilter === 'author' ? 'selected' : ''}>${i18n.t('admin.polls.resultsAuthor')}</option>
           </select>
         </div>
         <div class="col-6 col-lg-2">
@@ -231,7 +221,7 @@ function renderPollsTable() {
         </td>
         <td class="text-muted small">${p.creator_name || p.creator_email}</td>
         <td>${statusBadge(p.status)}</td>
-        <td>${visibilityBadge(p.visibility)}</td>
+        <td>${visibilityBadge(p.results_visibility)}</td>
         <td class="text-center"><span class="text-muted small">${p.votes_count}</span></td>
         <td class="text-muted small">${p.created_at ? formatDate(p.created_at) : '—'}</td>
         <td class="text-muted small">${p.ends_at ? formatDate(p.ends_at) : '—'}</td>
@@ -280,7 +270,7 @@ function renderPollsTable() {
           <div class="vm-admin-poll-card-title" title="${p.title}">${p.title}${featuredBadge}</div>
           <div class="vm-admin-poll-card-badges">
             ${statusBadge(p.status)}
-            ${visibilityBadge(p.visibility)}
+            ${visibilityBadge(p.results_visibility)}
           </div>
         </div>
         <div class="vm-admin-poll-card-author">${p.creator_name || p.creator_email}</div>
@@ -296,16 +286,25 @@ function renderPollsTable() {
     `;
   }).join('');
 
+  const isParticipantsSorted = state.sortBy === 'votes';
+  const participantsSortIndicator = isParticipantsSorted
+    ? (state.sortDir === 'asc' ? '↑' : '↓')
+    : '↕';
+
   return `
-    <div class="table-responsive vm-admin-polls-table-wrap">
+    <div class="vm-admin-polls-table-wrap">
       <table class="table table-hover align-middle mb-0 vm-admin-table vm-admin-polls-table">
         <thead>
           <tr class="text-muted small">
             <th>${i18n.t('admin.polls.colTitle')}</th>
             <th>${i18n.t('admin.polls.colCreator')}</th>
             <th>${i18n.t('admin.polls.colStatus')}</th>
-            <th>${i18n.t('admin.polls.colVisibility')}</th>
-            <th class="text-center">${i18n.t('admin.polls.colParticipants')}</th>
+            <th>${i18n.t('admin.polls.colResultsVisibility')}</th>
+            <th class="text-center">
+              <button type="button" class="btn btn-link btn-sm p-0 text-decoration-none fw-semibold text-reset" id="admin-sort-participants" aria-label="${i18n.t('admin.polls.colParticipants')}">
+                ${i18n.t('admin.polls.colParticipants')} ${participantsSortIndicator}
+              </button>
+            </th>
             <th>${i18n.t('admin.polls.colCreated')}</th>
             <th>${i18n.t('admin.polls.colExpires')}</th>
             <th>${i18n.t('admin.polls.colActions')}</th>
@@ -342,7 +341,11 @@ function renderPagination() {
 // ── Voters Modal ───────────────────────────────────
 function showVotersModal(voters, pollTitle) {
   const existing = document.getElementById('admin-voters-modal');
-  if (existing) existing.remove();
+  if (existing?.__vmCloseModal) {
+    existing.__vmCloseModal({ closedByPopState: true });
+  } else if (existing) {
+    existing.remove();
+  }
 
   const rows = voters.map(v => `
     <tr>
@@ -385,9 +388,25 @@ function showVotersModal(voters, pollTitle) {
     </div>
   `;
 
+  let isClosed = false;
+  let closeModal = () => {};
+
+  const endModalSession = beginBlockingModalSession(() => {
+    closeModal({ closedByPopState: true });
+  });
+
+  closeModal = (closeOptions = {}) => {
+    if (isClosed) return;
+    isClosed = true;
+    endModalSession(closeOptions);
+    modal.remove();
+  };
+
+  modal.__vmCloseModal = closeModal;
+
   modal.addEventListener('click', (e) => {
     if (e.target === modal || e.target.closest('[data-action="close-voters-modal"]')) {
-      modal.remove();
+      closeModal();
     }
     if (e.target.closest('#admin-export-voters-csv')) {
       exportVotersCSV(voters, pollTitle);
@@ -422,7 +441,7 @@ function renderContent(container) {
         ${renderStatsCards(state.stats)}
       </div>
     </details>
-    <div class="vm-card p-4">
+    <div class="vm-card p-4 vm-admin-polls-card">
       <h5 class="fw-bold mb-3" data-i18n="admin.polls.tableTitle">${i18n.t('admin.polls.tableTitle')}</h5>
       ${renderFilters()}
       ${renderPollsTable()}
@@ -454,7 +473,7 @@ async function loadData(container) {
         searchTitle: state.searchTitle,
         searchAuthor: state.searchAuthor,
         status: state.statusFilter,
-        visibility: state.visibilityFilter,
+        resultsVisibility: state.resultsVisibilityFilter,
         sortBy: state.sortBy,
         sortDir: state.sortDir,
         limit: PAGE_SIZE,
@@ -464,7 +483,7 @@ async function loadData(container) {
         searchTitle: state.searchTitle,
         searchAuthor: state.searchAuthor,
         status: state.statusFilter,
-        visibility: state.visibilityFilter
+        resultsVisibility: state.resultsVisibilityFilter
       })
     ]);
     state.stats = stats;
@@ -664,7 +683,7 @@ function bindEvents(container) {
 
   // Visibility filter
   container.querySelector('#admin-poll-vis-filter')?.addEventListener('change', (e) => {
-    state.visibilityFilter = e.target.value;
+    state.resultsVisibilityFilter = e.target.value;
     state.page = 1;
     loadData(container);
   });
@@ -676,13 +695,25 @@ function bindEvents(container) {
     loadData(container);
   });
 
+  container.querySelector('#admin-sort-participants')?.addEventListener('click', () => {
+    if (state.sortBy === 'votes') {
+      state.sortDir = state.sortDir === 'asc' ? 'desc' : 'asc';
+    } else {
+      state.sortBy = 'votes';
+      state.sortDir = 'desc';
+    }
+    state.page = 1;
+    loadData(container);
+  });
+
   // Reset filters
   container.querySelector('#admin-poll-reset-filters')?.addEventListener('click', () => {
     state.searchTitle = '';
     state.searchAuthor = '';
     state.statusFilter = '';
-    state.visibilityFilter = '';
+    state.resultsVisibilityFilter = '';
     state.sortBy = 'created_at';
+    state.sortDir = 'desc';
     state.page = 1;
     loadData(container);
   });

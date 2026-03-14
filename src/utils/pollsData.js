@@ -1,5 +1,6 @@
 import { supabaseClient } from '@utils/supabase.js';
 import { getCurrentUser } from '@utils/auth.js';
+import { computePollStatus } from '@utils/helpers.js';
 
 function requireCurrentUser() {
   const user = getCurrentUser();
@@ -16,6 +17,14 @@ function stripHtml(html) {
 
 function applyStatusFilter(query, status) {
   if (!status || status === 'all') return query;
+  
+  const now = new Date().toISOString();
+  if (status === 'open') {
+    return query.eq('status', 'open').or(`ends_at.is.null,ends_at.gt.${now}`);
+  }
+  if (status === 'closed') {
+    return query.or(`status.eq.closed,and(status.eq.open,ends_at.lte.${now})`);
+  }
   return query.eq('status', status);
 }
 
@@ -28,12 +37,20 @@ function generateShareCode(length = 8) {
   return code;
 }
 
+export async function syncExpiredPolls() {
+  const { error } = await supabaseClient.rpc('auto_close_expired_polls');
+  if (error) {
+    console.warn('Failed to auto-close expired polls:', error);
+  }
+}
+
 export async function fetchMyPollsList({ status = 'all' } = {}) {
   const user = requireCurrentUser();
+  await syncExpiredPolls();
 
   let pollsQuery = supabaseClient
     .from('polls')
-    .select('id, title, status, response_count, updated_at')
+    .select('id, title, status, ends_at, response_count, updated_at')
     .eq('owner_id', user.id)
     .order('updated_at', { ascending: false });
 
@@ -86,6 +103,7 @@ export async function fetchMyPollsList({ status = 'all' } = {}) {
 
   return polls.map((poll) => ({
     ...poll,
+    status: computePollStatus(poll),
     response_count: responseCountByPoll.get(poll.id) || 0,
     options_count: optionsCountByPoll.get(poll.id) || 0,
     share_code: shareCodeByPoll.get(poll.id) || null,
@@ -98,10 +116,11 @@ export async function fetchPollById(pollId) {
   }
 
   const user = requireCurrentUser();
+  await syncExpiredPolls();
 
   const { data: poll, error: pollError } = await supabaseClient
     .from('polls')
-    .select('id, owner_id, title, description_html, kind, visibility, status, ends_at, response_count, created_at, updated_at')
+    .select('id, owner_id, title, description_html, kind, visibility, results_visibility, status, ends_at, response_count, created_at, updated_at')
     .eq('id', pollId)
     .single();
 
@@ -123,49 +142,43 @@ export async function fetchPollById(pollId) {
     .limit(1)
     .maybeSingle();
 
-  const { data: voteRows, error: voteRowsError } = await supabaseClient
-    .from('votes')
-    .select('id, numeric_value')
-    .eq('poll_id', pollId);
+  let resultsAccess = null;
+  const { data: accessRows, error: accessError } = await supabaseClient
+    .rpc('get_poll_results_access', { p_poll_id: pollId });
 
-  if (voteRowsError) throw voteRowsError;
-
-  const voteIds = (voteRows || []).map((row) => row.id);
-  const numericValues = (voteRows || []).map((row) => row.numeric_value).filter((value) => typeof value === 'number');
-
-  let optionSelections = [];
-  if (voteIds.length > 0) {
-    const { data: selections, error: selectionsError } = await supabaseClient
-      .from('vote_options')
-      .select('option_id')
-      .in('vote_id', voteIds);
-
-    if (selectionsError) throw selectionsError;
-    optionSelections = selections || [];
+  if (!accessError && Array.isArray(accessRows) && accessRows.length > 0) {
+    resultsAccess = accessRows[0];
   }
 
-  const optionCountMap = new Map();
-  optionSelections.forEach((selection) => {
-    const currentCount = optionCountMap.get(selection.option_id) || 0;
-    optionCountMap.set(selection.option_id, currentCount + 1);
-  });
+  let summary = null;
+  const { data: summaryRows, error: summaryError } = await supabaseClient
+    .rpc('get_poll_results_summary', { p_poll_id: pollId });
 
-  const totalVotes = voteRows?.length || 0;
-  const normalizedOptions = (options || []).map((option) => {
-    const votesCount = optionCountMap.get(option.id) || 0;
-    const percentage = totalVotes > 0 ? Math.round((votesCount / totalVotes) * 100) : 0;
-    return {
-      ...option,
-      votes_count: votesCount,
-      percentage,
-    };
-  });
+  if (!summaryError && Array.isArray(summaryRows) && summaryRows.length > 0) {
+    summary = summaryRows[0];
+  }
 
-  const numericSummary = numericValues.length > 0
+  const totalVotes = Number(summary?.total_votes ?? poll.response_count ?? 0);
+
+  const normalizedOptions = Array.isArray(summary?.option_results)
+    ? summary.option_results.map((item) => ({
+        id: item.id,
+        text: item.text,
+        position: item.position,
+        votes_count: item.votes_count,
+        percentage: item.percentage,
+      }))
+    : (options || []).map((option) => ({
+        ...option,
+        votes_count: 0,
+        percentage: 0,
+      }));
+
+  const numericSummary = (summary?.numeric_avg !== null && summary?.numeric_avg !== undefined)
     ? {
-        avg: Number((numericValues.reduce((sum, value) => sum + value, 0) / numericValues.length).toFixed(2)),
-        min: Math.min(...numericValues),
-        max: Math.max(...numericValues),
+        avg: Number(summary.numeric_avg),
+        min: Number(summary.numeric_min),
+        max: Number(summary.numeric_max),
       }
     : null;
 
@@ -176,7 +189,8 @@ export async function fetchPollById(pollId) {
     description_html: poll.description_html,
     kind: poll.kind,
     visibility: poll.visibility,
-    status: poll.status,
+    results_visibility: poll.results_visibility,
+    status: computePollStatus(poll),
     ends_at: poll.ends_at,
     created_at: poll.created_at,
     updated_at: poll.updated_at,
@@ -184,6 +198,9 @@ export async function fetchPollById(pollId) {
     owner_id: poll.owner_id,
     share_code: shareRow?.share_code || null,
     is_owner: poll.owner_id === user.id,
+    is_admin: Boolean(resultsAccess?.is_admin),
+    has_voted: Boolean(resultsAccess?.has_voted),
+    can_view_results: Boolean(summary?.can_view_results ?? resultsAccess?.can_view_results ?? (poll.owner_id === user.id)),
     options: normalizedOptions,
     total_votes: totalVotes,
     numeric_summary: numericSummary,

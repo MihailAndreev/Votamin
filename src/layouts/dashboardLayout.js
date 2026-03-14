@@ -1,10 +1,9 @@
 /* ============================================================
    Votamin – Dashboard Layout  (Sidebar + Content area)
    ============================================================ */
-import { isAdmin, logout } from '@utils/auth.js';
-import { navigateTo, currentPath } from '../router.js';
+import { isAdmin } from '@utils/auth.js';
+import { currentPath } from '../router.js';
 import { i18n } from '../i18n/index.js';
-import { showToast } from '@utils/toast.js';
 import '@pages/dashboard/dashboard.css';
 
 const SIDEBAR_COLLAPSED_KEY = 'votamin_sidebar_collapsed';
@@ -48,12 +47,6 @@ const ICONS = {
       <rect x="16" y="4" width="3" height="14" rx="1" fill="currentColor"/>
     </svg>
   `,
-  logout: `
-    <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-      <path d="M10 4H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-      <path d="M14 16l4-4-4-4M18 12H9" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-    </svg>
-  `
 };
 
 function isCollapsed() {
@@ -82,7 +75,7 @@ export function renderDashboardLayout(contentContainer) {
     <div class="vm-dash-wrapper${collapsed ? ' vm-sidebar-collapsed' : ''}">
       <!-- Mobile toggle -->
       <button class="vm-sidebar-mobile-toggle d-lg-none btn btn-sm btn-votamin-outline"
-              id="sidebar-mobile-toggle" aria-label="Toggle menu">
+              id="sidebar-mobile-toggle" aria-expanded="false" aria-label="Toggle menu">
         <span class="vm-sidebar-icon">${ICONS.menu}</span>
       </button>
 
@@ -109,10 +102,6 @@ export function renderDashboardLayout(contentContainer) {
                     title="${i18n.t('dashboard.sidebar.collapse')}">
               <span class="vm-sidebar-icon" id="collapse-icon">${collapsed ? '»' : '«'}</span>
               <span class="vm-sidebar-label" data-i18n="dashboard.sidebar.collapse">Collapse</span>
-            </button>
-            <button class="vm-sidebar-link vm-sidebar-logout-btn" id="sidebar-logout-btn">
-              <span class="vm-sidebar-icon">${ICONS.logout}</span>
-              <span class="vm-sidebar-label" data-i18n="dashboard.sidebar.logout">Logout</span>
             </button>
           </div>
         </nav>
@@ -150,26 +139,25 @@ export function renderDashboardLayout(contentContainer) {
   function openMobileSidebar() {
     sidebar.classList.add('vm-sidebar-open');
     backdrop.classList.add('vm-backdrop-visible');
+    mobileToggle?.setAttribute('aria-expanded', 'true');
   }
   function closeMobileSidebar() {
     sidebar.classList.remove('vm-sidebar-open');
     backdrop.classList.remove('vm-backdrop-visible');
+    mobileToggle?.setAttribute('aria-expanded', 'false');
+  }
+  function toggleMobileSidebar() {
+    if (sidebar.classList.contains('vm-sidebar-open')) {
+      closeMobileSidebar();
+      return;
+    }
+    openMobileSidebar();
   }
 
-  mobileToggle?.addEventListener('click', openMobileSidebar);
+  mobileToggle?.addEventListener('click', toggleMobileSidebar);
   backdrop?.addEventListener('click', closeMobileSidebar);
   sidebar?.querySelectorAll('.vm-sidebar-link').forEach((link) => {
     link.addEventListener('click', closeMobileSidebar);
-  });
-
-  /* ── Logout ───────────────────────────────────── */
-  contentContainer.querySelector('#sidebar-logout-btn')?.addEventListener('click', async () => {
-    const { error } = await logout();
-    if (!error) {
-      navigateTo('/');
-      return;
-    }
-    showToast(error?.message || i18n.t('notifications.logoutFailed'), 'error');
   });
 
   /* ── i18n ─────────────────────────────────────── */

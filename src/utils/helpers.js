@@ -15,6 +15,18 @@ export function htmlToElement(html) {
   return tpl.content.firstChild;
 }
 
+/** Compute the real status of a poll based on its ends_at date */
+export function computePollStatus(poll) {
+  if (!poll) return 'draft';
+  if (poll.status === 'closed') return 'closed';
+  if (poll.status === 'open' && poll.ends_at) {
+    if (new Date(poll.ends_at).getTime() <= Date.now()) {
+      return 'closed';
+    }
+  }
+  return poll.status;
+}
+
 /** Inject CSS text into the <head>  (deduped by id) */
 export function injectCSS(id, cssText) {
   if (document.getElementById(id)) return;
@@ -27,6 +39,68 @@ export function injectCSS(id, cssText) {
 /** Remove injected CSS by id */
 export function removeCSS(id) {
   document.getElementById(id)?.remove();
+}
+
+let blockingModalDepth = 0;
+
+function setBlockingModalState(isOpen) {
+  document.body.classList.toggle('vm-modal-open', isOpen);
+}
+
+/**
+ * Start a blocking modal session:
+ * - locks page scroll/interactions via body class
+ * - pushes history state so mobile/browser Back closes the modal first
+ */
+export function beginBlockingModalSession(onBackRequest) {
+  blockingModalDepth += 1;
+  setBlockingModalState(true);
+
+  const modalStateId = `vm-modal-${Date.now()}-${Math.random().toString(16).slice(2)}`;
+  let historyEntryActive = false;
+
+  const onPopState = (event) => {
+    if (!historyEntryActive) return;
+    if (event.state?.__vmModalId === modalStateId) return;
+
+    historyEntryActive = false;
+    window.removeEventListener('popstate', onPopState);
+    onBackRequest?.();
+  };
+
+  try {
+    const nextState = { ...(window.history.state || {}), __vmModalId: modalStateId };
+    window.history.pushState(nextState, '', window.location.href);
+    historyEntryActive = true;
+    window.addEventListener('popstate', onPopState);
+  } catch {
+    historyEntryActive = false;
+  }
+
+  let finished = false;
+
+  return function endBlockingModalSession(options = {}) {
+    const { closedByPopState = false } = options;
+    if (finished) return;
+    finished = true;
+
+    if (historyEntryActive) {
+      historyEntryActive = false;
+      window.removeEventListener('popstate', onPopState);
+      if (!closedByPopState) {
+        try {
+          window.history.back();
+        } catch {
+          // no-op fallback when history is unavailable
+        }
+      }
+    }
+
+    blockingModalDepth = Math.max(0, blockingModalDepth - 1);
+    if (blockingModalDepth === 0) {
+      setBlockingModalState(false);
+    }
+  };
 }
 
 /** Generate a random short code */

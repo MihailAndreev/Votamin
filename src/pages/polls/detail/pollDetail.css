@@ -79,6 +79,7 @@
 /* ── 3-column wrapper ── */
 .vm-poll-detail-wrapper {
 	max-width: 100% !important;
+	padding-top: 1rem;
 	padding-left: clamp(0.75rem, 2vw, 1.5rem);
 	padding-right: clamp(0.75rem, 2vw, 1.5rem);
 }
@@ -116,6 +117,22 @@
 #copy-link {
 	display: inline-block;
 	overflow-wrap: anywhere;
+}
+
+#poll-edit-card .vm-edit-field-label {
+	font-size: 0.75rem;
+	font-weight: 700;
+	text-transform: uppercase;
+	letter-spacing: 0.04em;
+	color: var(--vm-teal, #14b8a6);
+	margin-bottom: 0.45rem;
+	display: inline-block;
+}
+
+#poll-edit-card .vm-edit-field-hint {
+	margin-top: 0.45rem;
+	font-size: 0.8rem;
+	color: var(--vm-text-muted, #6b7280);
 }
 
 /* ── Sidebars shared ── */
@@ -312,6 +329,52 @@
 	padding: 0.28rem 0.82rem;
 	background: var(--vm-gray-200);
 	color: var(--vm-gray-700);
+}
+
+.vm-badge--with-tooltip {
+	position: relative;
+	cursor: help;
+}
+
+.vm-badge--with-tooltip::before,
+.vm-badge--with-tooltip::after {
+	opacity: 0;
+	pointer-events: none;
+	transition: opacity var(--vm-transition), transform var(--vm-transition);
+	position: absolute;
+	left: 50%;
+	transform: translate(-50%, 4px);
+	z-index: 12;
+}
+
+.vm-badge--with-tooltip::before {
+	content: attr(data-tooltip);
+	bottom: calc(100% + 0.55rem);
+	background: var(--vm-gray-900);
+	color: var(--vm-white);
+	font-size: 0.72rem;
+	font-weight: 600;
+	line-height: 1.2;
+	padding: 0.32rem 0.5rem;
+	border-radius: var(--vm-radius-sm);
+	white-space: nowrap;
+	box-shadow: var(--vm-shadow-sm);
+}
+
+.vm-badge--with-tooltip::after {
+	content: '';
+	bottom: calc(100% + 0.3rem);
+	border-width: 0.3rem;
+	border-style: solid;
+	border-color: var(--vm-gray-900) transparent transparent transparent;
+}
+
+.vm-badge--with-tooltip:hover::before,
+.vm-badge--with-tooltip:hover::after,
+.vm-badge--with-tooltip:focus-visible::before,
+.vm-badge--with-tooltip:focus-visible::after {
+	opacity: 1;
+	transform: translate(-50%, 0);
 }
 
 /* ── Responsive: tablet ── */

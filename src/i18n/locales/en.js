@@ -110,8 +110,10 @@ export default {
       columns: {
         title: 'Title',
         type: 'Type',
+        resultsVisibility: 'Results Visibility',
         responses: 'Participants',
-        deadline: 'Modified Date',
+        deadline: 'Deadline',
+        modified: 'Modified',
         status: 'Status',
         myResponse: 'My Response',
         actions: 'Actions',
@@ -147,8 +149,8 @@ export default {
         cta: 'Create your first poll'
       },
       shared: {
-        title: "You haven't participated in any polls yet.",
-        subtitle: 'When you vote in a poll created by someone else, it will appear here.'
+        title: "You haven't participated in any polls of this type yet.",
+        subtitle: 'When you vote in a poll created by another user of this type, it will appear here.'
       }
     },
     actions: {
@@ -179,7 +181,7 @@ export default {
       showing: 'Showing'
     },
     account: {
-      title: 'Account',
+      title: 'Profile',
       emailLabel: 'Email',
       photoLabel: 'Photo',
       uploadPhoto: 'Upload photo',
@@ -203,7 +205,12 @@ export default {
       confirmPassword: 'Confirm new password',
       savePassword: 'Save Password',
       passwordChanged: 'Password changed successfully.',
-      passwordError: 'Failed to change password.'
+      passwordError: 'Failed to change password.',
+      deleteAccount: 'Delete account',
+      deleteAccountConfirm: 'Delete',
+      confirmDeleteAccount: 'Are you sure you want to delete your account? This action cannot be undone.',
+      deleteAccountSuccess: 'Account deleted successfully.',
+      deleteAccountError: 'Failed to delete account.'
     },
     confirmDelete: 'Are you sure you want to delete this poll?',
     shareError: 'Failed to generate share link.',
@@ -220,7 +227,6 @@ export default {
       ctaStart: 'Start for free',
       ctaLogin: 'I already have an account',
       features: {
-        noCard: '✓ No credit card required',
         freePlan: '✓ Free plan',
         unlimited: '✓ Unlimited polls'
       }
@@ -279,13 +285,15 @@ export default {
       title: 'Ready to get started?',
       subtitle: 'Join thousands of users already using Votamin',
       register: 'Create free account',
-      notice: 'Free registration • No credit card • Cancel anytime'
+      notice: 'Free registration • Cancel anytime'
     }
   },
   publicPoll: {
     fallbackDescription: 'Choose your answer.',
-    inviteTextWithName: '{inviter} invited you to participate in this poll.',
-    inviteTextFallback: 'The poll author invited you to participate in this poll.',
+    inviteTextWithName: '{inviter} invited you to vote',
+    inviteTextFallback: 'The poll author invited you to participate in this poll',
+    deadlineBadgeWithDate: 'until: {date}',
+    deadlineBadgeNoEnd: 'no deadline',
     notAccessibleTitle: 'This poll is not available',
     numericLabel: 'Enter a value',
     numericPlaceholder: 'For example: 10',
@@ -295,6 +303,7 @@ export default {
     thanksTitle: 'Thank you!',
     thanksText: 'Your vote has been received.',
     returnToDashboard: 'Back to dashboard',
+    returnToResults: 'Go to results',
     poweredBy: 'Powered by',
     errors: {
       missingCode: 'Missing share code.',
@@ -313,6 +322,12 @@ export default {
     },
     success: {
       voteSaved: 'Your vote was recorded successfully.'
+    },
+    instructions: {
+      single_choice: 'Single option allowed',
+      multiple_choice: 'Multiple options allowed',
+      numeric: 'Enter a numeric value',
+      rating: 'Provide a rating'
     }
   },
   createPoll: {
@@ -339,7 +354,7 @@ export default {
       options: 'Answer Options',
       minValue: 'Minimum Value',
       maxValue: 'Maximum Value',
-      visibility: 'Visibility',
+      visibility: 'Poll Visibility',
       resultsVisibility: 'Results Visibility',
       endDate: 'End Date (optional)',
       theme: 'Theme'
@@ -376,12 +391,10 @@ export default {
       privateDesc: 'Only shared participants can access'
     },
     resultsVisibility: {
-      after_vote: 'After Vote',
-      always: 'Always',
-      creator_only: 'Creator Only',
-      after_voteDesc: 'Voters see results immediately',
-      alwaysDesc: 'Results are visible to everyone',
-      creator_onlyDesc: 'Only you can see the results'
+      participants: 'Every participant',
+      author: 'Author only',
+      participantsDesc: 'Voted participants can view results',
+      authorDesc: 'Results are visible only to the poll author'
     },
     themes: {
       default: 'Default',
@@ -391,7 +404,7 @@ export default {
       orange: 'Orange'
     },
     actions: {
-      addOption: '+ Add Option',
+      addOption: 'Add Option',
       removeOption: 'Remove',
       next: 'Next',
       back: 'Back',
@@ -407,12 +420,13 @@ export default {
       minTwoOptions: 'At least 2 options are required',
       optionEmpty: 'Option cannot be empty',
       minLessThanMax: 'Minimum must be less than maximum',
-      maxRequired: 'Maximum value is recommended for numeric polls'
+      maxRequired: 'Maximum value is recommended for numeric polls',
+      endDateFuture: 'End date cannot be in the past'
     },
     preview: {
       title: 'Preview Your Poll',
       subtitle: 'This is how participants will see your poll',
-      closesOn: 'Closes on {date}',
+      closesOn: 'Deadline: {date}',
       noEndDate: 'No end date',
       questionFallback: 'Your question will appear here',
       rangeLabel: 'Range:',
@@ -428,7 +442,6 @@ export default {
       summaryTitle: 'Poll Summary',
       summaryQuestion: 'Question',
       summaryType: 'Type',
-      summaryVisibility: 'Visibility',
       summaryResults: 'Results',
       summaryHint: 'Use the buttons below to save as draft or publish your poll.'
     },
@@ -471,6 +484,7 @@ export default {
     editCancel: 'Cancel',
     editAction: 'Edit',
     backToMyPolls: '← Back to my polls',
+    backToSharedPolls: '← Back to shared with me',
     backToAdminPolls: '← Back to admin polls',
     noDescription: 'No description',
     shareCode: 'Share code:',
@@ -478,14 +492,21 @@ export default {
     titleLabel: 'Title',
     descriptionLabel: 'Description',
     statusLabel: 'Status',
-    visibilityLabel: 'Visibility',
-    visibility: {
-      public: 'Public',
-      private: 'Private'
+    endDateLabel: 'Deadline',
+    noEndDate: 'No deadline',
+    endDateRequired: 'Pick a deadline or check “No deadline”.',
+    endDateHint: 'The poll will close automatically at this date and time.',
+    hourLabel: 'Hour',
+    minuteLabel: 'Minute',
+    resultsVisibilityLabel: 'Results Visibility',
+    resultsVisibility: {
+      participants: 'Every participant',
+      author: 'Author only'
     },
     saveChanges: 'Save changes',
     editHint: 'Use "Edit" to change title, description, and status.',
     resultsTitle: 'Results',
+    resultsAccessDenied: 'Results are visible only to the poll author.',
     votesSuffix: 'votes',
     closePoll: 'Close poll',
     deletePoll: 'Delete',
@@ -506,7 +527,7 @@ export default {
       created: 'Created',
       adminTitle: 'Administration',
       shareCode: 'Share Code',
-      visibility: 'Visibility',
+      resultsVisibility: 'Results Visibility',
       kind: 'Type',
       justNow: 'just now',
       minutesAgo: 'min ago',
@@ -600,10 +621,13 @@ export default {
       searchByTitle: 'Search by title',
       searchByAuthor: 'Search by author',
       allStatuses: 'All statuses',
+      allResultsVisibility: 'All results visibility modes',
       allVisibility: 'All visibility',
       public: 'Public',
       unlisted: 'Unlisted',
       private: 'Private',
+      resultsParticipants: 'Every participant',
+      resultsAuthor: 'Author only',
       sortNewest: 'Newest',
       sortMostVotes: 'Most votes',
       sortTitle: 'By title',
@@ -612,6 +636,7 @@ export default {
       colTitle: 'Title',
       colCreator: 'Creator',
       colStatus: 'Status',
+      colResultsVisibility: 'Results Visibility',
       colVisibility: 'Visibility',
       colParticipants: 'Participants',
       colCreated: 'Created',

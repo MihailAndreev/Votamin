@@ -112,8 +112,10 @@ export default {
       columns: {
         title: 'Заглавие',
         type: 'Тип',
+        resultsVisibility: 'Видимост на резултатите',
         responses: 'Участници',
-        deadline: 'Модификация',
+        deadline: 'Срок',
+        modified: 'Модификация',
         status: 'Статус',
         myResponse: 'Мой отговор',
         actions: 'Действия',
@@ -149,8 +151,8 @@ export default {
         cta: 'Създай първата си анкета'
       },
       shared: {
-        title: 'Все още не си участвал в чужди анкети.',
-        subtitle: 'Когато гласуваш в анкета на друг потребител, тя ще се появи тук.'
+        title: 'Все още не си участвал в чужди анкети от този тип.',
+        subtitle: 'Когато гласуваш в анкета на друг потребител от този тип, тя ще се появи тук.'
       }
     },
     actions: {
@@ -181,7 +183,7 @@ export default {
       showing: 'Показани'
     },
     account: {
-      title: 'Акаунт',
+      title: 'Профил',
       emailLabel: 'Имейл',
       photoLabel: 'Снимка',
       uploadPhoto: 'Качи снимка',
@@ -205,7 +207,12 @@ export default {
       confirmPassword: 'Потвърди нова парола',
       savePassword: 'Запази парола',
       passwordChanged: 'Паролата е сменена успешно.',
-      passwordError: 'Неуспешна смяна на парола.'
+      passwordError: 'Неуспешна смяна на парола.',
+      deleteAccount: 'Изтрий акаунт',
+      deleteAccountConfirm: 'Изтрий',
+      confirmDeleteAccount: 'Сигурен ли си, че искаш да изтриеш акаунта си? Това действие е необратимо.',
+      deleteAccountSuccess: 'Акаунтът е изтрит успешно.',
+      deleteAccountError: 'Неуспешно изтриване на акаунта.'
     },
     confirmDelete: 'Сигурен ли си, че искаш да изтриеш тази анкета?',
     shareError: 'Неуспешно генериране на линк за споделяне.',
@@ -222,7 +229,6 @@ export default {
       ctaStart: 'Започни безплатно',
       ctaLogin: 'Вече имам акаунт',
       features: {
-        noCard: '✓ Без кредитна карта',
         freePlan: '✓ Безплатен план',
         unlimited: '✓ Неограничени анкети'
       }
@@ -281,13 +287,15 @@ export default {
       title: 'Готов ли си да започнеш?',
       subtitle: 'Присъедини се към хиляди потребители, които вече използват Votamin',
       register: 'Създай акаунт безплатно',
-      notice: 'Безплатна регистрация • Без кредитна карта • Отмени по всяко време'
+      notice: 'Безплатна регистрация • Отмени по всяко време'
     }
   },
   publicPoll: {
     fallbackDescription: 'Избери своя отговор.',
-    inviteTextWithName: '{inviter} ви покани да участвате в тази анкета.',
-    inviteTextFallback: 'Авторът на анкетата ви покани да участвате в тази анкета.',
+    inviteTextWithName: '{inviter} ви покани да гласувате',
+    inviteTextFallback: 'Авторът на анкетата ви покани да участвате в тази анкета',
+    deadlineBadgeWithDate: 'в срок до: {date}',
+    deadlineBadgeNoEnd: 'без краен срок',
     notAccessibleTitle: 'Анкетата не е достъпна',
     numericLabel: 'Въведи стойност',
     numericPlaceholder: 'Например: 10',
@@ -296,7 +304,8 @@ export default {
     submitting: 'Изпращане...',
     thanksTitle: 'Благодарим ти!',
     thanksText: 'Гласът ти е получен.',
-    returnToDashboard: 'Към Dashboard',
+    returnToDashboard: 'Към Табло',
+    returnToResults: 'Към резултат',
     poweredBy: 'Задвижвано от',
     errors: {
       missingCode: 'Липсва код за споделяне.',
@@ -315,6 +324,12 @@ export default {
     },
     success: {
       voteSaved: 'Гласът ти е записан успешно.'
+    },
+    instructions: {
+      single_choice: 'Възможна е една опция',
+      multiple_choice: 'Възможни са повече от една опции',
+      numeric: 'Въведете числова стойност',
+      rating: 'Дайте оценка'
     }
   },
   createPoll: {
@@ -341,7 +356,7 @@ export default {
       options: 'Опции за отговор',
       minValue: 'Минимална стойност',
       maxValue: 'Максимална стойност',
-      visibility: 'Видимост',
+      visibility: 'Видимост на анкетата',
       resultsVisibility: 'Видимост на резултатите',
       endDate: 'Краен срок (по избор)',
       theme: 'Тема'
@@ -378,12 +393,10 @@ export default {
       privateDesc: 'Само споделени участници могат да достъпят'
     },
     resultsVisibility: {
-      after_vote: 'След гласуване',
-      always: 'Винаги',
-      creator_only: 'Само автор',
-      after_voteDesc: 'Гласувалите виждат резултатите веднага',
-      alwaysDesc: 'Резултатите са видими за всички',
-      creator_onlyDesc: 'Само ти можеш да видиш резултатите'
+      participants: 'Всеки участник',
+      author: 'Само автор',
+      participantsDesc: 'Гласувалите участници виждат резултатите',
+      authorDesc: 'Резултатите са видими само за автора'
     },
     themes: {
       default: 'По подразбиране',
@@ -393,7 +406,7 @@ export default {
       orange: 'Оранжева'
     },
     actions: {
-      addOption: '+ Добави опция',
+      addOption: 'Добави опция',
       removeOption: 'Премахни',
       next: 'Напред',
       back: 'Назад',
@@ -409,12 +422,13 @@ export default {
       minTwoOptions: 'Необходими са поне 2 опции',
       optionEmpty: 'Опцията не може да е празна',
       minLessThanMax: 'Минималната стойност трябва да е по-малка от максималната',
-      maxRequired: 'Максималната стойност се препоръчва за числови анкети'
+      maxRequired: 'Максималната стойност се препоръчва за числови анкети',
+      endDateFuture: 'Крайният срок не може да е в миналото'
     },
     preview: {
       title: 'Преглед на анкетата',
       subtitle: 'Така ще изглежда анкетата за участниците',
-      closesOn: 'Затваря на {date}',
+      closesOn: 'Краен срок: {date}',
       noEndDate: 'Без краен срок',
       questionFallback: 'Тук ще се покаже въпросът ти',
       rangeLabel: 'Диапазон:',
@@ -430,7 +444,6 @@ export default {
       summaryTitle: 'Обобщение на анкетата',
       summaryQuestion: 'Въпрос',
       summaryType: 'Тип',
-      summaryVisibility: 'Видимост',
       summaryResults: 'Резултати',
       summaryHint: 'Използвай бутоните отдолу, за да запазиш като чернова или да публикуваш анкетата.'
     },
@@ -473,6 +486,7 @@ export default {
     editCancel: 'Откажи',
     editAction: 'Редактирай',
     backToMyPolls: '← Обратно към моите анкети',
+    backToSharedPolls: '← Обратно към споделени с мен',
     backToAdminPolls: '← Обратно към админ анкети',
     noDescription: 'Без описание',
     shareCode: 'Код за споделяне:',
@@ -480,14 +494,21 @@ export default {
     titleLabel: 'Заглавие',
     descriptionLabel: 'Описание',
     statusLabel: 'Статус',
-    visibilityLabel: 'Видимост',
-    visibility: {
-      public: 'Публична',
-      private: 'Частна'
+    endDateLabel: 'Краен срок',
+    noEndDate: 'Без краен срок',
+    endDateRequired: 'Избери краен срок или маркирай „Без краен срок“.',
+    endDateHint: 'Анкетата ще се затвори автоматично на тази дата и час.',
+    hourLabel: 'Час',
+    minuteLabel: 'Минути',
+    resultsVisibilityLabel: 'Видимост на резултатите',
+    resultsVisibility: {
+      participants: 'Всеки участник',
+      author: 'Само автор'
     },
     saveChanges: 'Запази промените',
     editHint: 'Използвай "Редактирай", за да промениш заглавие, описание и статус.',
     resultsTitle: 'Резултати',
+    resultsAccessDenied: 'Резултатите са видими само за автора на анкетата.',
     votesSuffix: 'гласа',
     closePoll: 'Затвори анкетата',
     deletePoll: 'Изтрий',
@@ -508,7 +529,7 @@ export default {
       created: 'Създадена',
       adminTitle: 'Администрация',
       shareCode: 'Код за споделяне',
-      visibility: 'Видимост',
+      resultsVisibility: 'Видимост на резултатите',
       kind: 'Тип',
       justNow: 'току-що',
       minutesAgo: 'мин. назад',
@@ -602,10 +623,13 @@ export default {
       searchByTitle: 'Търси по заглавие',
       searchByAuthor: 'Търси по автор',
       allStatuses: 'Всички статуси',
+      allResultsVisibility: 'Всички режими на резултати',
       allVisibility: 'Всяка видимост',
       public: 'Публична',
       unlisted: 'Непублична',
       private: 'Частна',
+      resultsParticipants: 'Всеки участник',
+      resultsAuthor: 'Само автор',
       sortNewest: 'Най-нови',
       sortMostVotes: 'Най-много гласове',
       sortTitle: 'По заглавие',
@@ -614,6 +638,7 @@ export default {
       colTitle: 'Заглавие',
       colCreator: 'Автор',
       colStatus: 'Статус',
+      colResultsVisibility: 'Видимост на резултатите',
       colVisibility: 'Видимост',
       colParticipants: 'Участници',
       colCreated: 'Създадена',

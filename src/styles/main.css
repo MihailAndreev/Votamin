@@ -13,6 +13,7 @@
 
 html {
   scroll-behavior: smooth;
+  scrollbar-gutter: stable;
 }
 
 body {
@@ -22,6 +23,11 @@ body {
   background-color: var(--vm-bg);
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
+}
+
+body.vm-modal-open {
+  overflow: hidden;
+  overscroll-behavior: contain;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -234,7 +240,7 @@ img {
 
 /* ── Footer ───────────────────────────────────────── */
 .vm-footer {
-  margin-top: 2.25rem;
+  margin-top: 1rem;
 }
 
 .vm-footer a {

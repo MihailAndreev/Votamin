@@ -4,6 +4,35 @@
 import { fetchDashboardSharedPolls } from '@utils/dashboardData.js';
 import { i18n } from '../../i18n/index.js';
 import { formatDate } from '@utils/helpers.js';
+ 
+function escapeHtmlAttr(value) {
+  return String(value ?? '').replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+ 
+function formatTimeOnly(dateValue) {
+  if (!dateValue) return '';
+  const parsed = new Date(dateValue);
+  if (Number.isNaN(parsed.getTime())) return '';
+  return parsed.toLocaleTimeString('bg-BG', {
+    hour: '2-digit',
+    minute: '2-digit'
+  });
+}
+ 
+function renderDateWithHover(dateValue, fallbackText) {
+  if (!dateValue) {
+    return fallbackText;
+  }
+
+  const displayValue = formatDate(dateValue);
+  const hoverValue = formatTimeOnly(dateValue);
+
+  if (!hoverValue) {
+    return displayValue;
+  }
+
+  return `\n    <span\n      class="vm-date-hover-tooltip"\n      data-tooltip="${escapeHtmlAttr(hoverValue)}"\n      tabindex="0"\n      aria-label="${escapeHtmlAttr(hoverValue)}"\n    >${displayValue}</span>\n  `;
+}
 
 function statusBadge(status) {
   const label = i18n.t(`dashboard.status.${status}`) || status;
@@ -13,6 +42,16 @@ function statusBadge(status) {
 function modifiedText(updatedAt) {
   if (!updatedAt) return i18n.t('dashboard.noModifiedDate');
   return formatDate(updatedAt);
+}
+
+function deadlineText(endsAt) {
+  if (!endsAt) return i18n.t('dashboard.noDeadline');
+  return formatDate(endsAt);
+}
+
+function resultsVisibilityBadge(value) {
+  const label = i18n.t(`createPoll.resultsVisibility.${value}`) || '—';
+  return `<span class="vm-results-visibility-badge">${label}</span>`;
 }
 
 function renderTable(polls) {
@@ -32,12 +71,12 @@ function renderTable(polls) {
         <tbody>
           ${polls.map(p => `
           <tr>
-            <td><a href="/polls/${p.id}" class="fw-semibold">${p.title}</a></td>
+            <td><a href="/polls/${p.id}?from=shared" class="fw-semibold">${p.title}</a></td>
             <td>${p.owner_name}</td>
-            <td>${modifiedText(p.updated_at)}</td>
+            <td>${renderDateWithHover(p.ends_at, i18n.t('dashboard.noDeadline'))}</td>
             <td>${statusBadge(p.status)}</td>
             <td>
-              <a href="/polls/${p.id}" class="btn btn-sm btn-votamin-outline">${i18n.t('dashboard.actions.view')}</a>
+              <a href="/polls/${p.id}?from=shared" class="btn btn-sm btn-votamin-outline">${i18n.t('dashboard.actions.view')}</a>
             </td>
           </tr>`).join('')}
         </tbody>
@@ -50,14 +89,16 @@ function renderCards(polls) {
     <div class="vm-dash-cards">
       ${polls.map(p => `
       <div class="vm-dash-card">
-        <div class="vm-dash-card-title"><a href="/polls/${p.id}">${p.title}</a></div>
-        <div class="vm-dash-card-meta">
+        <div class="vm-dash-card-title"><a href="/polls/${p.id}?from=shared">${p.title}</a></div>
+          <div class="vm-dash-card-meta">
           <span>${i18n.t('dashboard.table.columns.owner')}: ${p.owner_name}</span>
           ${statusBadge(p.status)}
-          <span>${modifiedText(p.updated_at)}</span>
+          ${resultsVisibilityBadge(p.results_visibility)}
+          <span>${i18n.t('dashboard.table.columns.deadline')}: ${renderDateWithHover(p.ends_at, i18n.t('dashboard.noDeadline'))}</span>
+          <span>${i18n.t('dashboard.table.columns.modified')}: ${modifiedText(p.updated_at)}</span>
         </div>
         <div class="vm-dash-card-actions">
-          <a href="/polls/${p.id}" class="btn btn-sm btn-votamin-outline">${i18n.t('dashboard.actions.view')}</a>
+          <a href="/polls/${p.id}?from=shared" class="btn btn-sm btn-votamin-outline">${i18n.t('dashboard.actions.view')}</a>
         </div>
       </div>`).join('')}
     </div>`;

@@ -8,6 +8,7 @@ import { supabaseClient } from '@utils/supabase.js';
 import { getLoaderMarkup } from '@components/loader.js';
 import { getCurrentUser } from '@utils/auth.js';
 import { navigateTo } from '../../router.js';
+import { computePollStatus } from '@utils/helpers.js';
 
 let removeLanguageChangedListener = null;
 
@@ -42,6 +43,49 @@ function getInviteText(inviterLabel) {
   return t('inviteTextFallback');
 }
 
+function formatDateTime24h(dateValue) {
+  const parsedDate = new Date(dateValue);
+  if (Number.isNaN(parsedDate.getTime())) {
+    return '';
+  }
+
+  return parsedDate.toLocaleString([], {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false
+  });
+}
+
+function renderDeadlineText(endsAt) {
+  if (!endsAt) {
+    return i18n.t('publicPoll.deadlineBadgeNoEnd');
+  }
+
+  const formattedDate = formatDateTime24h(endsAt);
+  return i18n.t('publicPoll.deadlineBadgeWithDate').replace('{date}', formattedDate || '');
+}
+
+function renderInviteLine(poll) {
+  const inviterName = typeof poll.inviter_label === 'string' ? poll.inviter_label.trim() : '';
+  const inviteText = getInviteText(poll.inviter_label);
+  const escapedInviteText = escapeHtml(inviteText);
+  const inviterMarkup = inviterName
+    ? `<strong class="preview-public-invite-strong">${escapeHtml(inviterName)}</strong>`
+    : '';
+
+  const inviteWithHighlightedName = inviterMarkup
+    ? escapedInviteText.replace(escapeHtml(inviterName), inviterMarkup)
+    : escapedInviteText;
+
+  const deadlineMarkup = `<strong class="preview-public-invite-strong">${escapeHtml(renderDeadlineText(poll.ends_at))}</strong>`;
+  const optionsMarkup = `<strong class="preview-public-invite-strong">${escapeHtml(t(`instructions.${poll.kind}`) || '')}</strong>`;
+
+  return `${inviteWithHighlightedName} ${deadlineMarkup} • ${optionsMarkup}`;
+}
+
 function renderErrorState(message) {
   return `
     <div class="min-vh-100 d-flex align-items-center justify-content-center"
@@ -59,11 +103,10 @@ function renderErrorState(message) {
 function renderOptions(poll) {
   if (poll.kind === 'numeric') {
     return `
-      <div class="mb-4">
-        <label class="form-label fw-semibold" for="public-numeric-value">${escapeHtml(t('numericLabel'))}</label>
+      <div class="preview-public-numeric-wrap">
         <input
           type="number"
-          class="form-control"
+          class="preview-public-numeric-input"
           id="public-numeric-value"
           placeholder="${escapeHtml(t('numericPlaceholder'))}"
         />
@@ -74,46 +117,71 @@ function renderOptions(poll) {
   const inputType = poll.kind === 'multiple_choice' ? 'checkbox' : 'radio';
 
   return `
-    <div class="d-grid gap-2 mb-4" id="public-options">
+    <div class="preview-public-options-list" id="public-options">
       ${poll.options.map((option) => `
-        <label class="vm-vote-option vm-card p-3 d-flex align-items-center gap-3">
-          <input type="${inputType}" name="vote" value="${option.id}" class="form-check-input mt-0" style="width:1.2em;height:1.2em;" />
-          <span class="fw-semibold">${escapeHtml(option.text)}</span>
+        <label class="preview-public-option vm-card">
+          <input type="${inputType}" name="vote" value="${option.id}" class="form-check-input mt-0" />
+          <span class="preview-public-option-text">${escapeHtml(option.text)}</span>
         </label>
       `).join('')}
     </div>
   `;
 }
 
-function renderPublicPollMarkup(poll) {
+function renderPublicPollMarkup(poll, hasVoted = false) {
   const isClosed = poll.status === 'closed';
   const description = poll.description || '';
+  const normalizedDescription = typeof description === 'string' ? description.trim() : '';
+  const hasDescription = normalizedDescription.length > 0;
+  const descriptionLabel = i18n.t('createPoll.fields.description').replace(/\s*\([^)]*\)\s*$/u, '').trim();
   const poweredByHref = getCurrentUser() ? '/dashboard' : '/';
-  const inviteText = getInviteText(poll.inviter_label);
+  const inviteLine = renderInviteLine(poll);
+  const resultsTarget = poll.is_owner ? `/polls/${poll.id}` : `/polls/${poll.id}?from=shared`;
 
   return `
     <div class="min-vh-100 d-flex align-items-center justify-content-center"
          style="background: linear-gradient(135deg, var(--vm-green-light) 0%, var(--vm-white) 50%, var(--vm-orange-light) 100%);">
       <div style="width:100%; max-width:520px; padding:1rem;">
-        <div class="vm-card p-4 p-md-5">
-          <div class="text-center mb-4">
-            <img src="/images/logo/logo.svg" alt="Votamin" class="vm-public-brand-logo" />
-            <p class="text-muted mb-2" id="public-poll-invite">${escapeHtml(inviteText)}</p>
-            <h4 class="vm-public-poll-title fw-bold" id="public-poll-title">${escapeHtml(poll.title)}</h4>
-            ${description ? `<p class="text-muted small" id="public-poll-desc">${escapeHtml(description)}</p>` : ''}
-          </div>
+        <div class="vm-card p-4 p-md-5 preview-public-card">
+          <div class="preview-public-shell">
+            <div class="preview-public-header text-center d-flex flex-column align-items-center" id="public-poll-header">
+              <div class="preview-public-organizer ${hasVoted ? 'd-none' : ''}">
+                <span class="preview-public-inviter-text">${inviteLine}</span>
+              </div>
+              <div class="preview-public-organizer-divider ${hasVoted ? 'd-none' : ''}" role="presentation"></div>
 
-          ${isClosed ? `<div class="alert alert-secondary">${escapeHtml(t('closedAlert'))}</div>` : ''}
+              <div class="w-100 preview-public-poll-header ${hasVoted ? 'd-none' : ''}">
+                <h4 class="preview-public-question fw-bold" id="public-poll-title">${escapeHtml(poll.title)}</h4>
+                ${hasDescription ? `
+                  <details class="preview-public-description-accordion">
+                    <summary class="preview-public-description-summary"><span class="preview-public-description-summary-text">${escapeHtml(descriptionLabel)}</span></summary>
+                    <p class="preview-public-description" id="public-poll-desc">${escapeHtml(normalizedDescription)}</p>
+                  </details>
+                  <div class="preview-public-description-divider" role="presentation"></div>
+                ` : ''}
+              </div>
+            </div>
 
-          <form id="public-vote-form">
-            ${renderOptions(poll)}
-            <button type="submit" class="btn btn-votamin w-100 btn-lg" ${isClosed ? 'disabled' : ''}>${escapeHtml(t('voteButton'))}</button>
-          </form>
+            <div class="${hasVoted ? 'd-none' : ''}">
+              ${isClosed ? `<div class="alert alert-secondary">${escapeHtml(t('closedAlert'))}</div>` : ''}
 
-          <div id="public-thanks" class="text-center d-none py-4">
-            <h4 class="fw-bold">${escapeHtml(t('thanksTitle'))}</h4>
-            <p class="text-muted">${escapeHtml(t('thanksText'))}</p>
-            <a href="/dashboard" class="btn btn-votamin mt-2" id="public-return-dashboard">${escapeHtml(t('returnToDashboard'))}</a>
+              <form id="public-vote-form">
+                ${renderOptions(poll)}
+                <button type="submit" class="btn btn-votamin btn-lg w-100 preview-public-vote-btn" ${isClosed ? 'disabled' : ''}>${escapeHtml(t('voteButton'))}</button>
+                ${poll.results_visibility === 'author'
+                  ? `<p class="preview-public-results-note">${escapeHtml(i18n.t('createPoll.resultsVisibility.authorDesc'))}</p>`
+                  : ''}
+              </form>
+            </div>
+
+            <div id="public-thanks" class="text-center ${hasVoted ? '' : 'd-none'} py-4">
+              <h4 class="fw-bold">${escapeHtml(t('thanksTitle'))}</h4>
+              <p class="text-muted">${escapeHtml(t('thanksText'))}</p>
+              <div class="d-flex flex-column gap-2 mt-2">
+                ${poll.can_view_results_after_vote ? `<a href="${resultsTarget}" class="btn btn-votamin" id="public-return-results">${escapeHtml(t('returnToResults'))}</a>` : ''}
+                <a href="/dashboard" class="btn btn-votamin-outline" id="public-return-dashboard">${escapeHtml(t('returnToDashboard'))}</a>
+              </div>
+            </div>
           </div>
         </div>
         <p class="text-center mt-3 small text-muted">
@@ -128,6 +196,8 @@ function renderPublicPollMarkup(poll) {
 }
 
 async function fetchPublicPollByCode(code) {
+  await supabaseClient.rpc('auto_close_expired_polls');
+
   const { data: share, error: shareError } = await supabaseClient
     .from('poll_shares')
     .select('poll_id, expires_at')
@@ -145,7 +215,7 @@ async function fetchPublicPollByCode(code) {
 
   const { data: poll, error: pollError } = await supabaseClient
     .from('polls')
-    .select('id, title, description_html, status, kind')
+    .select('id, owner_id, title, description_html, status, kind, results_visibility, ends_at')
     .eq('id', share.poll_id)
     .single();
 
@@ -171,10 +241,25 @@ async function fetchPublicPollByCode(code) {
 
   return {
     ...poll,
+    status: computePollStatus(poll),
     description: stripHtml(poll.description_html),
     inviter_label: inviterLabel,
     options: options || [],
   };
+}
+
+async function refreshPublicPollStatus(pollId) {
+  const { data, error } = await supabaseClient
+    .from('polls')
+    .select('status, ends_at')
+    .eq('id', pollId)
+    .maybeSingle();
+
+  if (error || !data) {
+    return null;
+  }
+
+  return computePollStatus(data);
 }
 
 function mapVoteErrorToMessage(error) {
@@ -205,17 +290,18 @@ async function submitPublicVote(poll, { selectedOptionIds, numericValue }) {
     throw new Error('auth_required');
   }
 
+  const voteId = crypto.randomUUID();
+
   const votePayload = {
+    id: voteId,
     poll_id: poll.id,
     voter_user_id: user.id,
     numeric_value: poll.kind === 'numeric' ? numericValue : null,
   };
 
-  const { data: voteRow, error: voteError } = await supabaseClient
+  const { error: voteError } = await supabaseClient
     .from('votes')
-    .insert(votePayload)
-    .select('id')
-    .single();
+    .insert(votePayload);
 
   if (voteError) throw voteError;
 
@@ -224,7 +310,7 @@ async function submitPublicVote(poll, { selectedOptionIds, numericValue }) {
   }
 
   const voteOptionsRows = selectedOptionIds.map((optionId) => ({
-    vote_id: voteRow.id,
+    vote_id: voteId,
     option_id: optionId,
   }));
 
@@ -273,17 +359,26 @@ export default async function render(container, params) {
 
   let hasVoted = false;
 
+  async function getResultsAccessAfterVote() {
+    const user = getCurrentUser();
+    if (!user?.id) return false;
+
+    const { data, error } = await supabaseClient.rpc('can_view_poll_results', { p_poll_id: poll.id });
+    if (error) {
+      return false;
+    }
+    return Boolean(data);
+  }
+
+  poll.is_owner = Boolean(getCurrentUser()?.id && poll.owner_id === getCurrentUser().id);
+  poll.can_view_results_after_vote = false;
+
   const renderPollView = () => {
-    container.innerHTML = renderPublicPollMarkup(poll);
+    container.innerHTML = renderPublicPollMarkup(poll, hasVoted);
 
     const form = container.querySelector('#public-vote-form');
     const thanks = container.querySelector('#public-thanks');
     const submitBtn = form?.querySelector('button[type="submit"]');
-
-    if (hasVoted) {
-      form?.classList.add('d-none');
-      thanks?.classList.remove('d-none');
-    }
 
     form?.addEventListener('submit', async (e) => {
       e.preventDefault();
@@ -294,7 +389,14 @@ export default async function render(container, params) {
         return;
       }
 
+      await supabaseClient.rpc('auto_close_expired_polls');
+      const latestStatus = await refreshPublicPollStatus(poll.id);
+      if (latestStatus) {
+        poll.status = latestStatus;
+      }
+
       if (poll.status !== 'open') {
+        renderPollView();
         showToast(t('errors.pollNotOpen'), 'error');
         return;
       }
@@ -330,6 +432,7 @@ export default async function render(container, params) {
       try {
         await submitPublicVote(poll, { selectedOptionIds, numericValue });
         hasVoted = true;
+        poll.can_view_results_after_vote = await getResultsAccessAfterVote();
         renderPollView();
         showToast(t('success.voteSaved'), 'success');
       } catch (error) {

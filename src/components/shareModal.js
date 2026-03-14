@@ -1,4 +1,5 @@
 import { i18n } from '../i18n/index.js';
+import { beginBlockingModalSession } from '../utils/helpers.js';
 
 let modalStylesInjected = false;
 
@@ -117,8 +118,18 @@ export function showShareModal(shareUrl) {
     const input = root.querySelector('#vm-share-input');
     const copyBtn = root.querySelector('[data-action="copy"]');
 
-    const close = (result) => {
+    let isClosed = false;
+    let close = () => {};
+
+    const endModalSession = beginBlockingModalSession(() => {
+      close(false, { closedByPopState: true });
+    });
+
+    close = (result, closeOptions = {}) => {
+      if (isClosed) return;
+      isClosed = true;
       document.removeEventListener('keydown', onKeyDown);
+      endModalSession(closeOptions);
       root.remove();
       resolve(result);
     };

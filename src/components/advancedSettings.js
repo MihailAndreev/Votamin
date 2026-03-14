@@ -2,22 +2,54 @@ import { i18n } from '../i18n/index.js';
 
 /**
  * Advanced Settings Component (Collapsible)
- * - Visibility (public/private)
- * - Results Visibility (after_vote/always/creator_only)
+ * - Results Visibility (participants/author)
  * - End Date (optional)
- * - Theme (default/blue/green/purple/orange)
  */
 export function renderAdvancedSettings(settings = {}, onChange) {
   const defaultSettings = {
-    visibility: 'public',
-    resultsVisibility: 'after_vote',
+    resultsVisibility: 'participants',
     endDate: '',
-    theme: 'default',
     ...settings
   };
 
+  const minimumDateTime = getCurrentLocalDateTimeValue();
+  const [minimumDate, minimumTime] = minimumDateTime.split('T');
+
+  function splitDateTimeValue(dateTimeValue) {
+    if (!dateTimeValue || typeof dateTimeValue !== 'string') {
+      return { date: '', time: '' };
+    }
+
+    const [datePart = '', timePart = ''] = dateTimeValue.split('T');
+    return {
+      date: datePart,
+      time: timePart.slice(0, 5)
+    };
+  }
+
+  const initialEndDate = splitDateTimeValue(defaultSettings.endDate);
+  const [initialHour = '', initialMinute = ''] = initialEndDate.time
+    ? initialEndDate.time.split(':')
+    : ['', ''];
+  const hourOptions = Array.from({ length: 24 }, (_, hour) => {
+    const value = String(hour).padStart(2, '0');
+    return `<option value="${value}" ${value === initialHour ? 'selected' : ''}>${value}</option>`;
+  }).join('');
+  const minuteOptions = Array.from({ length: 60 }, (_, minute) => {
+    const value = String(minute).padStart(2, '0');
+    return `<option value="${value}" ${value === initialMinute ? 'selected' : ''}>${value}</option>`;
+  }).join('');
+
+  function getCurrentLocalDateTimeValue() {
+    const now = new Date();
+    const localOffsetMs = now.getTimezoneOffset() * 60000;
+    return new Date(now.getTime() - localOffsetMs).toISOString().slice(0, 16);
+  }
+
   const container = document.createElement('div');
   container.className = 'advanced-settings';
+  const radioGroupId = `adv-${Math.random().toString(36).slice(2, 10)}`;
+  const resultsVisibilityGroupName = `resultsVisibility-${radioGroupId}`;
 
   function updateSetting(key, value) {
     defaultSettings[key] = value;
@@ -33,6 +65,9 @@ export function renderAdvancedSettings(settings = {}, onChange) {
         border: 2px solid var(--border-color, #e5e7eb);
         border-radius: 12px;
         overflow: hidden;
+        width: 100%;
+        max-width: 100%;
+        min-width: 0;
       }
 
       .advanced-settings-header {
@@ -95,12 +130,17 @@ export function renderAdvancedSettings(settings = {}, onChange) {
         grid-template-columns: 1fr;
         gap: 1.5rem;
         background: white;
+        width: 100%;
+        max-width: 100%;
+        min-width: 0;
       }
 
       .setting-field {
         display: flex;
         flex-direction: column;
         gap: 0.5rem;
+        width: 100%;
+        min-width: 0;
       }
 
       .setting-label {
@@ -119,6 +159,8 @@ export function renderAdvancedSettings(settings = {}, onChange) {
         display: flex;
         flex-direction: column;
         gap: 0.75rem;
+        width: 100%;
+        min-width: 0;
       }
 
       .radio-option {
@@ -130,6 +172,9 @@ export function renderAdvancedSettings(settings = {}, onChange) {
         border-radius: 8px;
         cursor: pointer;
         transition: all 0.2s;
+        width: 100%;
+        max-width: 100%;
+        min-width: 0;
       }
 
       .radio-option:hover {
@@ -152,6 +197,7 @@ export function renderAdvancedSettings(settings = {}, onChange) {
 
       .radio-label-wrapper {
         flex: 1;
+        min-width: 0;
       }
 
       .radio-label {
@@ -160,12 +206,14 @@ export function renderAdvancedSettings(settings = {}, onChange) {
         color: var(--text-color, #111827);
         display: block;
         cursor: pointer;
+        overflow-wrap: anywhere;
       }
 
       .radio-description {
         font-size: 0.75rem;
         color: var(--text-secondary, #6b7280);
         margin-top: 0.25rem;
+        overflow-wrap: anywhere;
       }
 
       .date-input {
@@ -174,6 +222,28 @@ export function renderAdvancedSettings(settings = {}, onChange) {
         border-radius: 8px;
         font-size: 0.875rem;
         transition: border-color 0.2s;
+      }
+
+      .date-time-group {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+        gap: 0.75rem;
+      }
+
+      .time-select-group {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+        gap: 0.5rem;
+        align-items: center;
+      }
+
+      .time-select {
+        font-variant-numeric: tabular-nums;
+      }
+
+      .time-separator {
+        font-weight: 700;
+        color: var(--text-secondary, #6b7280);
       }
 
       .date-input:focus {
@@ -252,6 +322,23 @@ export function renderAdvancedSettings(settings = {}, onChange) {
           padding: 0.65rem;
           gap: 0.6rem;
         }
+
+        .radio-label {
+          font-size: 0.84rem;
+        }
+
+        .radio-description {
+          font-size: 0.78rem;
+          line-height: 1.35;
+        }
+
+        .date-time-group {
+          grid-template-columns: 1fr;
+        }
+
+        .time-select-group {
+          grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+        }
       }
     </style>
 
@@ -270,52 +357,24 @@ export function renderAdvancedSettings(settings = {}, onChange) {
     <div class="advanced-settings-content">
       <div class="settings-grid">
         
-        <!-- Visibility -->
-        <div class="setting-field">
-          <label class="setting-label">${i18n.t('createPoll.fields.visibility')}</label>
-          <div class="radio-group">
-            <div class="radio-option ${defaultSettings.visibility === 'public' ? 'selected' : ''}" data-value="public">
-              <input type="radio" name="visibility" value="public" class="radio-input" ${defaultSettings.visibility === 'public' ? 'checked' : ''}>
-              <div class="radio-label-wrapper">
-                <span class="radio-label">${i18n.t('createPoll.visibility.public')}</span>
-                <span class="radio-description">${i18n.t('createPoll.visibility.publicDesc')}</span>
-              </div>
-            </div>
-            <div class="radio-option ${defaultSettings.visibility === 'private' ? 'selected' : ''}" data-value="private">
-              <input type="radio" name="visibility" value="private" class="radio-input" ${defaultSettings.visibility === 'private' ? 'checked' : ''}>
-              <div class="radio-label-wrapper">
-                <span class="radio-label">${i18n.t('createPoll.visibility.private')}</span>
-                <span class="radio-description">${i18n.t('createPoll.visibility.privateDesc')}</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
         <!-- Results Visibility -->
         <div class="setting-field">
           <label class="setting-label">${i18n.t('createPoll.fields.resultsVisibility')}</label>
           <div class="radio-group">
-            <div class="radio-option ${defaultSettings.resultsVisibility === 'after_vote' ? 'selected' : ''}" data-value="after_vote">
-              <input type="radio" name="resultsVisibility" value="after_vote" class="radio-input" ${defaultSettings.resultsVisibility === 'after_vote' ? 'checked' : ''}>
+            <label class="radio-option ${defaultSettings.resultsVisibility === 'participants' ? 'selected' : ''}" data-value="participants">
+              <input type="radio" name="${resultsVisibilityGroupName}" value="participants" data-setting="resultsVisibility" class="radio-input" ${defaultSettings.resultsVisibility === 'participants' ? 'checked' : ''}>
               <div class="radio-label-wrapper">
-                <span class="radio-label">${i18n.t('createPoll.resultsVisibility.after_vote')}</span>
-                <span class="radio-description">${i18n.t('createPoll.resultsVisibility.after_voteDesc')}</span>
+                <span class="radio-label">${i18n.t('createPoll.resultsVisibility.participants')}</span>
+                <span class="radio-description">${i18n.t('createPoll.resultsVisibility.participantsDesc')}</span>
               </div>
-            </div>
-            <div class="radio-option ${defaultSettings.resultsVisibility === 'always' ? 'selected' : ''}" data-value="always">
-              <input type="radio" name="resultsVisibility" value="always" class="radio-input" ${defaultSettings.resultsVisibility === 'always' ? 'checked' : ''}>
+            </label>
+            <label class="radio-option ${defaultSettings.resultsVisibility === 'author' ? 'selected' : ''}" data-value="author">
+              <input type="radio" name="${resultsVisibilityGroupName}" value="author" data-setting="resultsVisibility" class="radio-input" ${defaultSettings.resultsVisibility === 'author' ? 'checked' : ''}>
               <div class="radio-label-wrapper">
-                <span class="radio-label">${i18n.t('createPoll.resultsVisibility.always')}</span>
-                <span class="radio-description">${i18n.t('createPoll.resultsVisibility.alwaysDesc')}</span>
+                <span class="radio-label">${i18n.t('createPoll.resultsVisibility.author')}</span>
+                <span class="radio-description">${i18n.t('createPoll.resultsVisibility.authorDesc')}</span>
               </div>
-            </div>
-            <div class="radio-option ${defaultSettings.resultsVisibility === 'creator_only' ? 'selected' : ''}" data-value="creator_only">
-              <input type="radio" name="resultsVisibility" value="creator_only" class="radio-input" ${defaultSettings.resultsVisibility === 'creator_only' ? 'checked' : ''}>
-              <div class="radio-label-wrapper">
-                <span class="radio-label">${i18n.t('createPoll.resultsVisibility.creator_only')}</span>
-                <span class="radio-description">${i18n.t('createPoll.resultsVisibility.creator_onlyDesc')}</span>
-              </div>
-            </div>
+            </label>
           </div>
         </div>
 
@@ -323,24 +382,25 @@ export function renderAdvancedSettings(settings = {}, onChange) {
         <div class="setting-field">
           <label class="setting-label">${i18n.t('createPoll.fields.endDate')}</label>
           <p class="setting-description">${i18n.t('createPoll.advancedSettings.endDateHint')}</p>
-          <input 
-            type="datetime-local" 
-            class="date-input" 
-            id="end-date-input"
-            value="${defaultSettings.endDate}"
-          />
-        </div>
-
-        <!-- Theme -->
-        <div class="setting-field">
-          <label class="setting-label">${i18n.t('createPoll.fields.theme')}</label>
-          <div class="theme-selector">
-            ${['default', 'blue', 'green', 'purple', 'orange'].map(theme => `
-              <div class="theme-option ${defaultSettings.theme === theme ? 'selected' : ''}" data-theme="${theme}">
-                <div class="theme-preview ${theme}"></div>
-                <span class="theme-name">${i18n.t(`createPoll.themes.${theme}`)}</span>
-              </div>
-            `).join('')}
+          <div class="date-time-group">
+            <input 
+              type="date" 
+              class="date-input" 
+              id="end-date-date-input"
+              value="${initialEndDate.date}"
+              min="${minimumDate}"
+            />
+            <div class="time-select-group">
+              <select class="date-input time-select" id="end-date-hour-input">
+                <option value="">HH</option>
+                ${hourOptions}
+              </select>
+              <span class="time-separator">:</span>
+              <select class="date-input time-select" id="end-date-minute-input">
+                <option value="">MM</option>
+                ${minuteOptions}
+              </select>
+            </div>
           </div>
         </div>
 
@@ -358,45 +418,160 @@ export function renderAdvancedSettings(settings = {}, onChange) {
     chevron.classList.toggle('open');
   });
 
-  // Visibility handlers
-  container.querySelectorAll('input[name="visibility"]').forEach(input => {
-    input.addEventListener('change', (e) => {
-      container.querySelectorAll('.radio-option[data-value]').forEach(opt => {
-        if (opt.dataset.value && opt.closest('.setting-field').querySelector('input[name="visibility"]')) {
-          opt.classList.toggle('selected', opt.dataset.value === e.target.value);
+  function syncRadioSelection(groupName) {
+    const inputs = container.querySelectorAll(`input[name="${groupName}"]`);
+    inputs.forEach((input) => {
+      const option = input.closest('.radio-option');
+      if (option) {
+        option.classList.toggle('selected', input.checked);
+      }
+    });
+  }
+
+  [resultsVisibilityGroupName].forEach((groupName) => {
+    const inputs = container.querySelectorAll(`input[name="${groupName}"]`);
+    inputs.forEach((input) => {
+      input.addEventListener('change', (e) => {
+        syncRadioSelection(groupName);
+        const settingKey = e.target.dataset.setting;
+        if (settingKey) {
+          updateSetting(settingKey, e.target.value);
         }
       });
-      updateSetting('visibility', e.target.value);
     });
+
+    syncRadioSelection(groupName);
   });
 
-  // Results Visibility handlers
-  container.querySelectorAll('input[name="resultsVisibility"]').forEach(input => {
-    input.addEventListener('change', (e) => {
-      container.querySelectorAll('.radio-option[data-value]').forEach(opt => {
-        if (opt.dataset.value && opt.closest('.setting-field').querySelector('input[name="resultsVisibility"]')) {
-          opt.classList.toggle('selected', opt.dataset.value === e.target.value);
-        }
+  // End date handlers (date + time, 24h format)
+  const endDateDateInput = container.querySelector('#end-date-date-input');
+  const endDateHourInput = container.querySelector('#end-date-hour-input');
+  const endDateMinuteInput = container.querySelector('#end-date-minute-input');
+
+  function getCurrentMinimumParts() {
+    const currentMinDateTime = getCurrentLocalDateTimeValue();
+    const [currentMinDate, currentMinTime] = currentMinDateTime.split('T');
+    return { currentMinDate, currentMinTime };
+  }
+
+  function combineDateTime(dateValue, timeValue) {
+    if (!dateValue) {
+      return '';
+    }
+
+    const normalizedTime = timeValue || '00:00';
+    return `${dateValue}T${normalizedTime}`;
+  }
+
+  function parseMinutes(timeValue) {
+    const [hours = '0', minutes = '0'] = String(timeValue || '00:00').split(':');
+    return (Number(hours) * 60) + Number(minutes);
+  }
+
+  function getSelectedTimeValue() {
+    if (!endDateHourInput.value || !endDateMinuteInput.value) {
+      return '';
+    }
+
+    return `${endDateHourInput.value}:${endDateMinuteInput.value}`;
+  }
+
+  function setSelectedTimeValue(timeValue) {
+    const [hours = '', minutes = ''] = String(timeValue || '').split(':');
+    endDateHourInput.value = hours;
+    endDateMinuteInput.value = minutes;
+  }
+
+  function updateTimeSelectConstraints(selectedDate, currentMinDate, currentMinTime) {
+    const hourOptionsList = Array.from(endDateHourInput.options).slice(1);
+    const minuteOptionsList = Array.from(endDateMinuteInput.options).slice(1);
+
+    hourOptionsList.forEach((option) => {
+      option.disabled = false;
+    });
+
+    minuteOptionsList.forEach((option) => {
+      option.disabled = false;
+    });
+
+    if (!selectedDate || selectedDate !== currentMinDate) {
+      return;
+    }
+
+    const minMinutes = parseMinutes(currentMinTime);
+    const minHour = Math.floor(minMinutes / 60);
+    const minMinute = minMinutes % 60;
+
+    hourOptionsList.forEach((option) => {
+      const hour = Number(option.value);
+      option.disabled = (hour * 60) + 59 < minMinutes;
+    });
+
+    const selectedHour = Number(endDateHourInput.value);
+    if (!Number.isNaN(selectedHour) && selectedHour === minHour) {
+      minuteOptionsList.forEach((option) => {
+        option.disabled = Number(option.value) < minMinute;
       });
-      updateSetting('resultsVisibility', e.target.value);
-    });
+    }
+  }
+
+  function syncEndDateSetting() {
+    const { currentMinDate, currentMinTime } = getCurrentMinimumParts();
+    endDateDateInput.min = currentMinDate;
+
+    const selectedDate = endDateDateInput.value;
+    const selectedTime = getSelectedTimeValue();
+
+    if (!selectedDate) {
+      endDateHourInput.value = '';
+      endDateMinuteInput.value = '';
+      updateSetting('endDate', '');
+      return;
+    }
+
+    if (!selectedTime) {
+      setSelectedTimeValue(selectedDate === currentMinDate ? currentMinTime : '00:00');
+    }
+
+    updateTimeSelectConstraints(selectedDate, currentMinDate, currentMinTime);
+
+    if (endDateHourInput.selectedOptions[0]?.disabled) {
+      setSelectedTimeValue(selectedDate === currentMinDate ? currentMinTime : '00:00');
+      updateTimeSelectConstraints(selectedDate, currentMinDate, currentMinTime);
+    }
+
+    if (endDateMinuteInput.selectedOptions[0]?.disabled) {
+      setSelectedTimeValue(selectedDate === currentMinDate ? currentMinTime : '00:00');
+      updateTimeSelectConstraints(selectedDate, currentMinDate, currentMinTime);
+    }
+
+    const normalizedSelectedTime = getSelectedTimeValue() || (selectedDate === currentMinDate ? currentMinTime : '00:00');
+    const combined = combineDateTime(endDateDateInput.value, normalizedSelectedTime);
+    const currentMinimum = `${currentMinDate}T${currentMinTime}`;
+
+    if (combined && combined < currentMinimum) {
+      endDateDateInput.value = currentMinDate;
+      setSelectedTimeValue(currentMinTime);
+      updateTimeSelectConstraints(currentMinDate, currentMinDate, currentMinTime);
+      updateSetting('endDate', currentMinimum);
+      return;
+    }
+
+    updateSetting('endDate', combined);
+  }
+
+  syncEndDateSetting();
+
+  endDateDateInput.addEventListener('change', () => {
+    syncEndDateSetting();
   });
 
-  // End date handler
-  const endDateInput = container.querySelector('#end-date-input');
-  endDateInput.addEventListener('change', (e) => {
-    updateSetting('endDate', e.target.value);
+  endDateHourInput.addEventListener('change', () => {
+    syncEndDateSetting();
   });
 
-  // Theme handlers
-  container.querySelectorAll('.theme-option').forEach(option => {
-    option.addEventListener('click', () => {
-      const theme = option.dataset.theme;
-      container.querySelectorAll('.theme-option').forEach(opt => {
-        opt.classList.toggle('selected', opt.dataset.theme === theme);
-      });
-      updateSetting('theme', theme);
-    });
+  endDateMinuteInput.addEventListener('change', () => {
+    syncEndDateSetting();
   });
 
   return container;

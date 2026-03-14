@@ -67,7 +67,7 @@ export function renderNavbar(container) {
 
           <!-- Toggler -->
           <button class="navbar-toggler border-0" type="button"
-                  data-bs-toggle="collapse" data-bs-target="#vmNav"
+              id="vm-nav-toggle"
                   aria-controls="vmNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
           </button>
@@ -77,17 +77,17 @@ export function renderNavbar(container) {
         <div class="collapse navbar-collapse" id="vmNav">
           <ul class="navbar-nav ms-auto me-lg-2 align-items-lg-center gap-lg-1">
             <li class="nav-item">
-              <a class="nav-link" href="${homeHref}" data-i18n="navbar.home">Начало</a>
+              <a class="nav-link" href="${homeHref}" data-mobile-close-nav="1" data-i18n="navbar.home">Начало</a>
             </li>
             ${loggedIn ? `
               <li class="nav-item">
-                <a class="nav-link" href="/dashboard" data-i18n="navbar.dashboard">Табло</a>
+                <a class="nav-link" href="/dashboard" data-mobile-close-nav="1" data-i18n="navbar.dashboard">Табло</a>
               </li>
               <li class="nav-item">
-                <a class="nav-link" href="/polls" data-i18n="navbar.polls">Анкети</a>
+                <a class="nav-link" href="/polls" data-mobile-close-nav="1" data-i18n="navbar.polls">Анкети</a>
               </li>
               <li class="nav-item d-none" id="admin-nav-item">
-                <a class="nav-link" href="/admin" data-i18n="navbar.admin">Админ</a>
+                <a class="nav-link" href="/admin" data-mobile-close-nav="1" data-i18n="navbar.admin">Админ</a>
               </li>
               <li class="nav-item ms-lg-2">
                 <button class="btn btn-votamin-outline btn-sm" id="btn-logout" data-i18n="navbar.logout">Изход</button>
@@ -101,24 +101,17 @@ export function renderNavbar(container) {
               </li>
             `}
             <!-- Language Switcher -->
-            <li class="nav-item dropdown ms-lg-2 me-lg-1">
-              <a class="nav-link dropdown-toggle px-2 d-flex align-items-center" href="#" id="langDropdown" 
-                 role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <li class="nav-item dropdown ms-lg-2 me-lg-1" style="position: relative;">
+              <button class="nav-link px-2 d-flex align-items-center dropdown-toggle border-0 bg-transparent" id="langDropdownToggle" aria-expanded="false" type="button" aria-label="Language options">
                 <span id="currentLangFlag">${getCurrentLanguageFlag()}</span>
-              </a>
-              <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="langDropdown">
-                <li>
-                  <a class="dropdown-item d-flex align-items-center gap-2" href="#" data-lang="en">
-                    <img src="/images/flags/gb.svg" alt="English" width="20" height="15" style="border-radius: 2px;">
-                    <span>English</span>
-                  </a>
-                </li>
-                <li>
-                  <a class="dropdown-item d-flex align-items-center gap-2" href="#" data-lang="bg">
-                    <img src="/images/flags/bg.svg" alt="Български" width="20" height="15" style="border-radius: 2px;">
-                    <span>Български</span>
-                  </a>
-                </li>
+              </button>
+              <ul class="dropdown-menu dropdown-menu-end" id="langDropdownMenu" style="min-width: unset; position: absolute; z-index: 1050; padding: 0.5rem 0;">
+                <li><button class="dropdown-item d-flex justify-content-center align-items-center lang-switch-btn" type="button" data-lang="en" style="padding: 0.25rem 1rem;">
+                  <img src="/images/flags/gb.svg" width="24" class="shadow-sm rounded-1" alt="en">
+                </button></li>
+                <li><button class="dropdown-item d-flex justify-content-center align-items-center lang-switch-btn" type="button" data-lang="bg" style="padding: 0.25rem 1rem;">
+                  <img src="/images/flags/bg.svg" width="24" class="shadow-sm rounded-1" alt="bg">
+                </button></li>
               </ul>
             </li>
           </ul>
@@ -182,34 +175,77 @@ export function renderNavbar(container) {
     });
   }
 
-  /* Language switcher handler */
-  container.querySelectorAll('[data-lang]').forEach(link => {
-    link.addEventListener('click', (e) => {
+  function applyLanguage(lang) {
+    if (!lang) return;
+    i18n.setLang(lang);
+
+    const flagSpan = container.querySelector('#currentLangFlag');
+    if (flagSpan) {
+      const flagSrc = lang === 'bg'
+        ? '/images/flags/bg.svg'
+        : '/images/flags/gb.svg';
+      flagSpan.innerHTML = `<img src="${flagSrc}" alt="${lang}" width="20" height="15" style="border-radius: 2px;">`;
+    }
+  }
+
+  /* Language switcher handler (Custom) */
+  const langDropdownToggle = container.querySelector('#langDropdownToggle');
+  const langDropdownMenu = container.querySelector('#langDropdownMenu');
+
+  langDropdownToggle?.addEventListener('click', (e) => {
+    e.preventDefault();
+    e.stopPropagation(); // Stop Bootstrap from interfering
+    langDropdownMenu?.classList.toggle('show');
+  });
+
+  const closeDropdownOutside = (e) => {
+    if (!langDropdownToggle?.contains(e.target) && !langDropdownMenu?.contains(e.target)) {
+      langDropdownMenu?.classList.remove('show');
+    }
+  };
+  document.addEventListener('click', closeDropdownOutside);
+
+  container.querySelectorAll('.lang-switch-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
       e.preventDefault();
+      e.stopPropagation(); // Restrict bubbling to the mobile nav
       const lang = e.currentTarget.getAttribute('data-lang');
-      i18n.setLang(lang);
-      
-      // Update flag display
-      const flagSpan = container.querySelector('#currentLangFlag');
-      if (flagSpan) {
-        const flagSrc = lang === 'bg' 
-          ? '/images/flags/bg.svg' 
-          : '/images/flags/gb.svg';
-        flagSpan.innerHTML = `<img src="${flagSrc}" alt="${lang}" width="20" height="15" style="border-radius: 2px;">`;
-      }
+      applyLanguage(lang);
+      langDropdownMenu?.classList.remove('show');
     });
   });
 
   /* Collapse on mobile click */
-  container.querySelectorAll('.nav-link').forEach(link => {
-    link.addEventListener('click', () => {
-      const collapse = container.querySelector('.navbar-collapse');
-      if (collapse?.classList.contains('show')) {
-        import('bootstrap').then(({ Collapse }) => {
-          Collapse.getInstance(collapse)?.hide();
-        });
-      }
-    });
+  const navToggleBtn = container.querySelector('#vm-nav-toggle');
+  const navCollapseEl = container.querySelector('#vmNav');
+
+  async function setNavbarCollapsed(shouldCollapse) {
+    if (!navCollapseEl) return;
+
+    const { Collapse } = await import('bootstrap');
+    const collapseInstance = Collapse.getOrCreateInstance(navCollapseEl, { toggle: false });
+
+    if (shouldCollapse) {
+      collapseInstance.hide();
+    } else {
+      collapseInstance.show();
+    }
+
+    navToggleBtn?.setAttribute('aria-expanded', shouldCollapse ? 'false' : 'true');
+  }
+
+  navToggleBtn?.addEventListener('click', async () => {
+    const isOpen = navCollapseEl?.classList.contains('show');
+    await setNavbarCollapsed(Boolean(isOpen));
+  });
+
+  navCollapseEl?.addEventListener('click', async (event) => {
+    const closeTrigger = event.target.closest('[data-mobile-close-nav="1"]');
+    if (!closeTrigger) return;
+
+    if (navCollapseEl.classList.contains('show')) {
+      await setNavbarCollapsed(true);
+    }
   });
 
   /* Load translations */
