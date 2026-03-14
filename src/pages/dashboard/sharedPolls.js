@@ -15,6 +15,11 @@ function modifiedText(updatedAt) {
   return formatDate(updatedAt);
 }
 
+function deadlineText(endsAt) {
+  if (!endsAt) return i18n.t('dashboard.noDeadline');
+  return formatDate(endsAt);
+}
+
 function resultsVisibilityBadge(value) {
   const label = i18n.t(`createPoll.resultsVisibility.${value}`) || '—';
   return `<span class="vm-results-visibility-badge">${label}</span>`;
@@ -39,7 +44,7 @@ function renderTable(polls) {
           <tr>
             <td><a href="/polls/${p.id}?from=shared" class="fw-semibold">${p.title}</a></td>
             <td>${p.owner_name}</td>
-            <td>${modifiedText(p.updated_at)}</td>
+            <td>${deadlineText(p.ends_at)}</td>
             <td>${statusBadge(p.status)}</td>
             <td>
               <a href="/polls/${p.id}?from=shared" class="btn btn-sm btn-votamin-outline">${i18n.t('dashboard.actions.view')}</a>
@@ -60,7 +65,8 @@ function renderCards(polls) {
           <span>${i18n.t('dashboard.table.columns.owner')}: ${p.owner_name}</span>
           ${statusBadge(p.status)}
           ${resultsVisibilityBadge(p.results_visibility)}
-          <span>${modifiedText(p.updated_at)}</span>
+          <span>${i18n.t('dashboard.table.columns.deadline')}: ${deadlineText(p.ends_at)}</span>
+          <span>${i18n.t('dashboard.table.columns.modified')}: ${modifiedText(p.updated_at)}</span>
         </div>
         <div class="vm-dash-card-actions">
           <a href="/polls/${p.id}?from=shared" class="btn btn-sm btn-votamin-outline">${i18n.t('dashboard.actions.view')}</a>

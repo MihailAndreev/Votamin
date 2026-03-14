@@ -13,6 +13,7 @@
 
 html {
   scroll-behavior: smooth;
+  scrollbar-gutter: stable;
 }
 
 body {
@@ -239,7 +240,7 @@ img {
 
 /* ── Footer ───────────────────────────────────────── */
 .vm-footer {
-  margin-top: 2.25rem;
+  margin-top: 1rem;
 }
 
 .vm-footer a {

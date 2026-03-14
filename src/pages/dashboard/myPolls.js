@@ -38,6 +38,45 @@ function modifiedText(updatedAt) {
   return formatDate(updatedAt);
 }
 
+function formatTimeOnly(dateValue) {
+  if (!dateValue) return '';
+
+  const parsed = new Date(dateValue);
+  if (Number.isNaN(parsed.getTime())) return '';
+
+  return parsed.toLocaleTimeString('bg-BG', {
+    hour: '2-digit',
+    minute: '2-digit'
+  });
+}
+
+function renderDateWithHover(dateValue, fallbackText) {
+  if (!dateValue) {
+    return fallbackText;
+  }
+
+  const displayValue = formatDate(dateValue);
+  const hoverValue = formatTimeOnly(dateValue);
+
+  if (!hoverValue) {
+    return displayValue;
+  }
+
+  return `
+    <span
+      class="vm-date-hover-tooltip"
+      data-tooltip="${escapeHtmlAttr(hoverValue)}"
+      tabindex="0"
+      aria-label="${escapeHtmlAttr(hoverValue)}"
+    >${displayValue}</span>
+  `;
+}
+
+function deadlineText(endsAt) {
+  if (!endsAt) return i18n.t('dashboard.noDeadline');
+  return formatDate(endsAt);
+}
+
 function resultsVisibilityLabel(value) {
   return i18n.t(`createPoll.resultsVisibility.${value}`) || '—';
 }
@@ -54,6 +93,7 @@ function renderTable(polls) {
             <th>${t('resultsVisibility')}</th>
             <th>${t('responses')}</th>
             <th>${t('deadline')}</th>
+            <th>${t('modified')}</th>
             <th>${t('status')}</th>
             <th>${t('myResponse')}</th>
             <th>${t('actions')}</th>
@@ -66,7 +106,8 @@ function renderTable(polls) {
             <td>${kindBadge(p.kind)}</td>
             <td>${resultsVisibilityLabel(p.results_visibility)}</td>
             <td>${p.response_count}</td>
-            <td>${modifiedText(p.updated_at)}</td>
+            <td>${renderDateWithHover(p.ends_at, i18n.t('dashboard.noDeadline'))}</td>
+            <td>${renderDateWithHover(p.updated_at, i18n.t('dashboard.noModifiedDate'))}</td>
             <td>${statusBadge(p.status)}</td>
             <td>${p.my_response
               ? `<span class="text-success fw-semibold">${i18n.t('dashboard.myResponse.yes')}</span>`
@@ -101,7 +142,8 @@ function renderCards(polls) {
           ${statusBadge(p.status)}
           ${resultsVisibilityBadge(p.results_visibility)}
           <span>${p.response_count} ${i18n.t('dashboard.table.columns.responses').toLowerCase()}</span>
-          <span>${modifiedText(p.updated_at)}</span>
+          <span title="${escapeHtmlAttr(formatTimeOnly(p.ends_at) || i18n.t('dashboard.noDeadline'))}">${i18n.t('dashboard.table.columns.deadline')}: ${deadlineText(p.ends_at)}</span>
+          <span title="${escapeHtmlAttr(formatTimeOnly(p.updated_at) || i18n.t('dashboard.noModifiedDate'))}">${modifiedText(p.updated_at)}</span>
         </div>
         <div class="vm-dash-card-actions">
           <a href="/polls/${p.id}" class="btn btn-sm btn-votamin-outline">${i18n.t('dashboard.actions.view')}</a>
