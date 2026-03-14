@@ -1,12 +1,14 @@
 /* ============================================================
    Dashboard – Account sub-page (MVP)
    ============================================================ */
-import { getCurrentUser } from '@utils/auth.js';
+import { getCurrentUser, logout } from '@utils/auth.js';
 import { supabaseClient } from '@utils/supabase.js';
 import { i18n } from '../../i18n/index.js';
 import { showToast } from '@utils/toast.js';
+import { navigateTo } from '../../router.js';
 import { emitProfileUpdated, fetchProfile, getAvatarInitials, removeAvatar, resolveDisplayName, resolveEditableFullName, updateProfile, uploadAvatar } from '@utils/profile.js';
 import { showAvatarCropModal } from '@components/avatarCropModal.js';
+import { showConfirmModal } from '@components/confirmModal.js';
 
 export default async function render(container) {
   const user = getCurrentUser();
@@ -20,7 +22,8 @@ export default async function render(container) {
   const profileState = {
     fullName: resolveEditableFullName(profileData?.full_name, email),
     avatarUrl: profileData?.avatar_url || null,
-    isAvatarUploading: false
+    isAvatarUploading: false,
+    isDeletingAccount: false
   };
 
   function withAvatarCacheBust(url) {
@@ -50,6 +53,14 @@ export default async function render(container) {
     }
     if (removeAvatarBtn) {
       removeAvatarBtn.disabled = isUploading;
+    }
+  }
+
+  function setAccountDeleteProcessing(isProcessing) {
+    profileState.isDeletingAccount = isProcessing;
+    const deleteBtn = container.querySelector('#account-delete-btn');
+    if (deleteBtn) {
+      deleteBtn.disabled = isProcessing;
     }
   }
 
@@ -113,6 +124,11 @@ export default async function render(container) {
         </div>
         <button type="submit" class="btn btn-votamin" id="account-save-password-btn" disabled>${i18n.t('dashboard.account.savePassword')}</button>
       </form>
+
+      <hr class="mt-4">
+      <div class="vm-account-field mb-0">
+        <button type="button" class="btn btn-votamin-outline" id="account-delete-btn">${i18n.t('dashboard.account.deleteAccount')}</button>
+      </div>
     </div>`;
   }
 
@@ -162,6 +178,7 @@ export default async function render(container) {
     const avatarPreview = container.querySelector('#account-avatar-preview');
     const removeAvatarBtn = container.querySelector('#account-remove-avatar-btn');
     const uploadAvatarBtn = container.querySelector('#account-upload-avatar-btn');
+    const deleteBtn = container.querySelector('#account-delete-btn');
 
     if (avatarPreview) {
       avatarPreview.innerHTML = renderAvatar();
@@ -175,6 +192,10 @@ export default async function render(container) {
 
     if (uploadAvatarBtn) {
       uploadAvatarBtn.disabled = profileState.isAvatarUploading;
+    }
+
+    if (deleteBtn) {
+      deleteBtn.disabled = profileState.isDeletingAccount;
     }
   }
 
@@ -360,6 +381,35 @@ export default async function render(container) {
       }
 
       syncPasswordSaveState();
+    });
+
+    container.querySelector('#account-delete-btn')?.addEventListener('click', async () => {
+      if (!userId || profileState.isDeletingAccount) return;
+
+      const confirmed = await showConfirmModal(i18n.t('dashboard.account.confirmDeleteAccount'), {
+        title: i18n.t('dashboard.account.deleteAccount'),
+        confirmText: i18n.t('dashboard.account.deleteAccountConfirm')
+      });
+
+      if (!confirmed) return;
+
+      try {
+        setAccountDeleteProcessing(true);
+
+        const { error } = await supabaseClient.rpc('self_delete_account');
+        if (error) {
+          showToast(i18n.t('dashboard.account.deleteAccountError'), 'error');
+          return;
+        }
+
+        await logout();
+        showToast(i18n.t('dashboard.account.deleteAccountSuccess'), 'success');
+        navigateTo('/');
+      } catch {
+        showToast(i18n.t('dashboard.account.deleteAccountError'), 'error');
+      } finally {
+        setAccountDeleteProcessing(false);
+      }
     });
   }
 

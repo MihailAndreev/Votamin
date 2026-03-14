@@ -206,7 +206,12 @@ export default {
       confirmPassword: 'Потвърди нова парола',
       savePassword: 'Запази парола',
       passwordChanged: 'Паролата е сменена успешно.',
-      passwordError: 'Неуспешна смяна на парола.'
+      passwordError: 'Неуспешна смяна на парола.',
+      deleteAccount: 'Изтрий акаунт',
+      deleteAccountConfirm: 'Изтрий',
+      confirmDeleteAccount: 'Сигурен ли си, че искаш да изтриеш акаунта си? Това действие е необратимо.',
+      deleteAccountSuccess: 'Акаунтът е изтрит успешно.',
+      deleteAccountError: 'Неуспешно изтриване на акаунта.'
     },
     confirmDelete: 'Сигурен ли си, че искаш да изтриеш тази анкета?',
     shareError: 'Неуспешно генериране на линк за споделяне.',

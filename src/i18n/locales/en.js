@@ -204,7 +204,12 @@ export default {
       confirmPassword: 'Confirm new password',
       savePassword: 'Save Password',
       passwordChanged: 'Password changed successfully.',
-      passwordError: 'Failed to change password.'
+      passwordError: 'Failed to change password.',
+      deleteAccount: 'Delete account',
+      deleteAccountConfirm: 'Delete',
+      confirmDeleteAccount: 'Are you sure you want to delete your account? This action cannot be undone.',
+      deleteAccountSuccess: 'Account deleted successfully.',
+      deleteAccountError: 'Failed to delete account.'
     },
     confirmDelete: 'Are you sure you want to delete this poll?',
     shareError: 'Failed to generate share link.',
