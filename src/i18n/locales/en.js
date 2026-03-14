@@ -287,6 +287,8 @@ export default {
     fallbackDescription: 'Choose your answer.',
     inviteTextWithName: '{inviter} invited you to vote',
     inviteTextFallback: 'The poll author invited you to participate in this poll',
+    deadlineBadgeWithDate: 'until: {date}',
+    deadlineBadgeNoEnd: 'no deadline',
     notAccessibleTitle: 'This poll is not available',
     numericLabel: 'Enter a value',
     numericPlaceholder: 'For example: 10',

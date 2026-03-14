@@ -289,6 +289,8 @@ export default {
     fallbackDescription: 'Избери своя отговор.',
     inviteTextWithName: '{inviter} ви покани да гласувате',
     inviteTextFallback: 'Авторът на анкетата ви покани да участвате в тази анкета',
+    deadlineBadgeWithDate: 'в срок до: {date}',
+    deadlineBadgeNoEnd: 'без краен срок',
     notAccessibleTitle: 'Анкетата не е достъпна',
     numericLabel: 'Въведи стойност',
     numericPlaceholder: 'Например: 10',

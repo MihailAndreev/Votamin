@@ -273,9 +273,20 @@ export default function render(container) {
     }
 
     function renderDeadlineText() {
-      return endDate
-        ? i18n.t('createPoll.preview.closesOn').replace('{date}', new Date(endDate).toLocaleString([], { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit', hour12: false }))
-        : i18n.t('createPoll.preview.noEndDate');
+      if (!endDate) {
+        return i18n.t('publicPoll.deadlineBadgeNoEnd');
+      }
+
+      const formattedDate = new Date(endDate).toLocaleString([], {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: false
+      });
+
+      return i18n.t('publicPoll.deadlineBadgeWithDate').replace('{date}', formattedDate);
     }
 
     function getNumericExampleValue() {
@@ -295,10 +306,10 @@ export default function render(container) {
 
     function renderInviteLine() {
       const baseText = escapeHtml(inviteText).replace(escapeHtml(inviterName), `<strong class="preview-public-invite-strong">${escapeHtml(inviterName)}</strong>`);
-      const deadlineText = `<span class="preview-public-deadline-badge">${escapeHtml(renderDeadlineText())}</span>`;
+      const deadlineText = `<strong class="preview-public-invite-strong">${escapeHtml(renderDeadlineText())}</strong>`;
       const optionsText = `<strong class="preview-public-invite-strong">${escapeHtml(instructionText || '')}</strong>`;
 
-      return `${baseText} • ${deadlineText} • ${optionsText}`;
+      return `${baseText} ${deadlineText} • ${optionsText}`;
     }
 
     stepDiv.innerHTML = `
