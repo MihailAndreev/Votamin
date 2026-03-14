@@ -227,7 +227,6 @@ export default {
       ctaStart: 'Start for free',
       ctaLogin: 'I already have an account',
       features: {
-        noCard: '✓ No credit card required',
         freePlan: '✓ Free plan',
         unlimited: '✓ Unlimited polls'
       }
@@ -286,7 +285,7 @@ export default {
       title: 'Ready to get started?',
       subtitle: 'Join thousands of users already using Votamin',
       register: 'Create free account',
-      notice: 'Free registration • No credit card • Cancel anytime'
+      notice: 'Free registration • Cancel anytime'
     }
   },
   publicPoll: {
