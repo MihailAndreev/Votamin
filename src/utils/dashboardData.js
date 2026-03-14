@@ -40,6 +40,7 @@ function mapOwnerRows(ownerRows) {
   return new Map(
     (ownerRows || []).map((owner) => [owner.user_id, {
       full_name: normalizeOwnerName(owner.full_name),
+      email: typeof owner.email === 'string' && owner.email.trim() ? owner.email.trim() : null,
       avatar_url: owner.avatar_url || null,
     }])
   );
@@ -155,7 +156,7 @@ export async function fetchDashboardSharedPolls({ status = 'all' } = {}) {
       ...poll,
       status: computePollStatus(poll),
       response_count: responseCountByPollId.get(poll.id) || 0,
-      owner_name: owner?.full_name ?? UNKNOWN_OWNER_NAME,
+      owner_name: owner?.full_name ?? owner?.email ?? UNKNOWN_OWNER_NAME,
       owner_avatar_url: owner?.avatar_url ?? null,
     };
   });
