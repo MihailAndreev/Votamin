@@ -72,10 +72,10 @@ function renderStatsCards(stats) {
   if (!stats) {
     return `
       <div class="row g-2 mb-3 vm-admin-stats-row vm-admin-stats-row--polls" aria-hidden="true">
-        ${Array.from({ length: 7 }).map((_, index) => `
-          <div class="${index === 6 ? 'col-12 col-lg-6 col-xl' : 'col-6 col-lg-3 col-xl'}">
+        ${Array.from({ length: 6 }).map(() => `
+          <div class="col-6 col-lg-3 col-xl">
             <div class="vm-card p-2 text-center vm-admin-stat-card vm-admin-stat-card--skeleton">
-              <div class="vm-admin-stat-skeleton-value ${index === 6 ? 'vm-admin-stat-skeleton-value--title' : ''}"></div>
+              <div class="vm-admin-stat-skeleton-value"></div>
               <div class="vm-admin-stat-skeleton-label"></div>
             </div>
           </div>
@@ -118,16 +118,6 @@ function renderStatsCards(stats) {
         <div class="vm-card p-2 text-center vm-admin-stat-card">
           <div class="fw-bold vm-admin-stat-value" style="color:var(--bs-secondary);">${stats.polls_with_zero_votes ?? 0}</div>
           <div class="text-muted small" data-i18n="admin.polls.zeroVotes">${i18n.t('admin.polls.zeroVotes')}</div>
-        </div>
-      </div>
-      <div class="col-12 col-lg-6 col-xl">
-        <div class="vm-card p-2 text-center vm-admin-stat-card">
-          <div class="fw-bold vm-gradient-text vm-admin-stat-value vm-admin-stat-value--title text-truncate" title="${stats.most_voted_poll_title || '—'}">
-            🏆 ${stats.most_voted_poll_title || '—'}
-          </div>
-          <div class="text-muted small">
-            ${i18n.t('admin.polls.mostVoted')} (${stats.most_voted_poll_votes ?? 0} ${i18n.t('admin.polls.votesLabel')})
-          </div>
         </div>
       </div>
     </div>`;
@@ -296,6 +286,11 @@ function renderPollsTable() {
     `;
   }).join('');
 
+  const isParticipantsSorted = state.sortBy === 'votes';
+  const participantsSortIndicator = isParticipantsSorted
+    ? (state.sortDir === 'asc' ? '↑' : '↓')
+    : '↕';
+
   return `
     <div class="vm-admin-polls-table-wrap">
       <table class="table table-hover align-middle mb-0 vm-admin-table vm-admin-polls-table">
@@ -305,7 +300,11 @@ function renderPollsTable() {
             <th>${i18n.t('admin.polls.colCreator')}</th>
             <th>${i18n.t('admin.polls.colStatus')}</th>
             <th>${i18n.t('admin.polls.colResultsVisibility')}</th>
-            <th class="text-center">${i18n.t('admin.polls.colParticipants')}</th>
+            <th class="text-center">
+              <button type="button" class="btn btn-link btn-sm p-0 text-decoration-none fw-semibold text-reset" id="admin-sort-participants" aria-label="${i18n.t('admin.polls.colParticipants')}">
+                ${i18n.t('admin.polls.colParticipants')} ${participantsSortIndicator}
+              </button>
+            </th>
             <th>${i18n.t('admin.polls.colCreated')}</th>
             <th>${i18n.t('admin.polls.colExpires')}</th>
             <th>${i18n.t('admin.polls.colActions')}</th>
@@ -696,6 +695,17 @@ function bindEvents(container) {
     loadData(container);
   });
 
+  container.querySelector('#admin-sort-participants')?.addEventListener('click', () => {
+    if (state.sortBy === 'votes') {
+      state.sortDir = state.sortDir === 'asc' ? 'desc' : 'asc';
+    } else {
+      state.sortBy = 'votes';
+      state.sortDir = 'desc';
+    }
+    state.page = 1;
+    loadData(container);
+  });
+
   // Reset filters
   container.querySelector('#admin-poll-reset-filters')?.addEventListener('click', () => {
     state.searchTitle = '';
@@ -703,6 +713,7 @@ function bindEvents(container) {
     state.statusFilter = '';
     state.resultsVisibilityFilter = '';
     state.sortBy = 'created_at';
+    state.sortDir = 'desc';
     state.page = 1;
     loadData(container);
   });
